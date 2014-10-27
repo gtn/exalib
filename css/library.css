@@ -1,0 +1,219 @@
+.library-item {
+	display: block;
+	border: 1px solid white;
+	padding: 5px 10px;
+	margin: 5px 0;
+}
+.library-item:hover {
+	background: -moz-linear-gradient(center top , #FAFAFA 0%, #F5F5F5 100%) repeat scroll 0 0 rgba(0, 0, 0, 0);
+    border: 1px solid #DDDDDD;
+    border-radius: 5px;
+    box-shadow: 0 1px 0 #FFFFFF inset;
+}
+.library-item .head {
+	font-family: 'vegurregular' !important;
+	color: #007BB6;
+	font-size: 18px;
+	font-weight: normal;
+	margin-bottom: 15px;
+}
+.library_filter, .library_filter_main {
+float: left;
+	width: 300px;
+}
+.library_filter a {
+	display: block;
+	padding: 2px 0 3px 5px;
+}
+.library_filter a:hover {
+	text-decoration: underline;
+}
+.library_filter_main a {
+	display: block;
+	padding: 1px 0 1px 5px;
+}
+.library_top_filter a:hover {
+	text-decoration: underline;
+}
+
+.library_result {
+	
+	margin-left: 300px;
+}
+h1.library_result_heading {
+	font-size: 16px;
+	margin-top: 34px;
+	margin-bottom: 20px;
+	padding-left: 0;
+}
+
+h2.library_filter_heading {
+	font-size: 16px;
+	padding-bottom: 10px;
+}
+
+
+/* --- Libary new Styles ----- */ 
+
+.library_result .paging, .library_result .library_result_heading {
+	text-align: center;
+}
+
+.library_result .paging {
+	margin-bottom: 20px;
+	color: #666666;
+}
+.library_result .library_result_heading {
+	color: #666666;
+}
+
+
+.libary_author {
+	color: #000;
+}
+
+h1.libary_head {
+    -moz-border-bottom-colors: none !important;
+    -moz-border-left-colors: none !important;
+    -moz-border-right-colors: none !important;
+    -moz-border-top-colors: none !important;
+    background: none repeat scroll 0 0 rgba(0, 0, 0, 0) !important;
+    
+    border-color: #C8C8C8;
+    border-image: none !important;
+    border-style: none;
+    border-width: 0;
+    
+    color: #003876;
+    
+    border-bottom: 1px solid #C8C8C8 !important;
+    padding-bottom: 20px !important;
+    
+    font-size: 1.9em;
+    font-weight: normal !important;
+    margin-bottom: 35px !important;
+    margin-top: 20px !important;
+}
+
+.exalib_lib {
+    margin: 0 10px;
+    padding: 10px;
+}
+
+.library_filter a {
+	color: #666666;
+}
+
+.library_filter_heading {
+	color: #666;
+}
+
+.libary_nores {
+	font-size: 18px;
+	color: #007BB6;
+}
+
+a.exalib-lib {
+	margin-top: 15px;
+	margin-top: 15px;
+    background: url([[pix:theme|bgbutton]]) repeat-x scroll 0 0 #003876;
+    border: 1px solid #003F85;
+    border-radius: 10px;
+    box-shadow: 0 5px 5px #005BC1 inset, 0 1px 1px rgba(0, 0, 0, 0.05);
+    color: #FFFFFF;
+    font-size: 16px;
+    padding: 5px 15px;
+}
+
+a.exalib-blue-cat-lib {
+	margin-top: 5px;
+	margin-top: 5px;
+    background: url([[pix:theme|bgbutton]]) repeat-x scroll 0 0 #003876;
+    border: 1px solid #003F85;
+    border-radius: 7px;
+    box-shadow: 0 5px 5px #005BC1 inset, 0 1px 1px rgba(0, 0, 0, 0.05);
+    color: #FFFFFF;
+    font-size: 14px;
+    padding: 3px 20px;
+}
+
+.library_result_main {
+
+	margin-bottom: 100px;
+	margin-top: 30px;
+}
+
+.libary_top_cat {
+	text-align: center;
+}
+
+.exalib_lib input[type="text"] {
+	box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset;
+	border-radius: 7px;
+	border: 1px solid #CCCCCC;
+	font-size: 14px;
+	padding: 4px 3px;
+
+}
+
+.exalib_lib input.libaryfront_search[type="text"] {
+	box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset;
+	border-radius: 7px;
+	border: 1px solid #CCCCCC;
+	font-size: 16px;
+	padding: 6px 3px;
+
+}
+
+input.libaryfront_searchsub[type="submit"] {
+    box-shadow: 0 5px 5px #005BC1 inset, 0 1px 1px rgba(0, 0, 0, 0.05);
+    color: #FFFFFF;
+    cursor: pointer;
+    font-size: 16px;
+    padding: 5px 15px;
+    margin-left: 5px;
+}
+
+
+
+.libary_cat_select select {
+   background: transparent;
+   width: 228px;
+   padding: 3px;
+   font-size: 14px;
+   line-height: 1;
+   border: 0;
+   border-radius: 0;
+   height: 24px;
+   -webkit-appearance: none;
+}
+
+.libary_cat_select {
+   width: 200px;
+   height: 24px;
+   overflow: hidden;
+   background: url(http://gtn02.gtn-solutions.com/layouts/exalib_lib/pix/select_arrow.png) no-repeat right #fff;
+   border: 1px solid #ccc;
+   text-align: center;
+   border-radius: 7px;
+   position: absolute;
+   left: 50%;
+   margin-left: -100px;
+   margin-top: 20px;
+   }
+
+.library_top_filter {
+	text-align: right;
+	color: #666;
+	padding-top: 5px;
+}
+
+.library_top_filter a {
+	color: #666;
+}
+
+.library-item div {
+	color: #666;
+}
+
+
