@@ -1,7 +1,7 @@
 <?php
 
 require_once 'lib.php';
-require_login(EXALIB_COURSE_ID);
+block_exalib_require_open();
 
 $file = $_REQUEST['file'];
 if (!preg_match('!^library/Podcasts/(.*)!', $file, $matches)) die ('not library file');

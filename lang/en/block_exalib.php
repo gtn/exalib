@@ -24,3 +24,9 @@
 $string['pluginname'] = 'Exabis Library';
 $string['heading'] = 'Exabis Library';
 
+$string['exalib:use'] = 'Use Exalib: Viewing and Searching';
+$string['block/exalib:open'] = 'Open Items and Files';
+$string['exalib:admin'] = 'Manage Content';
+$string['exalib:addinstance'] = 'Add Instance to Course';
+
+$string['edit_content'] = 'Manage Library Content';

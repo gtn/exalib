@@ -2,6 +2,8 @@
 
 require 'inc.php';
 
+block_exalib_require_view();
+
 if ($itemid = optional_param('itemid', 0, PARAM_INT)) {
 	if (!$item = $DB->get_record("exalib_item", array('id'=>$itemid))) {
 		print_error("item not found");
@@ -15,8 +17,6 @@ if ($itemid = optional_param('itemid', 0, PARAM_INT)) {
 
 $PAGE->set_url('/', array());
 $PAGE->set_course($SITE);
-
-// require_login();
 
 $PAGE->set_url('/blocks/exalib');
 $PAGE->set_context(context_system::instance());

@@ -2,8 +2,7 @@
 
 require 'inc.php';
 
-// disabled: all users area allowed to view this page
-// require_login(EXALIB_COURSE_ID);
+block_exalib_require_use();
 
 $PAGE->set_url('/', array());
 $PAGE->set_course($SITE);

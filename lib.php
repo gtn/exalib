@@ -1,13 +1,40 @@
 <?php
 
 define('FILESYSTEMREPO_ID', 9);
-define('EXALIB_COURSE_ID', 25);
+
+function block_exalib_new_moodle_url() {
+	global $CFG;
+	
+	$moodle_path = preg_replace('!^[^/]+//[^/]+!', '', $CFG->wwwroot);
+	
+	return new moodle_url(str_replace($moodle_path, '', $_SERVER['REQUEST_URI']));
+}
+
+function block_exalib_require_use() {
+	if (!has_capability('block/exalib:use', context_system::instance())) {
+		throw new require_login_exception('You are no allowed to view Library Content');
+	}
+}
+
+function block_exalib_require_open() {
+	block_exalib_require_use();
+	if (!has_capability('block/exalib:use', context_system::instance())) {
+		throw new require_login_exception('You are no allowed to view Library Content');
+	}
+}
+
+function block_exalib_require_admin() {
+	block_exalib_require_use();
+	if (!has_capability('block/exalib:use', context_system::instance())) {
+		throw new require_login_exception('You are no Exalib Admin');
+	}
+}
 
 function print_items($ITEMS, $admin=false) {
 	foreach ($ITEMS as $item) {
 		
 		$fs = get_file_storage();
-		$areafiles = $fs->get_area_files(get_context_instance(CONTEXT_SYSTEM)->id, 'block_exalib', 'item_file', $item->id, 'itemid', '', false);
+		$areafiles = $fs->get_area_files(context_system::instance()->id, 'block_exalib', 'item_file', $item->id, 'itemid', '', false);
 		$file = reset($areafiles);
 
 		$downloadUrl = null;
@@ -33,7 +60,7 @@ function print_items($ITEMS, $admin=false) {
 					$targetNewWindow = true;
 				}
 			}
-		} elseif ($item->content || $item->background) {
+		} elseif ($item->content) {
 			$url = 'detail.php?itemid='.$item->id;
 		} else {
 			$url = '';
@@ -141,7 +168,7 @@ function block_exalib_send_stored_file($itemid) {
 }
 
 function block_exalib_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, $options) {
-	require_login(EXALIB_COURSE_ID);
+	block_exalib_require_open();
 
 	$fs = get_file_storage();
 	$areafiles = $fs->get_area_files(get_context_instance(CONTEXT_SYSTEM)->id, 'block_exalib', 'item_file', $args[0], 'itemid', '', false);

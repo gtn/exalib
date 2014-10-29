@@ -5,7 +5,7 @@ require 'inc.php';
 $PAGE->set_url('/', array());
 $PAGE->set_course($SITE);
 
-require_login(17);
+block_exalib_require_admin();
 
 $overviewPage = new moodle_url('/blocks/exalib');
 

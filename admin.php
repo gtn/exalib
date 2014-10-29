@@ -5,10 +5,7 @@ require 'inc.php';
 $PAGE->set_url('/', array());
 $PAGE->set_course($SITE);
 
-require_login(EXALIB_COURSE_ID);
-if (!has_capability('moodle/site:config', context_system::instance())) {
-	throw new require_login_exception('you are no admin, please login first');
-}
+block_exalib_require_admin();
 
 $PAGE->set_url('/blocks/exalib');
 $PAGE->set_context(context_system::instance());
@@ -27,9 +24,9 @@ LEFT JOIN {exalib_item} AS item ON item.id=ic.item_id
 GROUP BY category.id
 ORDER BY name");
 
-$parents = array();
+$CATEGORY_BY_PARENT = array();
 foreach ($CATEGORIES as $cat) {
-	$parents[$cat->parent_id][$cat->id] = $cat;
+	$CATEGORY_BY_PARENT[$cat->parent_id][$cat->id] = $cat;
 }
 
 
@@ -80,47 +77,56 @@ if ($show == 'edit' || $show == 'add') {
 			$mform =& $this->_form; // Don't forget the underscore! 
 	 
 			$mform->addElement('text', 'name', 'Name', 'size="100"');
+			$mform->setType('name', PARAM_TEXT);
 			$mform->addRule('name', 'Name required', 'required', null, 'server');
 			
 			$mform->addElement('text', 'source', 'Source', 'size="100"');
+			$mform->setType('source', PARAM_TEXT);
 
 			$mform->addElement('header', 'content', 'Content');
 
 			$mform->addElement('text', 'resource_id', 'Resource', 'size="100"');
+			$mform->setType('resource_id', PARAM_INT);
+
 			$mform->addElement('text', 'link', 'Link', 'size="100"');
+			$mform->setType('link', PARAM_TEXT);
 			
 			$mform->addElement('filemanager', 'file', 'File', null, array('subdirs' => false, 'maxfiles' => 1));
 
 			$mform->closeHeaderBefore('authors');
 			
 			$mform->addElement('text', 'authors', 'Authors', 'size="100"');
+			$mform->setType('authors', PARAM_TEXT);
 
-			$text = '';
-
-			global $DB, $parents;
-			foreach ($parents[0] as $cat) {
-				$text .= '<b>'.$cat->name.'</b><br />';
-
-				foreach ($parents[$cat->id] as $cat) {
-					$text .= '<input type="checkbox" name="CATEGORIES[]" value="'.$cat->id.'" '.
-							(in_array($cat->id, $this->_customdata['itemCategories'])?'checked ':'').'/>'.$cat->name.'<br />';
-					
-					foreach ($parents[$cat->id] as $cat) {
-						$text .= '&nbsp;&nbsp;&gt;&nbsp;<input type="checkbox" name="CATEGORIES[]" value="'.$cat->id.'" '.
-							(in_array($cat->id, $this->_customdata['itemCategories'])?'checked ':'').'/>'.$cat->name.'<br />';
-					}
-				}
-			}
-			
-			$mform->addElement('static', 'description', 'Groups', $text);
+			$mform->addElement('static', 'description', 'Groups', $this->get_categories());
 
 			$this->add_action_buttons();
+		}
+
+		function get_categories($level=0, $parent=0) {
+			global $CATEGORY_BY_PARENT;
+
+			if (empty($CATEGORY_BY_PARENT[$parent])) return;
+			
+			$text = '';
+			foreach ($CATEGORY_BY_PARENT[$parent] as $cat) {
+				if (!$parent) {
+					$text .= '<b>'.$cat->name.'</b><br />';
+				} else {
+					$text .= '<div style="padding-left: '.(20*$level).'px;"><input type="checkbox" name="CATEGORIES[]" value="'.$cat->id.'" '.
+							(in_array($cat->id, $this->_customdata['itemCategories'])?'checked ':'').'/>'.$cat->name.'</div>';
+				}
+				
+				$text .= $this->get_categories($level+1, $cat->id);
+			}
+			
+			return $text;
 		}
 	}
 	
 
 
-	$itemCategories = $DB->get_records_sql_menu("SELECT id, id AS val
+	$itemCategories = $DB->get_records_sql_menu("SELECT category.id, category.id AS val
 	FROM {exalib_category} AS category
 	LEFT JOIN {exalib_item_category} AS ic ON category.id=ic.category_id
 	WHERE ic.item_id=?", array($item->id));
@@ -142,7 +148,7 @@ if ($show == 'edit' || $show == 'add') {
 		}
 
 		// save file
-		$context = get_context_instance(CONTEXT_SYSTEM);
+		$context = context_system::instance();
 		file_save_draft_area_files($fromform->file, $context->id, 'block_exalib', 'item_file', $fromform->id, null);
 				
 		// save categories
@@ -180,15 +186,12 @@ $ITEMS = null;
 if ($q = optional_param('q', '', PARAM_TEXT)) {
 	$q = trim($q);
 	
-	$qparams = split(' ', $q);
+	$qparams = preg_split('!\s+!', $q);
 	
 	$sqlJoin = "";
 	$sqlWhere = "";
 	$sqlParams = array();
 	
-	if ($filter_id)
-		$sqlJoin .= "	JOIN {exalib_item_category} AS ic_filter ON (ic_filter.item_id = item.id AND (ic_filter.category_id=".$filter_id."))";
-
 	foreach ($qparams as $i=>$qparam) {
 		$sqlJoin .= " LEFT JOIN {exalib_item_category} AS ic$i ON item.id=ic$i.item_id";
 		$sqlJoin .= " LEFT JOIN {exalib_category} AS c$i ON ic$i.category_id=c$i.id";
@@ -210,7 +213,7 @@ if ($q = optional_param('q', '', PARAM_TEXT)) {
 	) AS x";
 	$count = $DB->get_field_sql($sql, $sqlParams);
 
-	$pagingbar = new paging_bar($count, $page, $perpage, new moodle_url($_SERVER['REQUEST_URI']));
+	$pagingbar = new paging_bar($count, $page, $perpage, block_exalib_new_moodle_url());
 
 	$sql = "SELECT item.*
 	FROM {exalib_item} AS item 
@@ -221,7 +224,7 @@ if ($q = optional_param('q', '', PARAM_TEXT)) {
 	LIMIT ".$page*$perpage.', '.$perpage;
 	$ITEMS = $DB->get_records_sql($sql, $sqlParams);
 } elseif ($category_id = optional_param('category_id', 0, PARAM_INT)) {
-	$ITEMS = $DB->get_records_sql("SELECT *
+	$ITEMS = $DB->get_records_sql("SELECT item.*
 	FROM {exalib_item} AS item
 	JOIN {exalib_item_category} AS ic ON item.id=ic.item_id AND ic.category_id=?
 	ORDER BY name", array($category_id));
@@ -260,23 +263,32 @@ echo $OUTPUT->header();
 ?>
 <a href="admin.php?show=add">Add new</a>
 <form method="get" action="admin.php">
-	<input type="text" name="q" />
+	<input type="text" name="q" value="<?php echo p($q); ?>"/>
 	<input type="submit" value="Fulltext Search" />
 </form>
 <?php
 
-echo '<h1>Filter</h1>';
-foreach ($parents[0] as $cat) {
-	echo '<h2 style="margin: 30px 0 0 0;">'.$cat->name.'</h1>';
-
-	foreach ($parents[$cat->id] as $cat) {
-		echo '<a href="admin.php?category_id='.$cat->id.'">'.$cat->name.' ('.$cat->cnt.')</a><br />';
+function block_exalib_print_nav($level=0, $parent=0) {
+	global $CATEGORY_BY_PARENT, $category_id;
+	
+	if (empty($CATEGORY_BY_PARENT[$parent])) return;
+	
+	foreach ($CATEGORY_BY_PARENT[$parent] as $cat) {
+		if (!$parent)
+			echo '<div style="padding-bottom: 8px;">';
 		
-		foreach ($parents[$cat->id] as $cat) {
-			echo '&nbsp;&nbsp;&gt;&nbsp;<a href="admin.php?category_id='.$cat->id.'">'.$cat->name.' ('.$cat->cnt.')</a><br />';
-		}
+		echo '<a href="admin.php?category_id='.$cat->id.'" style="padding-left: '.(20*$level).'px;'.($cat->id==$category_id?'color: #007BB6;':'').'">';
+		echo '»&nbsp;&nbsp;'.$cat->name.' ('.$cat->cnt.')</a>';
+		
+		block_exalib_print_nav($level+1, $cat->id);
+		
+		if (!$parent)
+			echo '</div>';
 	}
+	
 }
+
+echo block_exalib_print_nav();
 
 echo '<hr style="margin: 20px 0"/>';
 
