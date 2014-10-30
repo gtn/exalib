@@ -10,13 +10,52 @@
     border-radius: 5px;
     box-shadow: 0 1px 0 #FFFFFF inset;
 }
+.library-item-buttons {
+	display: none;
+}
+.library-item:hover .library-item-buttons {
+	display: inline;
+}
 .library-item .head {
-	font-family: 'vegurregular' !important;
 	color: #007BB6;
 	font-size: 18px;
 	font-weight: normal;
 	margin-bottom: 15px;
 }
+
+.library_categories {
+	float: left;
+	width: 300px;
+}
+.library_categories_item {
+	display: block;
+	padding: 2px 0 3px 5px;
+}
+.library_categories_item:hover .library_categories_item_title {
+	text-decoration: underline;
+}
+.library_categories_item_buttons {
+	display: none;
+	padding-left: 10px;
+}
+.library_categories_item:hover .library_categories_item_buttons{
+	display: inline;
+}
+.library_categories_item.selected .library_categories_item_title {
+	text-decoration: underline;
+	font-weight: bold;
+}
+.library_categories_item-level0 {
+	font-size: 180%;
+	margin: 30px 0 10px 0;
+}
+.library_categories_item:not(.library_categories_item-level0)::before {
+	content: "»  ";
+}
+.library_categories_subgroup {
+	padding-left: 20px;
+}
+
 .library_filter, .library_filter_main {
 float: left;
 	width: 300px;
@@ -49,7 +88,8 @@ h1.library_result_heading {
 
 h2.library_filter_heading {
 	font-size: 16px;
-	padding-bottom: 10px;
+	padding: 0;
+	margin: 20px 0 0 0;
 }
 
 

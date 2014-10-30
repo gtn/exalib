@@ -79,7 +79,9 @@ function print_items($ITEMS, $admin=false) {
 			echo '<div class="head">'.$item->name.'</div>';
 		if ($item->source) echo '<div><span class="libary_author">Source:</span> '.$item->source.'</div>';
 		if ($item->authors) echo '<div><span class="libary_author">Authors:</span> '.$item->authors.'</div>';
-		if ($linkHeader) echo '<a href="'.$url.($targetNewWindow?' target="_blank"':'').'">'.($podcast?'listen':'show').'</a>';
+		
+		echo '<span class="library-item-buttons">';
+		if ($linkHeader) echo '<a href="'.$url.($targetNewWindow?'" target="_blank"':'').'"> '.($podcast?'listen':'show').'</a>';
 		if ($admin) {
 			echo ' | <a href="admin.php?show=edit&id='.$item->id.'">edit</a>';
 			echo ' | <a href="admin.php?show=delete&id='.$item->id.'"">delete</a>';
@@ -87,6 +89,8 @@ function print_items($ITEMS, $admin=false) {
 		if ($downloadUrl) {
 			echo ' | <a href="'.$downloadUrl.'">download</a>';
 		}
+		echo '</span>';
+		
 		if ($linkHeader) {
 			echo '</div>';
 		} else {
