@@ -37,6 +37,8 @@ if ($show == 'delete') {
 }
 
 if ($show == 'edit' || $show == 'add') {
+	$category_id = optional_param('category_id', '', PARAM_INT);
+	
 	if ($show == 'add') {
 		$id = 0;
 		$item = new StdClass;
@@ -106,6 +108,10 @@ if ($show == 'edit' || $show == 'add') {
 	LEFT JOIN {exalib_item_category} AS ic ON category.id=ic.category_id
 	WHERE ic.item_id=?", array($id));
 	
+	if (!$itemCategories && $category_id) {
+		$itemCategories[$category_id] = $category_id;
+	}
+	
 	$item_edit_form = new item_edit_form($_SERVER['REQUEST_URI'], array('itemCategories'=>$itemCategories));
 
 	if ($item_edit_form->is_cancelled()){
@@ -113,12 +119,15 @@ if ($show == 'edit' || $show == 'add') {
 	} else if ($fromform = $item_edit_form->get_data()){
 		// edit/add
 		
-		if ($item->id) {
+		if (!empty($item->id)) {
 			$fromform->id = $item->id;
 			$DB->update_record('exalib_item', $fromform);
 		} else {
 			try {
-			$fromform->id = $DB->insert_record('exalib_item', $fromform);
+				if (!isset($fromform->resource_id)) $fromform->resource_id = 0;
+				if (!isset($fromform->content)) $fromform->content = '';
+				
+				$fromform->id = $DB->insert_record('exalib_item', $fromform);
 			} catch (Exception $e) { var_dump($e); exit;}
 		}
 
@@ -132,7 +141,7 @@ if ($show == 'edit' || $show == 'add') {
 			$DB->execute('INSERT INTO {exalib_item_category} (item_id, category_id) VALUES (?, ?)', array($fromform->id, $categoryId));
 		}
 		
-		redirect('admin.php');
+		redirect('admin.php?category_id='.$category_id);
 		exit;
 		
 	} else {

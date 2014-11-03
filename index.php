@@ -244,11 +244,6 @@ echo $OUTPUT->header();
 
 <div class="library_categories">
 
-<?php
-	if (IS_ADMIN_MODE) {
-		?><a href="<?php echo $url_add; ?>">Add new</a><?php
-	}
-?>
 <form method="get" action="<?php echo $url_search; ?>">
 	<?php echo html_writer::input_hidden_params($url_search); ?>
 	<input name="q" type="text" value="<?php p($q) ?>" />
@@ -276,11 +271,13 @@ function block_exalib_print_nav($level=0, $parent=0) {
 		echo '<a class="library_categories_item_title" href="'.$url_category->out(true, array('category_id' => $cat->id)).'">'.$cat->name.' ('.$cat->cnt_inc_subs.')</a>';
 		
 		if (IS_ADMIN_MODE) {
-			echo '<span class="library_categories_item_buttons">';
-			echo '<a href="admin.php?show=category_add&category_id='.$cat->id.'">add</a>';
-			echo ' | <a href="admin.php?show=category_edit&category_id='.$cat->id.'">edit</a>';
-			echo ' | <a href="admin.php?show=category_delete&category_id='.$cat->id.'">delete</a>';
-			echo '</span>';
+			echo '<span class="library_categories_item_buttons"><span>';
+			echo '<a href="admin.php?show=category_add&category_id='.$cat->id.'">add sub category</a><br />';
+			if ($level > 0) {
+				echo '<a href="admin.php?show=category_edit&category_id='.$cat->id.'">edit category</a><br />';
+				echo '<a href="admin.php?show=category_delete&category_id='.$cat->id.'">delete category</a>';
+			}
+			echo '</span></span>';
 		}
 
 		echo '</div>';
@@ -308,6 +305,10 @@ foreach ($topGroups as $id=>$cat) {
 */
 
 if ($ITEMS !== null) {
+	if (IS_ADMIN_MODE) {
+		?><a href="<?php echo $url_add; ?>">Add new Entry</a><?php
+	}
+
 	echo '<h1 class="library_result_heading">Results</h1>';
 	
 	if (!$ITEMS) {
