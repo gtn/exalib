@@ -10,6 +10,11 @@ if (IS_ADMIN_MODE) {
 	block_exalib_require_use();
 }
 
+$importlatein = optional_param('importlatein', '0', PARAM_INT);
+if($importlatein==1){
+	require 'importlatein.php';
+	block_exalib_importlatein();
+}
 
 /*
 // disable this site, always use advanced search
