@@ -36,17 +36,6 @@ function block_exalib_importlatein() {
 		$data->name=block_exalib_ersnull($item->titel);$data->authors=block_exalib_ersnull($item->autor);
 		$DB->update_record('exalib_item', $data);
 		
-		$sql="INSERT INTO mdl_exalib_item (id,resource_id,link,source,file,name,authors) VALUES ";
-		$sql.="(".$item->artikel_id.",
-		".block_exalib_preperefields($item->dokumentart_id).",
-		'".block_exalib_preperefields($item->url_id)."',
-		'".block_exalib_preperefields($item->quelle)."',
-		'".block_exalib_preperefields($item->bildlink)."',
-		'".block_exalib_preperefields($item->titel)."',
-		'".block_exalib_preperefields($item->autor)."',
-		'".block_exalib_preperefields($item->inhalt)."')";
-		//echo $sql;
-		
 		
 		$sql='INSERT INTO {exalib_item_category} (item_id,category_id) VALUES ';
 		$sql.='('.$item->artikel_id.','.$item->treeid.')';
@@ -74,12 +63,5 @@ function block_exalib_ersnull($wert){
 	if(empty($wert)) $wert="";
 	return $wert;
 }
-function block_exalib_preperefields($wert){
-	if(empty($wert)) return "0";
-	else {
-		$wert=str_replace("?","",$wert);
-		$wert=str_replace(';','',$wert);
-		return mysql_real_escape_string(stripslashes($wert));
-	}
-}
+
 ?>
