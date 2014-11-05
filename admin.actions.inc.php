@@ -2,14 +2,135 @@
 
 $show = optional_param('show', '', PARAM_TEXT);
 
+if ($show == 'categories') {
+	$PAGE->navbar->add('Categories');
+	
+	echo $OUTPUT->header();
+
+	echo '<div><a href="admin.php?show=category_add&parent_id=0">add main category</a></div>';
+	
+	block_exalib_category_manager::walkTree(function($level, $parent, $cat) {
+	
+		echo '<div>&bullet; ';
+		
+		echo $cat->name.' ('.$cat->cnt_inc_subs.') ';
+		
+		echo '<span class="library_categories_item_buttons"><span>';
+		echo '<a href="admin.php?show=category_edit&category_id='.$cat->id.'">edit</a>';
+		echo ' | <a href="admin.php?show=category_delete&category_id='.$cat->id.'">delete</a>';
+		echo '</span></span>';
+
+		echo '</div>';
+
+		echo '<div style="padding-left: 30px;">';
+		echo '<a href="admin.php?show=category_add&parent_id='.$cat->id.'">add category here</a>';
+		
+	}, function($level) {
+		echo '</div>';
+	});
+ 
+	echo $OUTPUT->footer();
+	exit;
+}
+
 if ($show == 'category_delete') {
-	die('TODO: '.$show);
+	$confirm = optional_param("confirm", "", PARAM_BOOL);
+	$category_id = required_param('category_id', PARAM_INT);
+	
+	if (data_submitted() && $confirm && confirm_sesskey()) {
+		$DB->delete_records('exalib_category', array(
+			'id' => required_param('category_id', PARAM_INT)
+		));
+		redirect('admin.php?show=categories');
+		exit;
+	} else {
+		$optionsyes = array('category_id' => $category_id, 'show' => 'category_delete', 'confirm' => 1, 'sesskey' => sesskey());
+		$optionsno = array();
+
+		echo $OUTPUT->header();
+	 
+		echo '<br />';
+		echo $OUTPUT->confirm('delete category '.block_exalib_category_manager::getCategory($category_id)->name.'?', new moodle_url('admin.php', $optionsyes), new moodle_url('admin.php', $optionsno));
+
+		echo $OUTPUT->footer();
+		exit;
+	}
+	exit;
 }
-if ($show == 'category_add') {
-	die('TODO: '.$show);
-}
-if ($show == 'category_edit') {
-	die('TODO: '.$show);
+if (($show == 'category_add') || ($show == 'category_edit')) {
+	if ($show == 'category_add') {
+		$category = (object)array(
+			'id' => 0,
+			'parent_id' => required_param('parent_id', PARAM_INT)
+		);
+	} else {
+		$category = $DB->get_record('exalib_category', array('id'=>required_param('category_id', PARAM_INT)));
+	}
+	
+	require_once("$CFG->libdir/formslib.php");
+	 
+	class item_edit_form extends moodleform {
+	 
+		var $_category_select = array(0 => 'root');
+		
+		function definition() {
+			global $CFG;
+	 
+			block_exalib_category_manager::walkTree(function($level, $parent, $cat) {
+				$this->_category_select[$cat->id] = str_repeat('&nbsp;&nbsp;&nbsp;', $level).'&bullet; '.$cat->name;
+			});
+
+			$mform =& $this->_form; // Don't forget the underscore! 
+	 
+			$mform->addElement('text', 'name', 'Name', 'size="100"');
+			$mform->setType('name', PARAM_TEXT);
+			$mform->addRule('name', 'Name required', 'required', null, 'server');
+			
+			$mform->addElement('select', 'parent_id', 'Parent', $this->_category_select);
+
+			// $mform->addElement('static', 'description', 'Groups', $this->get_categories());
+
+			$this->add_action_buttons();
+		}
+
+		function get_categories() {
+			return ;
+		}
+	}
+	
+
+
+	$category_edit_form = new item_edit_form($_SERVER['REQUEST_URI']);
+
+	if ($category_edit_form->is_cancelled()){
+
+	} else if ($fromform = $category_edit_form->get_data()){
+		// edit/add
+		
+		if (!empty($category->id)) {
+			$fromform->id = $category->id;
+			$DB->update_record('exalib_category', $fromform);
+		} else {
+			try {
+				$fromform->id = $DB->insert_record('exalib_category', $fromform);
+			} catch (Exception $e) { var_dump($e); exit;}
+		}
+
+		redirect('admin.php?show=categories');
+		exit;
+		
+	} else {
+		// display form
+		
+		echo $OUTPUT->header();
+	 
+		$category_edit_form->set_data($category);
+		$category_edit_form->display();
+		
+		echo $OUTPUT->footer();
+	}
+
+	exit;
 }
 
 if ($show == 'delete') {
@@ -22,6 +143,7 @@ if ($show == 'delete') {
 		$DB->delete_records('exalib_item', array('id'=>$id));
 		$DB->delete_records('exalib_item_category', array("item_id" => $id));
 		redirect('admin.php');
+		exit;
 	} else {
 		$optionsyes = array('id' => $id, 'show' => 'delete', 'confirm' => 1, 'sesskey' => sesskey());
 		$optionsno = array();
@@ -80,24 +202,13 @@ if ($show == 'edit' || $show == 'add') {
 			$this->add_action_buttons();
 		}
 
-		function get_categories($level=0, $parent=0) {
-			global $CATEGORY_BY_PARENT;
-
-			if (empty($CATEGORY_BY_PARENT[$parent])) return;
-			
-			$text = '';
-			foreach ($CATEGORY_BY_PARENT[$parent] as $cat) {
-				if (!$parent) {
-					$text .= '<b>'.$cat->name.'</b><br />';
-				} else {
-					$text .= '<div style="padding-left: '.(20*$level).'px;"><input type="checkbox" name="CATEGORIES[]" value="'.$cat->id.'" '.
-							(in_array($cat->id, $this->_customdata['itemCategories'])?'checked ':'').'/>'.$cat->name.'</div>';
-				}
-				
-				$text .= $this->get_categories($level+1, $cat->id);
-			}
-			
-			return $text;
+		function get_categories() {
+			return block_exalib_category_manager::walkTree(function($level, $parent, $cat) {
+				return '<div style="padding-left: '.(20*$level).'px;"><input type="checkbox" name="CATEGORIES[]" value="'.$cat->id.'" '.
+						(in_array($cat->id, $this->_customdata['itemCategories'])?'checked ':'').'/>'.
+						($level == 0 ? '<b>'.$cat->name.'</b>' : $cat->name).
+						'</div>';
+			});
 		}
 	}
 	

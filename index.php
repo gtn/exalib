@@ -50,7 +50,7 @@ $filter_id = 0;
 
 //$FILTER_CATEGORY = $DB->get_record("exalib_category", array('id'=>$filter_id));
 //if ($FILTER_CATEGORY) $PAGE->navbar->add($FILTER_CATEGORY->name);
-
+if (IS_ADMIN_MODE) $PAGE->navbar->add('Administration', 'admin.php');
 
 
 $CURRENT_CATEGORY = block_exalib_category_manager::getCategory($category_id);
@@ -225,6 +225,10 @@ echo $OUTPUT->header();
 
 <?php
 
+if (IS_ADMIN_MODE) {
+	echo '<a href="admin.php?show=categories">Manage Categories</a>';
+}
+
 echo block_exalib_category_manager::walkTree(function($level, $parent, $cat) {
 	global $url_category, $category_id;
 	
@@ -232,16 +236,6 @@ echo block_exalib_category_manager::walkTree(function($level, $parent, $cat) {
 	
 	echo '<a class="library_categories_item_title" href="'.$url_category->out(true, array('category_id' => $cat->id)).'">'.$cat->name.' ('.$cat->cnt_inc_subs.')</a>';
 	
-	if (IS_ADMIN_MODE) {
-		echo '<span class="library_categories_item_buttons"><span>';
-		echo '<a href="admin.php?show=category_add&category_id='.$cat->id.'">add sub category</a><br />';
-		if ($level > 0) {
-			echo '<a href="admin.php?show=category_edit&category_id='.$cat->id.'">edit category</a><br />';
-			echo '<a href="admin.php?show=category_delete&category_id='.$cat->id.'">delete category</a>';
-		}
-		echo '</span></span>';
-	}
-
 	echo '</div>';
 
 	echo '<div class="library_categories_subgroup">';
