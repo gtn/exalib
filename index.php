@@ -46,47 +46,9 @@ $filter_id = 0;
 //$FILTER_CATEGORY = $DB->get_record("exalib_category", array('id'=>$filter_id));
 //if ($FILTER_CATEGORY) $PAGE->navbar->add($FILTER_CATEGORY->name);
 
-function block_exalib_load_categories() {
-	global $DB, $CATEGORIES, $CATEGORY_BY_PARENT;
-	
-	$CATEGORIES = $DB->get_records_sql("SELECT category.*, count(DISTINCT item.id) AS cnt
-	FROM {exalib_category} AS category
-	LEFT JOIN {exalib_item_category} AS ic ON (category.id=ic.category_id)
-	JOIN {exalib_item} AS item ON item.id=ic.item_id
-	GROUP BY category.id
-	ORDER BY name");
-
-	$CATEGORY_BY_PARENT = array();
-
-	foreach ($CATEGORIES as &$cat) {
-
-		$CATEGORY_BY_PARENT[$cat->parent_id][$cat->id] = &$cat;
-		
-		$cnt = $cat->cnt;
-		$cat_id = $cat->id;
-
-		// find parents
-		while (true) {
-			if (!isset($cat->cnt_inc_subs)) $cat->cnt_inc_subs = 0;
-			$cat->cnt_inc_subs += $cnt;
-			
-			if (!isset($cat->self_inc_all_sub_ids)) $cat->self_inc_all_sub_ids = array();
-			$cat->self_inc_all_sub_ids[] = $cat_id;
-		
-			if (($cat->parent_id > 0) && isset($CATEGORIES[$cat->parent_id])) {
-				// $parentCat
-				$cat =& $CATEGORIES[$cat->parent_id];
-			} else {
-				break;
-			}
-		}
-	}
-	unset($cat);
-}
-block_exalib_load_categories();
 
 
-$CURRENT_CATEGORY = $category_id && isset($CATEGORIES[$category_id]) ? $CATEGORIES[$category_id] : null;
+$CURRENT_CATEGORY = block_exalib_category_manager::getCategory($category_id);
 $CURRENT_CATEGORY_SUB_IDS = $CURRENT_CATEGORY ? $CURRENT_CATEGORY->self_inc_all_sub_ids : array(-9999);
 
 if (IS_ADMIN_MODE) {
@@ -258,36 +220,29 @@ echo $OUTPUT->header();
 
 <?php
 
-function block_exalib_print_nav($level=0, $parent=0) {
-	global $CATEGORY_BY_PARENT, $url_category, $category_id;
+echo block_exalib_category_manager::walkTree(function($level, $parent, $cat) {
+	global $url_category, $category_id;
 	
-	if (empty($CATEGORY_BY_PARENT[$parent])) return;
+	echo '<div class="library_categories_item library_categories_item-level'.$level.($cat->id==$category_id?' selected':'').'">';
 	
-	if ($level > 1) echo '<div class="library_categories_subgroup">';
-
-	foreach ($CATEGORY_BY_PARENT[$parent] as $cat) {
-		echo '<div class="library_categories_item library_categories_item-level'.$level.($cat->id==$category_id?' selected':'').'">';
-		
-		echo '<a class="library_categories_item_title" href="'.$url_category->out(true, array('category_id' => $cat->id)).'">'.$cat->name.' ('.$cat->cnt_inc_subs.')</a>';
-		
-		if (IS_ADMIN_MODE) {
-			echo '<span class="library_categories_item_buttons"><span>';
-			echo '<a href="admin.php?show=category_add&category_id='.$cat->id.'">add sub category</a><br />';
-			if ($level > 0) {
-				echo '<a href="admin.php?show=category_edit&category_id='.$cat->id.'">edit category</a><br />';
-				echo '<a href="admin.php?show=category_delete&category_id='.$cat->id.'">delete category</a>';
-			}
-			echo '</span></span>';
+	echo '<a class="library_categories_item_title" href="'.$url_category->out(true, array('category_id' => $cat->id)).'">'.$cat->name.' ('.$cat->cnt_inc_subs.')</a>';
+	
+	if (IS_ADMIN_MODE) {
+		echo '<span class="library_categories_item_buttons"><span>';
+		echo '<a href="admin.php?show=category_add&category_id='.$cat->id.'">add sub category</a><br />';
+		if ($level > 0) {
+			echo '<a href="admin.php?show=category_edit&category_id='.$cat->id.'">edit category</a><br />';
+			echo '<a href="admin.php?show=category_delete&category_id='.$cat->id.'">delete category</a>';
 		}
-
-		echo '</div>';
-		
-		block_exalib_print_nav($level+1, $cat->id);
+		echo '</span></span>';
 	}
-	if ($level > 1) echo '</div>';
-}
 
-echo block_exalib_print_nav();
+	echo '</div>';
+
+	echo '<div class="library_categories_subgroup">';
+}, function($level) {
+	echo '</div>';
+});
 
 ?>
 </div> 

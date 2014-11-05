@@ -186,3 +186,106 @@ function block_exalib_pluginfile($course, $cm, $context, $filearea, $args, $forc
 	send_stored_file($file, 0, 0, $forcedownload, array('preview' => $preview));
 }
 
+class block_exalib_category_manager {
+	static $categories = null;
+	static $categoriesByParent = null;
+	
+	static function getCategory($category_id) {
+		self::load();
+		
+		return isset(self::$categories[$category_id]) ? self::$categories[$category_id] : null;
+	}
+	
+	static function walkTree($functionBefore, $functionAfter = null) {
+		return self::walkTreeItem($functionBefore, $functionAfter);
+	}
+	
+	static private function walkTreeItem($functionBefore, $functionAfter, $level=0, $parent=0) {
+		if (empty(self::$categoriesByParent[$parent])) return;
+		
+		$output = '';
+		foreach (self::$categoriesByParent[$parent] as $cat) {
+			if ($functionBefore) $output .= $functionBefore($level, $parent, $cat);
+			$output .= self::walkTreeItem($functionBefore, $functionAfter, $level+1, $cat->id);
+			if ($functionAfter) $output .= $functionAfter($level, $parent, $cat);
+		}
+		return $output;
+	}
+	
+	static function createDefaultCategories() {
+		global $DB;
+		
+		if ($DB->get_records('exalib_category', null, '', 'id', 0, 1)) {
+			return;
+		}
+		
+		$main_id = $DB->insert_record('exalib_category', array(
+			'parent_id' => 0,
+			'name' => 'Main Category'
+		));
+		$sub_id = $DB->insert_record('exalib_category', array(
+			'parent_id' => $main_id,
+			'name' => 'Sub Category'
+		));
+		
+		$item_id = $DB->insert_record('exalib_item', array(
+			'resource_id' => '',
+			'link' => '',
+			'source' => '',
+			'file' => '',
+			'name' => '',
+			'authors' => '',
+			'content' => '',
+			'name' => 'Test Entry'
+		));
+
+		$DB->insert_record('exalib_item_category', array(
+			'item_id' => $item_id,
+			'category_id' => $main_id
+		));
+	}
+	
+	static function load() {
+		global $DB;
+		
+		if (self::$categories !== null) {
+			// already loaded
+			return;
+		}
+		
+		self::createDefaultCategories();
+		
+		self::$categories = $DB->get_records_sql("SELECT category.*, count(DISTINCT item.id) AS cnt
+		FROM {exalib_category} AS category
+		LEFT JOIN {exalib_item_category} AS ic ON (category.id=ic.category_id)
+		LEFT JOIN {exalib_item} AS item ON item.id=ic.item_id
+		GROUP BY category.id
+		ORDER BY name");
+		self::$categoriesByParent = array();
+
+		foreach (self::$categories as &$cat) {
+
+			self::$categoriesByParent[$cat->parent_id][$cat->id] = &$cat;
+			
+			$cnt = $cat->cnt;
+			$cat_id = $cat->id;
+
+			// find parents
+			while (true) {
+				if (!isset($cat->cnt_inc_subs)) $cat->cnt_inc_subs = 0;
+				$cat->cnt_inc_subs += $cnt;
+				
+				if (!isset($cat->self_inc_all_sub_ids)) $cat->self_inc_all_sub_ids = array();
+				$cat->self_inc_all_sub_ids[] = $cat_id;
+			
+				if (($cat->parent_id > 0) && isset(self::$categories[$cat->parent_id])) {
+					// $parentCat
+					$cat =& self::$categories[$cat->parent_id];
+				} else {
+					break;
+				}
+			}
+		}
+		unset($cat);
+	}
+}
