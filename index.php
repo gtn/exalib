@@ -70,13 +70,18 @@ $page    = optional_param('page', 0, PARAM_INT);
 $ITEMS = null;
 $pagingbar = null;
 
+if (IS_ADMIN_MODE) {
+	$sqlWhere = "";
+} else {
+	$sqlWhere = "AND (item.hidden IS NULL OR item.hidden=0) AND (item.online_from IS NULL OR (item.online_from <= ".time()." AND item.online_to >= ".time()."))";
+}
+
 if ($q = optional_param('q', '', PARAM_TEXT)) {
 	$q = trim($q);
 	
 	$qparams = preg_split('!\s+!', $q);
 	
 	$sqlJoin = "";
-	$sqlWhere = "";
 	$sqlParams = array();
 	
 	if ($CURRENT_CATEGORY) {
@@ -131,6 +136,7 @@ if ($q = optional_param('q', '', PARAM_TEXT)) {
 		SELECT item.*
 		FROM {exalib_item} AS item
 		JOIN {exalib_item_category} AS ic ON (item.id=ic.item_id AND ic.category_id IN (".join(',', $CURRENT_CATEGORY_SUB_IDS)."))
+		WHERE 1=1 $sqlWhere
 		GROUP BY item.id
 		ORDER BY item.name
 		LIMIT ".$page*$perpage.', '.$perpage."

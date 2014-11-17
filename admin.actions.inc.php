@@ -187,15 +187,30 @@ if ($show == 'edit' || $show == 'add') {
 
 			$mform->addElement('header', 'content', 'Content');
 
+			$mform->addElement('text', 'link_titel', 'Link Titel', 'size="100"');
+			$mform->setType('link_titel', PARAM_TEXT);
+			
 			$mform->addElement('text', 'link', 'Link', 'size="100"');
 			$mform->setType('link', PARAM_TEXT);
-			
+
 			$mform->addElement('filemanager', 'file', 'File', null, array('subdirs' => false, 'maxfiles' => 1));
 
 			$mform->closeHeaderBefore('authors');
 			
 			$mform->addElement('text', 'authors', 'Authors', 'size="100"');
 			$mform->setType('authors', PARAM_TEXT);
+
+			$mform->addElement('date_selector', 'online_from', 'Online From', array(
+				'startyear' => 2014, 
+				'stopyear'  => date('Y'),
+				'optional'  => true
+			));
+			$mform->addElement('date_selector', 'online_to', 'Online To', array(
+				'startyear' => 2014, 
+				'stopyear'  => date('Y'),
+				'optional'  => true
+			));
+			$mform->addElement('checkbox', 'hidden', 'Hidden');
 
 			$mform->addElement('static', 'description', 'Groups', $this->get_categories());
 
@@ -230,6 +245,8 @@ if ($show == 'edit' || $show == 'add') {
 	} else if ($fromform = $item_edit_form->get_data()){
 		// edit/add
 		
+		if (!isset($fromform->hidden)) $fromform->hidden = null;
+
 		if (!empty($item->id)) {
 			$fromform->id = $item->id;
 			$DB->update_record('exalib_item', $fromform);
