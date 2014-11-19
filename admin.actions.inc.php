@@ -1,5 +1,8 @@
 <?php
 
+require_once $CFG->libdir.'/formslib.php';
+require_once $CFG->libdir.'/filelib.php';
+
 $show = optional_param('show', '', PARAM_TEXT);
 
 if ($show == 'categories') {
@@ -160,13 +163,17 @@ if ($show == 'delete') {
 
 if ($show == 'edit' || $show == 'add') {
 	$category_id = optional_param('category_id', '', PARAM_INT);
-	
+	$textfieldoptions = array('trusttext'=>true, 'subdirs'=>true, 'maxfiles'=>99, 'context'=>context_system::instance());
+
 	if ($show == 'add') {
 		$id = 0;
 		$item = new StdClass;
+		$item->contentformat = FORMAT_HTML;
 	} else {
 		$id = required_param('id', PARAM_INT);
 		$item = $DB->get_record('exalib_item', array('id'=>$id));
+		$item->contentformat = FORMAT_HTML;
+		$item = file_prepare_standard_editor($item, 'content', $textfieldoptions, context_system::instance(), 'block_exalib', 'item_content', $item->id);
 	}
 	
 	require_once("$CFG->libdir/formslib.php");
@@ -185,7 +192,7 @@ if ($show == 'edit' || $show == 'add') {
 			$mform->addElement('text', 'source', 'Source', 'size="100"');
 			$mform->setType('source', PARAM_TEXT);
 
-			$mform->addElement('header', 'content', 'Content');
+			$mform->addElement('header', 'contentheader', 'Content');
 
 			$mform->addElement('text', 'link_titel', 'Link Titel', 'size="100"');
 			$mform->setType('link_titel', PARAM_TEXT);
@@ -194,6 +201,9 @@ if ($show == 'edit' || $show == 'add') {
 			$mform->setType('link', PARAM_TEXT);
 
 			$mform->addElement('filemanager', 'file', 'File', null, array('subdirs' => false, 'maxfiles' => 1));
+
+			$mform->addElement('editor', 'content_editor', 'Content', 'rows="20" cols="50" style="width: 95%"');
+			$mform->setType('content', PARAM_RAW);
 
 			$mform->closeHeaderBefore('authors');
 			
@@ -249,7 +259,6 @@ if ($show == 'edit' || $show == 'add') {
 
 		if (!empty($item->id)) {
 			$fromform->id = $item->id;
-			$DB->update_record('exalib_item', $fromform);
 		} else {
 			try {
 				if (!isset($fromform->resource_id)) $fromform->resource_id = 0;
@@ -258,6 +267,10 @@ if ($show == 'edit' || $show == 'add') {
 				$fromform->id = $DB->insert_record('exalib_item', $fromform);
 			} catch (Exception $e) { var_dump($e); exit;}
 		}
+
+		$fromform->contentformat = FORMAT_HTML;
+		$fromform = file_postupdate_standard_editor($fromform, 'content', $textfieldoptions, context_system::instance(), 'block_exalib', 'item_content', $fromform->id);
+		$DB->update_record('exalib_item', $fromform);
 
 		// save file
 		$context = context_system::instance();
@@ -269,6 +282,10 @@ if ($show == 'edit' || $show == 'add') {
 			$DB->execute('INSERT INTO {exalib_item_category} (item_id, category_id) VALUES (?, ?)', array($fromform->id, $categoryId));
 		}
 		
+		if (!$category_id && is_array($_REQUEST['CATEGORIES'])) {
+			$category_id = reset($_REQUEST['CATEGORIES']);
+			// read first category
+		}
 		redirect('admin.php?category_id='.$category_id);
 		exit;
 		
