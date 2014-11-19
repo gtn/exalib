@@ -73,7 +73,7 @@ $pagingbar = null;
 if (IS_ADMIN_MODE) {
 	$sqlWhere = "";
 } else {
-	$sqlWhere = "AND (item.hidden IS NULL OR item.hidden=0) AND (item.online_from IS NULL OR (item.online_from <= ".time()." AND item.online_to >= ".time()."))";
+	$sqlWhere = "AND IFNULL(item.hidden,0)=0 AND (IFNULL(item.online_from,0)=0 OR (item.online_from <= ".time()." AND item.online_to >= ".time()."))";
 }
 
 if ($q = optional_param('q', '', PARAM_TEXT)) {

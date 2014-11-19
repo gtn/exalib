@@ -258,9 +258,9 @@ class block_exalib_category_manager {
 		self::$categories = $DB->get_records_sql("SELECT category.*, count(DISTINCT item.id) AS cnt
 		FROM {exalib_category} AS category
 		LEFT JOIN {exalib_item_category} AS ic ON (category.id=ic.category_id)
-		LEFT JOIN {exalib_item} AS item ON item.id=ic.item_id ".(IS_ADMIN_MODE?'':"AND (item.hidden IS NULL OR item.hidden=0) AND (item.online_from IS NULL OR (item.online_from <= ".time()." AND item.online_to >= ".time()."))")."
+		LEFT JOIN {exalib_item} AS item ON item.id=ic.item_id ".(IS_ADMIN_MODE?'':"AND IFNULL(item.hidden,0)=0 AND (IFNULL(item.online_from,0)=0 OR (item.online_from <= ".time()." AND item.online_to >= ".time()."))")."
 		WHERE 1=1
-		".(IS_ADMIN_MODE?'':"AND (category.hidden IS NULL OR category.hidden=0)")."
+		".(IS_ADMIN_MODE?'':"AND IFNULL(category.hidden,0)=0")."
 		GROUP BY category.id
 		ORDER BY name");
 		self::$categoriesByParent = array();
