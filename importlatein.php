@@ -1,5 +1,51 @@
 <?php
 
+function block_exalib_importlatein_urls() {
+	global $DB;
+	
+	$fs = get_file_storage();
+	
+	$urls = $DB->get_records_sql("SELECT community_artikel.artikel_id,url.url_ID,url.url FROM url INNER JOIN community_artikel ON community_artikel.url_ID=url.url_ID");
+	
+	foreach ($urls as $url) {
+		if(empty($url->url)) continue;
+		
+		$data= new stdClass();
+		$data->id=$url->artikel_id;
+		$data->link=$url->url;
+		
+		if (preg_match('!schule.at!', $url->url)) {
+			// only import schule.at stuff
+			if (preg_match('!\.(jpg|docx?|xlsx?|pdf|pptx?|csv|odt|gif|mp3|zip|pps|rtf|png|bmp)$!i', $url->url)) {
+				// only those filetypes
+				$areafiles = $fs->get_area_files(context_system::instance()->id, 'block_exalib', 'item_file', $data->id, 'itemid', '', false);
+				$file = reset($areafiles);
+				if (true || !$file) {
+					// only download if not yet downloaded
+					
+					// $url->url = 'http://localhost/phpmyadmin/themes/pmahomme/img/logo_left.png';
+					
+					// $fs->delete_area_files(context_system::instance()->id, 'block_exalib', 'item_file', $data->id);
+					
+					echo "downloading ".$url->url."<br>\n";
+					$fs->create_file_from_url(array(
+						'component' => 'block_exalib',
+						'contextid' => context_system::instance()->id,
+						'filearea' => 'item_file',
+						'filepath' => '/',
+						'filename' => basename($url->url),
+						'itemid' => $data->id
+					), $url->url);
+					
+					$data->link = '';
+				}
+			}
+		}
+		
+		$DB->update_record('exalib_item', $data);
+	}
+}
+
 function block_exalib_importlatein() {
 	global $DB, $CFG;
 	echo "der Import wurde angestossen";
@@ -8,6 +54,8 @@ function block_exalib_importlatein() {
 	$DB->delete_records("exalib_item");
 	$DB->delete_records("exalib_item_category");
 	
+	$transaction = $DB->start_delegated_transaction();
+
 	//$categories = $DB->get_records("community_tree");
 	$categories=$DB->get_records_sql("SELECT * FROM community_tree");
 	foreach ($categories as $category) {
@@ -33,7 +81,8 @@ function block_exalib_importlatein() {
 		
 		$data= new stdClass();
 		$data->id=$item->artikel_id;$data->content=block_exalib_ersnull($item->inhalt);
-		$data->resource_id=block_exalib_ersnull($item->dokumentart_id);$data->link=block_exalib_ersnull($item->url_id);
+		//?? = block_exalib_ersnull($item->dokumentart_id);
+		$data->link=block_exalib_ersnull($item->url_id);
 		$data->source=block_exalib_ersnull($item->quelle);$data->file=block_exalib_ersnull($item->bildlink);
 		$data->name=block_exalib_ersnull($item->titel);$data->authors=block_exalib_ersnull($item->autor);
 		$DB->update_record('exalib_item', $data);
@@ -45,16 +94,8 @@ function block_exalib_importlatein() {
 		//$DB->insert_record("exalib_category", array("id" =>  $category->kategorie_tree_id,"parent_id" =>  $category->kategorie_tree_high,"name" =>  $category->name));
 	}
 	
-	$urls=$DB->get_records_sql("SELECT community_artikel.artikel_id,url.url_ID,url.url FROM url INNER JOIN community_artikel ON community_artikel.url_ID=url.url_ID");
-	
-	foreach ($urls as $url) {
-		
-		if(!empty($url->url)){
-			$data= new stdClass();
-			$data->id=$url->artikel_id;$data->link=$url->url;
-			$DB->update_record('exalib_item', $data);
-		}
-	}
+	block_exalib_importlatein_urls();
+
 	$data= new stdClass();
 	//latein plattform als root ohne parentid setzen
 	$data->id=568;$data->parent_id=0;
@@ -109,11 +150,9 @@ function block_exalib_importlatein() {
 	}
 	
 	
-	
+	$transaction->allow_commit();
 }
 function block_exalib_ersnull($wert){
 	if(empty($wert)) $wert="";
 	return $wert;
 }
-
-?>

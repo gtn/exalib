@@ -31,6 +31,8 @@ function block_exalib_require_admin() {
 }
 
 function print_items($ITEMS, $admin=false) {
+	global $CFG;
+
 	foreach ($ITEMS as $item) {
 		
 		$fs = get_file_storage();

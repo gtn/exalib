@@ -164,6 +164,7 @@ if ($show == 'delete') {
 if ($show == 'edit' || $show == 'add') {
 	$category_id = optional_param('category_id', '', PARAM_INT);
 	$textfieldoptions = array('trusttext'=>true, 'subdirs'=>true, 'maxfiles'=>99, 'context'=>context_system::instance());
+	$fileoptions = array('subdirs'=>false, 'maxfiles'=> 1);
 
 	if ($show == 'add') {
 		$id = 0;
@@ -174,6 +175,7 @@ if ($show == 'edit' || $show == 'add') {
 		$item = $DB->get_record('exalib_item', array('id'=>$id));
 		$item->contentformat = FORMAT_HTML;
 		$item = file_prepare_standard_editor($item, 'content', $textfieldoptions, context_system::instance(), 'block_exalib', 'item_content', $item->id);
+		$item = file_prepare_standard_filemanager($item, 'file', $fileoptions, context_system::instance(), 'block_exalib', 'item_file', $item->id);
 	}
 	
 	require_once("$CFG->libdir/formslib.php");
@@ -200,15 +202,15 @@ if ($show == 'edit' || $show == 'add') {
 			$mform->addElement('text', 'link', 'Link', 'size="100"');
 			$mform->setType('link', PARAM_TEXT);
 
-			$mform->addElement('filemanager', 'file', 'File', null, array('subdirs' => false, 'maxfiles' => 1));
+			$mform->addElement('filemanager', 'file_filemanager', 'File', null, $this->_customdata['fileoptions']);
 
 			$mform->addElement('editor', 'content_editor', 'Content', 'rows="20" cols="50" style="width: 95%"');
 			$mform->setType('content', PARAM_RAW);
 
-			$mform->closeHeaderBefore('authors');
-			
 			$mform->addElement('text', 'authors', 'Authors', 'size="100"');
 			$mform->setType('authors', PARAM_TEXT);
+
+			$mform->addElement('header', 'onlineheader', 'Online Settings');
 
 			$mform->addElement('date_selector', 'online_from', 'Online From', array(
 				'startyear' => 2014, 
@@ -222,7 +224,9 @@ if ($show == 'edit' || $show == 'add') {
 			));
 			$mform->addElement('checkbox', 'hidden', 'Hidden');
 
-			$mform->addElement('static', 'description', 'Groups', $this->get_categories());
+			$mform->addElement('header', 'categoriesheader', 'Categories');
+
+			$mform->addElement('static', 'categories', 'Groups', $this->get_categories());
 
 			$this->add_action_buttons();
 		}
@@ -248,7 +252,7 @@ if ($show == 'edit' || $show == 'add') {
 		$itemCategories[$category_id] = $category_id;
 	}
 	
-	$item_edit_form = new item_edit_form($_SERVER['REQUEST_URI'], array('itemCategories'=>$itemCategories));
+	$item_edit_form = new item_edit_form($_SERVER['REQUEST_URI'], array('itemCategories'=>$itemCategories, 'fileoptions'=>$fileoptions));
 
 	if ($item_edit_form->is_cancelled()){
 
@@ -273,8 +277,7 @@ if ($show == 'edit' || $show == 'add') {
 		$DB->update_record('exalib_item', $fromform);
 
 		// save file
-		$context = context_system::instance();
-		file_save_draft_area_files($fromform->file, $context->id, 'block_exalib', 'item_file', $fromform->id, null);
+        $fromform = file_postupdate_standard_filemanager($fromform, 'file', $fileoptions, context_system::instance(), 'block_exalib', 'item_file', $fromform->id);
 				
 		// save categories
 		$DB->delete_records('exalib_item_category', array("item_id" => $fromform->id));
