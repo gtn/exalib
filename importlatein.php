@@ -60,10 +60,16 @@ function block_exalib_importlatein() {
 	//$categories = $DB->get_records("community_tree");
 	$categories=$DB->get_records_sql("SELECT * FROM community_tree");
 	foreach ($categories as $category) {
-		$sql='INSERT INTO {exalib_category} (id,parent_id,name) VALUES ';
-		$sql.='('.$category->kategorie_tree_id.','.$category->kategorie_tree_high.',"'.mysql_real_escape_string($category->name).'")';
+		
+		$sql='INSERT INTO {exalib_category} (id,parent_id) VALUES ';
+		$sql.='('.$category->kategorie_tree_id.','.$category->kategorie_tree_high.')';
+		
 		$DB->Execute($sql);
 		//$DB->insert_record("exalib_category", array("id" =>  $category->kategorie_tree_id,"parent_id" =>  $category->kategorie_tree_high,"name" =>  $category->name));
+		$data= new stdClass();
+		$data->id=$category->kategorie_tree_id;
+		$data->name=$category->name;
+		$DB->update_record('exalib_category', $data);
 	}
 	$data= new stdClass();
 	//latein plattform als root ohne parentid setzen
