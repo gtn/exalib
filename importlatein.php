@@ -78,11 +78,10 @@ function block_exalib_importlatein() {
 
 	$categories=$DB->get_records_sql("SELECT * FROM community_tree");
 	foreach ($categories as $category) {
-		$sql = 'INSERT INTO {exalib_category} (id,parent_id,name) VALUES (?, ?, ?)';
-		$DB->Execute($sql, array(
-			$category->kategorie_tree_id,
-			$category->kategorie_tree_high,
-			$category->name
+		$DB->import_record('exalib_category', array(
+			'id' => $category->kategorie_tree_id,
+			'parent_id' => $category->kategorie_tree_high,
+			'name' => $category->name
 		));
 	}
 
