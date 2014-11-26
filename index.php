@@ -10,10 +10,15 @@ if (IS_ADMIN_MODE) {
 	block_exalib_require_use();
 }
 
-$importlatein = optional_param('importlatein', '0', PARAM_INT);
-if($importlatein==1){
+if (optional_param('importlatein', '0', PARAM_TEXT) == '1') {
 	require 'importlatein.php';
 	block_exalib_importlatein();
+	exit;
+}
+if (optional_param('importlatein', '0', PARAM_TEXT) == 'urls') {
+	require 'importlatein.php';
+	block_exalib_importlatein_urls();
+	exit;
 }
 
 /*
