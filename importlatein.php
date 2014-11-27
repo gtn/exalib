@@ -65,7 +65,42 @@ function block_exalib_importlatein_urls() {
 	
 	echo "downloading all files finished";
 }
+function block_exalib_importlatein2() {
+	global $DB, $CFG;
+	echo "Import Update<br />\n";
+	
+	/* wenn kein bis datum angegeben, bis datum in weiter zukunft setzen */
+	$items=$DB->get_records_sql("Select a.*,k.kategorie_tree_id as treeid from community_artikel as a INNER JOIN community_kategorie as k ON a.artikel_id = k.is_id");
+	foreach ($items as $item) {
+		if ($item->_delete) continue;
+		$data= new stdClass();
+		$data->id=$item->artikel_id;
+		if(empty($item->verfallsdatum)){
+			$data->online_to=5555555555;
+		}else{
+			$datum = new DateTime($item->verfallsdatum);
+			$data->online_to=$datum->getTimestamp();
+		}
+		$DB->update_record('exalib_item', $data);
+	}
+	
+	/*leere kategorien löschen, aber nur kategorien die keine unterkategorien haben */
+	$sql='SELECT parent_id FROM {exalib_category} GROUP BY parent_id';
+	$parents=$DB->get_records_sql($sql);
+	$parlist="-1";
+	foreach ($parents as $par) {
+		$parlist.=",".$par->parent_id;
+	}
+	
+	$sql='select cat.id from {exalib_category} cat LEFT JOIN {exalib_item_category} mm ON mm.category_id=cat.id WHERE cat.id NOT IN ('.$parlist.') AND mm.id IS NULL';
 
+	$emptycats=$DB->get_records_sql($sql);
+	foreach ($emptycats as $cat) {
+		$DB->update_record('exalib_category', array ("id"=>$cat->id,"hidden"=>1));
+	}
+	
+	
+}
 function block_exalib_importlatein() {
 	global $DB, $CFG;
 	echo "der Import wurde angestossen<br />\n";
@@ -111,8 +146,12 @@ function block_exalib_importlatein() {
 		$datum = new DateTime($item->erscheindatum);
 		$data->online_from=$datum->getTimestamp();
 		$data->time_created=$data->online_from;
-		$datum = new DateTime($item->verfallsdatum);
-		$data->online_to=$datum->getTimestamp();
+		if(empty($item->verfallsdatum)){
+			$data->online_to=0;
+		}else{
+			$datum = new DateTime($item->verfallsdatum);
+			$data->online_to=$datum->getTimestamp();
+		}
 		
 		$data->hidden=block_exalib_inverthidden($item->genehmigt);
 		$datum = new DateTime($item->aenderungsdatum);

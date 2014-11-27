@@ -20,7 +20,11 @@ if (optional_param('importlatein', '0', PARAM_TEXT) == 'urls') {
 	block_exalib_importlatein_urls();
 	exit;
 }
-
+if (optional_param('importlatein', '0', PARAM_TEXT) == '2') {
+	require 'importlatein.php';
+	block_exalib_importlatein2();
+	exit;
+}
 /*
 // disable this site, always use advanced search
 header('Location: adv_search.php'.

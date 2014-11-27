@@ -79,6 +79,7 @@ function print_items($ITEMS, $admin=false) {
 			echo '<a class="head"'.($url?' href="'.$url.'"':'').($targetNewWindow?' target="_blank"':'').'>'.$item->name.'</a>';
 		else
 			echo '<div class="head">'.$item->name.'</div>';
+		if ($item->content) echo '<div class="libary_content">'.$item->content.'</div>';
 		if ($item->source) echo '<div><span class="libary_author">Source:</span> '.$item->source.'</div>';
 		if ($item->authors) echo '<div><span class="libary_author">Authors:</span> '.$item->authors.'</div>';
 		
