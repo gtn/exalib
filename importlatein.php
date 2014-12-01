@@ -52,9 +52,8 @@ function block_exalib_importlatein_urls() {
 						// couldn't download
 						echo "  ERROR: ".$e->getMessage()."<br />\n";
 					}
-					
-					$data->link = '';
 				}
+				$data->link = '';
 			} else {
 				echo "ignored download: ".$url->url."<br />\n";
 			}

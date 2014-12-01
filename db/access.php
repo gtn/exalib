@@ -52,13 +52,19 @@ $capabilities = array(
             'manager' => CAP_ALLOW
         )
     ),
-    'block/exalib:admin' => array(
+    'block/exalib:creator' => array(
         'captype' => 'write',
         'contextlevel' => CONTEXT_SYSTEM,
         'archetypes' => array(
             'teacher' => CAP_ALLOW,
             'editingteacher' => CAP_ALLOW,
             'manager' => CAP_ALLOW
+        )
+    ),
+    'block/exalib:admin' => array(
+        'captype' => 'write',
+        'contextlevel' => CONTEXT_SYSTEM,
+        'archetypes' => array(
         )
     ),
     'block/exalib:addinstance' => array(

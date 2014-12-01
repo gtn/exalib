@@ -10,6 +10,14 @@ function block_exalib_new_moodle_url() {
 	return new moodle_url(str_replace($moodle_path, '', $_SERVER['REQUEST_URI']));
 }
 
+function block_exalib_is_creator() {
+	return block_exalib_is_admin() || has_capability('block/exalib:creator', context_system::instance());
+}
+
+function block_exalib_is_admin() {
+	return has_capability('block/exalib:admin', context_system::instance());
+}
+
 function block_exalib_require_use() {
 	if (!has_capability('block/exalib:use', context_system::instance())) {
 		throw new require_login_exception('You are no allowed to view Library Content');
@@ -23,15 +31,40 @@ function block_exalib_require_open() {
 	}
 }
 
+function block_exalib_require_creator() {
+	block_exalib_require_use();
+	if (!block_exalib_is_creator()) {
+		throw new require_login_exception('You are no Exalib Creator');
+	}
+}
+
 function block_exalib_require_admin() {
 	block_exalib_require_use();
-	if (!has_capability('block/exalib:use', context_system::instance())) {
+	if (!block_exalib_is_admin()) {
 		throw new require_login_exception('You are no Exalib Admin');
 	}
 }
 
+function block_exalib_require_can_edit_item(stdClass $item) {
+	if (!block_exalib_can_edit_item($item)) {
+		throw new require_login_exception('You are no allowed to edit this Item');
+	}
+}
+
+function block_exalib_can_edit_item(stdClass $item) {
+	global $USER;
+	
+	// admin is allowed
+	if (block_exalib_is_admin()) return true;
+	
+	// item creator is allowed
+	if ($item->created_by == $USER->id) return true;
+	
+	else return false;
+}
+
 function print_items($ITEMS, $admin=false) {
-	global $CFG;
+	global $CFG, $DB;
 
 	foreach ($ITEMS as $item) {
 		
@@ -39,66 +72,74 @@ function print_items($ITEMS, $admin=false) {
 		$areafiles = $fs->get_area_files(context_system::instance()->id, 'block_exalib', 'item_file', $item->id, 'itemid', '', false);
 		$file = reset($areafiles);
 
-		$downloadUrl = null;
-		$podcast = false;
+		$linkUrl = '';
+		$linkText = '';
+		$linkTextPrefix = '';
 		$targetNewWindow = false;
 		
 		if ($file) {
-			$url = "{$CFG->wwwroot}/pluginfile.php/{$file->get_contextid()}/block_exalib/item_file/".$file->get_itemid();
+			$linkUrl = "{$CFG->wwwroot}/pluginfile.php/{$file->get_contextid()}/block_exalib/item_file/".$file->get_itemid();
+			$linkTextPrefix = 'File:';
+			$linkText = $file->get_filename();
 			$targetNewWindow = true;
 		} elseif ($item->resource_id) {
-			$url = '/mod/resource/view.php?id='.$item->resource_id;
+			$linkUrl = '/mod/resource/view.php?id='.$item->resource_id;
 		} elseif ($item->link) {
 			if (strpos($item->link, 'rtmp://') === 0) {
-				$url = 'detail.php?itemid='.$item->id;
+				$linkUrl = 'detail.php?itemid='.$item->id;
 			} elseif (strpos($item->link, 'filesystemrepo://') === 0) {
-				$url = 'file.php?itemid='.$item->id;
+				$linkUrl = 'file.php?itemid='.$item->id;
+				$linkText = 'Download';
+				$targetNewWindow = true;
 			} else {
-				$url = $item->link;
-				if (preg_match('!library/Podcasts/(.*)!', $url, $matches)) {
-					$downloadUrl = 'download.php?file='.urlencode($matches[0]);
-					$podcast = true;
-				} else {
-					$targetNewWindow = true;
-				}
+				$linkUrl = $item->link;
+				$linkText = trim($item->link_titel) ? $item->link_titel : $item->link;
+				$targetNewWindow = true;
 			}
 		} elseif ($item->content) {
-			$url = 'detail.php?itemid='.$item->id;
-		} else {
-			$url = '';
+			$linkUrl = 'detail.php?itemid='.$item->id;
 		}
-
-		$linkHeader = $admin || $downloadUrl;
 		
-		if ($linkHeader)
-			echo '<div class="library-item">';
-		else
-			echo '<a class="library-item"'.($url?' href="'.$url.'"':'').($targetNewWindow?' target="_blank"':'').'>';
+		echo '<div class="library-item">';
 
-		if ($linkHeader)
-			echo '<a class="head"'.($url?' href="'.$url.'"':'').($targetNewWindow?' target="_blank"':'').'>'.$item->name.'</a>';
+		if ($linkUrl)
+			echo '<a class="head" href="'.$linkUrl.($targetNewWindow?'" target="_blank':'').'">'.$item->name.'</a>';
 		else
 			echo '<div class="head">'.$item->name.'</div>';
+			
 		if ($item->content) echo '<div class="libary_content">'.$item->content.'</div>';
 		if ($item->source) echo '<div><span class="libary_author">Source:</span> '.$item->source.'</div>';
 		if ($item->authors) echo '<div><span class="libary_author">Authors:</span> '.$item->authors.'</div>';
 		
-		echo '<span class="library-item-buttons">';
-		if ($linkHeader) echo '<a href="'.$url.($targetNewWindow?'" target="_blank"':'').'"> '.($podcast?'listen':'show').'</a>';
-		if ($admin) {
-			echo ' | <a href="admin.php?show=edit&id='.$item->id.'">edit</a>';
-			echo ' | <a href="admin.php?show=delete&id='.$item->id.'"">delete</a>';
-		}
-		if ($downloadUrl) {
-			echo ' | <a href="'.$downloadUrl.'">download</a>';
-		}
-		echo '</span>';
-		
-		if ($linkHeader) {
+		if ($item->time_created) {
+			echo '<div><span class="libary_author">Created:</span> '.userdate($item->time_created);
+			if ($item->created_by && $tmp_user = $DB->get_record('user', array('id'=>$item->created_by))) {
+				echo ' by '.fullname($tmp_user);
+			}
 			echo '</div>';
-		} else {
-			echo '</a>';
 		}
+		if ($item->time_modified) {
+			echo '<div><span class="libary_author">Last Modified:</span> '.userdate($item->time_modified);
+			if ($item->modified_by && $tmp_user = $DB->get_record('user', array('id'=>$item->modified_by))) {
+				echo ' by '.fullname($tmp_user);
+			}
+			echo '</div>';
+		}
+		
+		if ($linkText) {
+			echo '<div>';
+			if ($linkTextPrefix) echo '<span class="libary_author">'.$linkTextPrefix.'</span> ';
+			echo '<a href="'.$linkUrl.($targetNewWindow?'" target="_blank"':'').'">'.$linkText.'</a>';
+			echo '</div>';
+		}
+		if ($admin && block_exalib_can_edit_item($item)) {
+			echo '<span class="library-item-buttons">';
+			echo '<a href="admin.php?show=edit&id='.$item->id.'">edit</a>';
+			echo ' | <a href="admin.php?show=delete&id='.$item->id.'"">delete</a>';
+			echo '</span>';
+		}
+		
+		echo '</div>';
 	}
 }
 

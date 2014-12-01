@@ -6,6 +6,8 @@ require_once $CFG->libdir.'/filelib.php';
 $show = optional_param('show', '', PARAM_TEXT);
 
 if ($show == 'categories') {
+	block_exalib_require_admin();
+
 	$PAGE->navbar->add('Categories');
 	
 	echo $OUTPUT->header();
@@ -37,6 +39,8 @@ if ($show == 'categories') {
 }
 
 if ($show == 'category_delete') {
+	block_exalib_require_admin();
+	
 	$confirm = optional_param("confirm", "", PARAM_BOOL);
 	$category_id = required_param('category_id', PARAM_INT);
 	
@@ -61,6 +65,8 @@ if ($show == 'category_delete') {
 	exit;
 }
 if (($show == 'category_add') || ($show == 'category_edit')) {
+	block_exalib_require_admin();
+	
 	if ($show == 'category_add') {
 		$category = (object)array(
 			'id' => 0,
@@ -140,6 +146,8 @@ if ($show == 'delete') {
 	$id = required_param('id', PARAM_INT);
 	$item = $DB->get_record('exalib_item', array('id'=>$id));
 	
+	block_exalib_require_can_edit_item($item);
+	
 	$confirm = optional_param("confirm", "", PARAM_BOOL);
 	
 	if (data_submitted() && $confirm && confirm_sesskey()) {
@@ -170,9 +178,14 @@ if ($show == 'edit' || $show == 'add') {
 		$id = 0;
 		$item = new StdClass;
 		$item->contentformat = FORMAT_HTML;
+	
+		block_exalib_require_creator();
 	} else {
 		$id = required_param('id', PARAM_INT);
 		$item = $DB->get_record('exalib_item', array('id'=>$id));
+		
+		block_exalib_require_can_edit_item($item);
+		
 		$item->contentformat = FORMAT_HTML;
 		$item = file_prepare_standard_editor($item, 'content', $textfieldoptions, context_system::instance(), 'block_exalib', 'item_content', $item->id);
 		$item = file_prepare_standard_filemanager($item, 'file', $fileoptions, context_system::instance(), 'block_exalib', 'item_file', $item->id);
@@ -263,13 +276,14 @@ if ($show == 'edit' || $show == 'add') {
 
 		if (!empty($item->id)) {
 			$fromform->id = $item->id;
+			$fromform->modified_by = $USER->id;
+			$fromform->time_modified = time();
 		} else {
 			try {
-				if (!isset($fromform->resource_id)) $fromform->resource_id = 0;
-				if (!isset($fromform->content)) $fromform->content = '';
-				
+				$fromform->created_by = $USER->id;
+				$fromform->time_created = time();
 				$fromform->id = $DB->insert_record('exalib_item', $fromform);
-			} catch (Exception $e) { var_dump($e); exit;}
+			} catch (Exception $e) { var_dump($e); exit; }
 		}
 
 		$fromform->contentformat = FORMAT_HTML;

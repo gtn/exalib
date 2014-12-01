@@ -4,35 +4,33 @@ if (!defined('IS_ADMIN_MODE')) define('IS_ADMIN_MODE', 0);
 
 require 'inc.php';
 
-if (IS_ADMIN_MODE) {
+
+
+if ($importlatein = optional_param('importlatein', '0', PARAM_TEXT)) {
 	block_exalib_require_admin();
+
+	require 'importlatein.php';
+
+	if ($importlatein == '1') {
+		block_exalib_importlatein();
+	}
+	if ($importlatein == 'urls') {
+		block_exalib_importlatein_urls();
+	}
+	if ($importlatein == '2') {
+		block_exalib_importlatein2();
+	}
+	exit;
+}
+
+
+
+
+if (IS_ADMIN_MODE) {
+	block_exalib_require_creator();
 } else {
 	block_exalib_require_use();
 }
-
-if (optional_param('importlatein', '0', PARAM_TEXT) == '1') {
-	require 'importlatein.php';
-	block_exalib_importlatein();
-	exit;
-}
-if (optional_param('importlatein', '0', PARAM_TEXT) == 'urls') {
-	require 'importlatein.php';
-	block_exalib_importlatein_urls();
-	exit;
-}
-if (optional_param('importlatein', '0', PARAM_TEXT) == '2') {
-	require 'importlatein.php';
-	block_exalib_importlatein2();
-	exit;
-}
-/*
-// disable this site, always use advanced search
-header('Location: adv_search.php'.
-	(($category_id = optional_param('category_id', '', PARAM_TEXT))?'?category_ids%5B%5D='.$category_id:'')
-);
-exit;
-*/
-
 
 
 
@@ -147,7 +145,7 @@ if ($q = optional_param('q', '', PARAM_TEXT)) {
 		JOIN {exalib_item_category} AS ic ON (item.id=ic.item_id AND ic.category_id IN (".join(',', $CURRENT_CATEGORY_SUB_IDS)."))
 		WHERE 1=1 $sqlWhere
 		GROUP BY item.id
-		ORDER BY item.name
+		ORDER BY GREATEST(time_created,time_modified) DESC
 		LIMIT ".$page*$perpage.', '.$perpage."
 	");
 }	
@@ -240,7 +238,7 @@ echo $OUTPUT->header();
 
 <?php
 
-if (IS_ADMIN_MODE) {
+if (IS_ADMIN_MODE && block_exalib_is_admin()) {
 	echo '<a href="admin.php?show=categories">Manage Categories</a>';
 }
 

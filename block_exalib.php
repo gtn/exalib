@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__.'/lib.php';
+
 class block_exalib extends block_list {
 
 	function init() {
@@ -45,8 +47,10 @@ class block_exalib extends block_list {
 		$this->content->items[]='<a title="' . get_string('heading', 'block_exalib') . '" href="' . $CFG->wwwroot . '/blocks/exalib/index.php?courseid=' . $COURSE->id . '">' . get_string('heading', 'block_exalib') . '</a>';
 		$this->content->icons[]='<img src="' . $CFG->wwwroot . '/blocks/exalib/pix/module_search.png" height="16" width="23" alt="'.get_string("heading", "block_exalib").'" />';
 
-		$this->content->items[]='<a title="' . get_string('edit_content', 'block_exalib') . '" href="' . $CFG->wwwroot . '/blocks/exalib/admin.php?courseid=' . $COURSE->id . '">' . get_string('edit_content', 'block_exalib') . '</a>';
-		$this->content->icons[]='<img src="' . $CFG->wwwroot . '/blocks/exalib/pix/module_config.png" height="16" width="23" alt="'.get_string("edit_content", "block_exalib").'" />';
+		if (block_exalib_is_creator()) {
+			$this->content->items[]='<a title="' . get_string('edit_content', 'block_exalib') . '" href="' . $CFG->wwwroot . '/blocks/exalib/admin.php?courseid=' . $COURSE->id . '">' . get_string('edit_content', 'block_exalib') . '</a>';
+			$this->content->icons[]='<img src="' . $CFG->wwwroot . '/blocks/exalib/pix/module_config.png" height="16" width="23" alt="'.get_string("edit_content", "block_exalib").'" />';
+		}
 
         return $this->content;
     }
