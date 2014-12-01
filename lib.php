@@ -2,6 +2,33 @@
 
 define('FILESYSTEMREPO_ID', 9);
 
+function exalib_t($x) {
+	global $SESSION;
+	
+	$args = func_get_args();
+	$languageStrings = array();
+	$params = array();
+	
+	foreach ($args as $i => $string) {
+		if (preg_match('!^([^:]+):(.*)$!', $string, $matches)) {
+			$languageStrings[$matches[1]] = $matches[2];
+		} elseif ($i == 0) {
+			// first entry is default
+			$languageStrings[''] = $string;
+		} else {
+			// is param
+			$params[] = $string;
+		}
+	}
+	
+	if (isset($languageStrings[$SESSION->lang]))
+		$string = $languageStrings[$SESSION->lang];
+	else
+		$string = reset($languageStrings);
+	
+	return $string;
+}
+
 function block_exalib_new_moodle_url() {
 	global $CFG;
 	
@@ -79,7 +106,7 @@ function print_items($ITEMS, $admin=false) {
 		
 		if ($file) {
 			$linkUrl = "{$CFG->wwwroot}/pluginfile.php/{$file->get_contextid()}/block_exalib/item_file/".$file->get_itemid();
-			$linkTextPrefix = 'File:';
+			$linkTextPrefix = exalib_t('en:File', 'de:Datei');
 			$linkText = $file->get_filename();
 			$targetNewWindow = true;
 		} elseif ($item->resource_id) {
@@ -89,7 +116,7 @@ function print_items($ITEMS, $admin=false) {
 				$linkUrl = 'detail.php?itemid='.$item->id;
 			} elseif (strpos($item->link, 'filesystemrepo://') === 0) {
 				$linkUrl = 'file.php?itemid='.$item->id;
-				$linkText = 'Download';
+				$linkText = exalib_t('Download');
 				$targetNewWindow = true;
 			} else {
 				$linkUrl = $item->link;
@@ -108,20 +135,20 @@ function print_items($ITEMS, $admin=false) {
 			echo '<div class="head">'.$item->name.'</div>';
 			
 		if ($item->content) echo '<div class="libary_content">'.$item->content.'</div>';
-		if ($item->source) echo '<div><span class="libary_author">Source:</span> '.$item->source.'</div>';
-		if ($item->authors) echo '<div><span class="libary_author">Authors:</span> '.$item->authors.'</div>';
+		if ($item->source) echo '<div><span class="libary_author">'.exalib_t('en:Source', 'de:Quelle').':</span> '.$item->source.'</div>';
+		if ($item->authors) echo '<div><span class="libary_author">'.exalib_t('en:Authors', 'de:Autoren').':</span> '.$item->authors.'</div>';
 		
 		if ($item->time_created) {
-			echo '<div><span class="libary_author">Created:</span> '.userdate($item->time_created);
+			echo '<div><span class="libary_author">'.exalib_t('en:Created', 'de:Erstellt').':</span> '.userdate($item->time_created);
 			if ($item->created_by && $tmp_user = $DB->get_record('user', array('id'=>$item->created_by))) {
-				echo ' by '.fullname($tmp_user);
+				echo ' '.exalib_t('en:by', 'de:von').' '.fullname($tmp_user);
 			}
 			echo '</div>';
 		}
 		if ($item->time_modified) {
-			echo '<div><span class="libary_author">Last Modified:</span> '.userdate($item->time_modified);
+			echo '<div><span class="libary_author">'.exalib_t('en:Last Modified', 'de:Zulätzt geändert').':</span> '.userdate($item->time_modified);
 			if ($item->modified_by && $tmp_user = $DB->get_record('user', array('id'=>$item->modified_by))) {
-				echo ' by '.fullname($tmp_user);
+				echo ' '.exalib_t('en:by', 'de:von').' '.fullname($tmp_user);
 			}
 			echo '</div>';
 		}
@@ -134,8 +161,8 @@ function print_items($ITEMS, $admin=false) {
 		}
 		if ($admin && block_exalib_can_edit_item($item)) {
 			echo '<span class="library-item-buttons">';
-			echo '<a href="admin.php?show=edit&id='.$item->id.'">edit</a>';
-			echo ' | <a href="admin.php?show=delete&id='.$item->id.'"">delete</a>';
+			echo '<a href="admin.php?show=edit&id='.$item->id.'">'.exalib_t('en:Edit', 'de:Ändern').'</a>';
+			echo ' | <a href="admin.php?show=delete&id='.$item->id.'"">'.exalib_t('en:Delete', 'de:Löschen').'</a>';
 			echo '</span>';
 		}
 		

@@ -127,7 +127,7 @@ if ($q = optional_param('q', '', PARAM_TEXT)) {
 	LIMIT ".$page*$perpage.', '.$perpage;
 	$ITEMS = $DB->get_records_sql($sql, $sqlParams);
 	
-} else {
+} elseif ($CURRENT_CATEGORY) {
 	$sqlJoin = "	JOIN {exalib_item_category} AS ic ON (ic.item_id = item.id AND ic.category_id IN (".join(',', $CURRENT_CATEGORY_SUB_IDS)."))";
 
 	$count = $DB->get_field_sql("
@@ -145,10 +145,20 @@ if ($q = optional_param('q', '', PARAM_TEXT)) {
 		JOIN {exalib_item_category} AS ic ON (item.id=ic.item_id AND ic.category_id IN (".join(',', $CURRENT_CATEGORY_SUB_IDS)."))
 		WHERE 1=1 $sqlWhere
 		GROUP BY item.id
-		ORDER BY GREATEST(time_created,time_modified) DESC
+		ORDER BY GREATEST(IFNULL(time_created,0),IFNULL(time_modified,0)) DESC
 		LIMIT ".$page*$perpage.', '.$perpage."
 	");
-}	
+} else {
+	// latest changes
+	$ITEMS = $DB->get_records_sql("
+		SELECT item.*
+		FROM {exalib_item} AS item
+		WHERE 1=1 $sqlWhere
+		GROUP BY item.id
+		ORDER BY GREATEST(IFNULL(time_created,0),IFNULL(time_modified,0)) DESC
+		LIMIT 20
+	");
+}
 
 
 
@@ -191,21 +201,21 @@ echo $OUTPUT->header();
 			<br /><br /><br />
 			<form method="get" action="search.php">
 				<input name="q" type="text" value="<?php p($q) ?>" style="width: 240px;" class="libaryfront_search" />
-				<input value="Search" type="submit" class="libaryfront_searchsub">
+				<input value="<?php echo exalib_t('en:Search', 'de:Suchen'); ?>" type="submit" class="libaryfront_searchsub">
 			</form>
 			<?php else: ?>
 			<form method="get" action="search.php">
 				<input name="q" type="text" value="<?php p($q) ?>" style="width: 240px;" class="libaryfront_search" />
-				<input value="Search" type="submit" class="libaryfront_searchsub">
+				<input value="<?php echo exalib_t('en:Search', 'de:Suchen'); ?>" type="submit" class="libaryfront_searchsub">
 			</form>
 			<?php endif; ?>
 
 			<?php
 			if ($ITEMS !== null) {
-				echo '<h1 class="library_result_heading">Results</h1>';
+				echo '<h1 class="library_result_heading">'.exalib_t('en:Results', 'de:Ergebnisse').'</h1>';
 				
 				if (!$ITEMS) {
-					echo 'no items found';
+					exalib_t('en:No Items found', 'de:Keine Einträge gefunden');
 				} else {
 					if ($pagingbar) echo $OUTPUT->render($pagingbar);
 					print_items($ITEMS);
@@ -227,13 +237,13 @@ echo $OUTPUT->header();
 <form method="get" action="<?php echo $url_search; ?>">
 	<?php echo html_writer::input_hidden_params($url_search); ?>
 	<input name="q" type="text" value="<?php p($q) ?>" />
+		<?php if ($category_id): ?>
 		<select name="category_id">
-			<?php if ($category_id): ?>
-			<option value="<?php echo $category_id; ?>">in this category</option>
-			<?php endif; ?>
-			<option value="0">whole library</option>
+			<option value="<?php echo $category_id; ?>"><?php echo exalib_t('en:In this Category', 'de:in dieser Kategorie'); ?></option>
+			<option value="0"><?php echo exalib_t('en:Whole Library', 'de:ganze Bibliothek'); ?></option>
 		</select>
-	<input value="Search" type="submit">
+		<?php endif; ?>
+	<input value="<?php echo exalib_t('en:Search', 'de:Suchen'); ?>" type="submit">
 </form>
 
 <?php
@@ -271,26 +281,32 @@ foreach ($topGroups as $id=>$cat) {
 </div>
 */
 
-if ($ITEMS !== null) {
+if ($CURRENT_CATEGORY) {
 	if (IS_ADMIN_MODE) {
 		?><a href="<?php echo $url_add; ?>">Add new Entry</a><?php
 	}
 
-	echo '<h1 class="library_result_heading">Results</h1>';
+	echo '<h1 class="library_result_heading">'.exalib_t('en:Results', 'de:Ergebnisse').'</h1>';
 	
 	if (!$ITEMS) {
-		echo 'no items found';
+		echo exalib_t('en:No Items found', 'de:Keine Einträge gefunden');
 	} else {
 		if ($pagingbar) echo $OUTPUT->render($pagingbar);
 		print_items($ITEMS, IS_ADMIN_MODE);
 		if ($pagingbar) echo $OUTPUT->render($pagingbar);
 	}
 } else {
-	?>
+	echo '<h1 class="library_result_heading">'.exalib_t('de:Letzte Änderungen').'</h1>';
+	
+	print_items($ITEMS, IS_ADMIN_MODE);
+	
+	/*
+	? >
 	<div style="text-align: center; padding: 200px 60px 0 0;" class="libary_nores">
 		Please choose a category on the left to help narrow your search,<br />or simply type a keyword in the search box.
 	</div>
-	<?php
+	< ?php
+	*/
 }
 ?>
 </div>
