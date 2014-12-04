@@ -255,6 +255,11 @@ if (IS_ADMIN_MODE && block_exalib_is_admin()) {
 echo block_exalib_category_manager::walkTree(function($level, $parent, $cat) {
 	global $url_category, $category_id;
 	
+	if (!IS_ADMIN_MODE && !$cat->cnt_inc_subs) {
+		// hide empty categories
+		return;
+	}
+	
 	echo '<div class="library_categories_item library_categories_item-level'.$level.($cat->id==$category_id?' selected':'').'">';
 	
 	echo '<a class="library_categories_item_title" href="'.$url_category->out(true, array('category_id' => $cat->id)).'">'.$cat->name.' ('.$cat->cnt_inc_subs.')</a>';
@@ -262,7 +267,12 @@ echo block_exalib_category_manager::walkTree(function($level, $parent, $cat) {
 	echo '</div>';
 
 	echo '<div class="library_categories_subgroup">';
-}, function($level) {
+}, function($level, $parent, $cat) {
+	if (!IS_ADMIN_MODE && !$cat->cnt_inc_subs) {
+		// hide empty categories
+		return;
+	}
+
 	echo '</div>';
 });
 

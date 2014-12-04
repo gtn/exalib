@@ -268,6 +268,8 @@ class block_exalib_category_manager {
 	}
 	
 	static function walkTree($functionBefore, $functionAfter = null) {
+		self::load();
+
 		return self::walkTreeItem($functionBefore, $functionAfter);
 	}
 	
