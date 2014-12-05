@@ -71,9 +71,11 @@ function block_exalib_importlatein2() {
 	/* wenn kein bis datum angegeben, bis datum in weiter zukunft setzen */
 	$items=$DB->get_records_sql("Select a.*,k.kategorie_tree_id as treeid from community_artikel as a INNER JOIN community_kategorie as k ON a.artikel_id = k.is_id");
 	foreach ($items as $item) {
-		if ($item->_delete) continue;
+		//if ($item->_delete) continue;
 		$data= new stdClass();
 		$data->id=$item->artikel_id;
+		$data->modified_by=$item->lastmodby_id;
+		$data->created_by=$item->owner_id;
 		if(empty($item->verfallsdatum)){
 			$data->online_to=5555555555;
 		}else{
@@ -83,6 +85,7 @@ function block_exalib_importlatein2() {
 		$DB->update_record('exalib_item', $data);
 	}
 	
+
 	/*leere kategorien löschen, aber nur kategorien die keine unterkategorien haben */
 	$sql='SELECT parent_id FROM {exalib_category} GROUP BY parent_id';
 	$parents=$DB->get_records_sql($sql);
@@ -170,8 +173,9 @@ function block_exalib_importlatein() {
 	
 	$htmls=$DB->get_records_sql("SELECT * FROM community_html");
 
-	foreach ($htmls as $html) {
-		$last_recid=$DB->insert_record("exalib_item", array("resource_id"=>0,"link" =>block_exalib_ersnull($html->imageurl),"source" =>  "","file" =>  "","name" =>  "html_comunity_rs","authors" =>  block_exalib_ersnull($html->autor),"content" =>block_exalib_ersnull($html->beschreibung)));
+	foreach ($htmls as $html) {	
+		
+		$last_recid=$DB->insert_record("exalib_item", array("resource_id"=>0,"link" =>block_exalib_ersnull($html->imageurl),"source" =>  "","file" =>  "","name" =>  "html_comunity_rs","authors" =>  block_exalib_ersnull($html->autor),"content" =>block_exalib_ersnull($html->beschreibung),"modified_by"=>$html->lastmodby_id,"created_by"=>$html->owner_id));
 		if (intval($last_recid)>0){
 			$DB->insert_record("exalib_item_category", array("item_id"=>$last_recid,"category_id" =>  $html->bereich));
 			//$sql='INSERT INTO {exalib_item_category} (item_id,category_id) VALUES ';
@@ -184,7 +188,8 @@ function block_exalib_importlatein() {
 	$news=$DB->get_records_sql("SELECT * FROM community_news WHERE del=0");
 
 	foreach ($news as $new) {
-		$last_recid=$DB->insert_record("exalib_item", array("resource_id"=>0,"link" =>block_exalib_ersnull($new->url),"source" =>  "","file" =>  block_exalib_ersnull($new->imageurl),"name" =>$new->titel,"authors" =>  block_exalib_ersnull($new->autor),"content" =>"<div class='news_short'>".$new->short."</div>".$new->beschreibung));
+		
+		$last_recid=$DB->insert_record("exalib_item", array("resource_id"=>0,"link" =>block_exalib_ersnull($new->url),"source" =>  "","file" =>  block_exalib_ersnull($new->imageurl),"name" =>$new->titel,"authors" =>  block_exalib_ersnull($new->autor),"content" =>"<div class='news_short'>".$new->short."</div>".$new->beschreibung,"modified_by"=>$new->lastmodby_id,"created_by"=>$new->owner_id));
 		if (intval($last_recid)>0){
 			$DB->insert_record("exalib_item_category", array("item_id"=>$last_recid,"category_id" =>  $new->bereich));
 			//$sql='INSERT INTO {exalib_item_category} (item_id,category_id) VALUES ';
@@ -203,6 +208,7 @@ function block_exalib_importlatein() {
 		"file" =>block_exalib_ersnull($newsltr->attach_link),
 		"name" =>block_exalib_ersnull($newsltr->betreff),
 		"authors" =>  block_exalib_ersnull($newsltr->u_owner),
+		"created_by"=>$newsltr->owner_id,
 		"content" =>"<div class='newsletter_inhalt'>".block_exalib_ersnull($newsltr->inhalt)."</div>Die Newsletterempfänger:<br><br>".block_exalib_ersnull($newsltr->recipients));
 		
 		$last_recid=$DB->insert_record("exalib_item", $data);
