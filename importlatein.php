@@ -74,8 +74,7 @@ function block_exalib_importlatein2() {
 		//if ($item->_delete) continue;
 		$data= new stdClass();
 		$data->id=$item->artikel_id;
-		$data->modified_by=$item->lastmodby_id;
-		$data->created_by=$item->owner_id;
+		
 		if(empty($item->verfallsdatum)){
 			$data->online_to=5555555555;
 		}else{
@@ -143,6 +142,8 @@ function block_exalib_importlatein() {
 		$data->id=$item->artikel_id;$data->content=block_exalib_ersnull($item->inhalt);
 		//?? = block_exalib_ersnull($item->dokumentart_id);
 		$data->link=block_exalib_ersnull($item->url_id);
+		$data->modified_by=$item->lastmodby_id;
+		$data->created_by=$item->owner_id;
 		$data->source=block_exalib_ersnull($item->quelle);$data->file=block_exalib_ersnull($item->bildlink);
 		$data->name=block_exalib_ersnull($item->titel);$data->authors=block_exalib_ersnull($item->autor);
 		$datum = new DateTime($item->erscheindatum);

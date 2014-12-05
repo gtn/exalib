@@ -20,8 +20,9 @@ function exalib_t($x) {
 			$params[] = $string;
 		}
 	}
-	
-	if (isset($languageStrings[$SESSION->lang]))
+	if (empty($SESSION->lang))
+		$string = reset($languageStrings);
+	else if (isset($languageStrings[$SESSION->lang]))
 		$string = $languageStrings[$SESSION->lang];
 	else
 		$string = reset($languageStrings);
