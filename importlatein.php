@@ -64,6 +64,57 @@ function block_exalib_importlatein_urls() {
 	
 	echo "downloading all files finished";
 }
+function block_exalib_importlatein3() {
+	global $ret;global $erg;
+	$erg=array();
+	block_exalib_bundeslaender("400","OÖ");//OÖ
+	block_exalib_bundeslaender("443","BGLD");//bgld
+	block_exalib_bundeslaender("459","WIEN");//wien
+	
+  block_exalib_bundeslaender("449","NÖ");//NÖ
+	block_exalib_bundeslaender("3352","SüdT");//Südtirol
+	block_exalib_bundeslaender("483","KTN");//ktn
+	
+	/*block_exalib_bundeslaender("449");//NÖ
+	block_exalib_bundeslaender("3352");//Südtirol
+	block_exalib_bundeslaender("483");//ktn*/
+	echo "<pre>";
+	print_r($erg);
+}
+function block_exalib_bundeslaender($retl,$bltitle){
+	global $erg;global $ret;
+	$ret=$retl;
+	block_exalib_getsubcats($ret);
+	$erg=block_exalib_adduser($ret,$erg,$retl,$bltitle);
+}
+function block_exalib_adduser($ret,$erg,$retl,$bltitle){
+	global $DB;
+	if($ret!=""){
+		$items=$DB->get_records_sql("SELECT i.id,i.created_by,i.modified_by FROM {exalib_item_category} mm INNER JOIN {exalib_item} i ON i.id=mm.item_id WHERE category_id IN (".$ret.")");
+		foreach ($items as $item) {
+			if(array_key_exists($item->created_by,$erg) && array_key_exists($retl,$erg[$item->created_by])) $erg[$item->created_by][$retl]=($erg[$item->created_by][$retl]+1);
+			else {
+				$erg[$item->created_by][$retl]=1;
+			}
+			/*if($item->created_by!=$item->modified_by){
+				if(array_key_exists($item->modified_by,$erg)) $erg[$item->modified_by]=($erg[$item->modified_by]+1);
+				else $erg[$item->modified_by]=1;
+			}*/
+		}
+	}
+	return $erg;
+}
+function block_exalib_getsubcats($catid){
+	global $ret,$DB;
+	$items=$DB->get_records("exalib_category",array("parent_id"=>$catid));
+	foreach ($items as $item) {
+		block_exalib_getsubcats($item->id);
+		if($item->hidden!=1){
+			$ret.=",".$item->id;
+		}
+	}
+}
+
 function block_exalib_importlatein2() {
 	global $DB, $CFG;
 	echo "Import Update<br />\n";
@@ -133,7 +184,7 @@ function block_exalib_importlatein() {
 	foreach ($items as $item) {
 		if ($item->_delete) continue;
 
-		$sql="INSERT INTO mdl_exalib_item (id,resource_id,link,source,file,name,authors,content) VALUES ";
+		$sql="INSERT INTO {exalib_item} (id,resource_id,link,source,file,name,authors,content) VALUES ";
 		$sql.="(".$item->artikel_id.",0,'','','','','','')";
 		$DB->Execute($sql);
 		

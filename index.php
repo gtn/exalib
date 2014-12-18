@@ -20,6 +20,9 @@ if ($importlatein = optional_param('importlatein', '0', PARAM_TEXT)) {
 	if ($importlatein == '2') {
 		block_exalib_importlatein2();
 	}
+	if ($importlatein == '3') {
+		block_exalib_importlatein3();
+	}
 	exit;
 }
 
