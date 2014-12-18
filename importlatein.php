@@ -65,21 +65,49 @@ function block_exalib_importlatein_urls() {
 	echo "downloading all files finished";
 }
 function block_exalib_importlatein3() {
-	global $ret;global $erg;
+	global $ret;global $erg;global $DB;
 	$erg=array();
-	block_exalib_bundeslaender("400","OÖ");//OÖ
-	block_exalib_bundeslaender("443","BGLD");//bgld
+	$bundesl=array("400"=>"Oberösterreich",
+	"443"=>"Burgenland",
+	"459"=>"Wien",
+	"449"=>"Niederösterreich",
+	"3352"=>"Südtirol",
+	"483"=>"Kärnten");
+	
+	foreach($bundesl as $k=>$v){
+		block_exalib_bundeslaender($k,$v);
+	}
+	/*block_exalib_bundeslaender("443","BGLD");//bgld
 	block_exalib_bundeslaender("459","WIEN");//wien
 	
   block_exalib_bundeslaender("449","NÖ");//NÖ
 	block_exalib_bundeslaender("3352","SüdT");//Südtirol
 	block_exalib_bundeslaender("483","KTN");//ktn
 	
-	/*block_exalib_bundeslaender("449");//NÖ
+	block_exalib_bundeslaender("449");//NÖ
 	block_exalib_bundeslaender("3352");//Südtirol
 	block_exalib_bundeslaender("483");//ktn*/
 	echo "<pre>";
-	print_r($erg);
+	foreach($erg as $k=>$v){
+		echo "<br>Userid:".$k." bl:";
+		$anztemp=0;$blid="";
+		foreach($v as $k1=>$v1){
+			if($v1>$anztemp) {$blid=$k1;$anztemp=$v1;}
+		}
+		if ($info = $DB->get_record('user_info_data', array('userid' => $k,"fieldid"=>1))) {
+			
+			if(empty($info->data)){
+				$data=array("id"=>$info->id,"data"=>$bundesl[$blid]);
+				$DB->update_record('user_info_data', $data);
+			}
+		}else{
+				$data=array("data"=>$bundesl[$blid],"fieldid"=>1,"userid"=>$k);
+				$DB->insert_record('user_info_data', $data);
+			
+		}
+		
+	}
+	
 }
 function block_exalib_bundeslaender($retl,$bltitle){
 	global $erg;global $ret;
@@ -165,9 +193,14 @@ function block_exalib_importlatein() {
 
 	$categories=$DB->get_records_sql("SELECT * FROM community_tree");
 	foreach ($categories as $category) {
+		if(!empty($category->level_mother)){
+			$parentid=$category->level_mother;
+		}else{
+			$parentid=$category->kategorie_tree_high;
+		}
 		$DB->import_record('exalib_category', array(
 			'id' => $category->kategorie_tree_id,
-			'parent_id' => $category->kategorie_tree_high,
+			'parent_id' => $parentid,
 			'name' => $category->name
 		));
 	}
