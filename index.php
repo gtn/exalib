@@ -74,11 +74,12 @@ if (IS_ADMIN_MODE) {
 
 
 
-$perpage = 5;
+$perpage = 20;
 $page    = optional_param('page', 0, PARAM_INT);
 
 $ITEMS = null;
 $pagingbar = null;
+$SHOW = null;
 
 if (IS_ADMIN_MODE) {
 	$sqlWhere = "";
@@ -87,6 +88,8 @@ if (IS_ADMIN_MODE) {
 }
 
 if ($q = optional_param('q', '', PARAM_TEXT)) {
+	$SHOW = 'search';
+	
 	$q = trim($q);
 	
 	$qparams = preg_split('!\s+!', $q);
@@ -102,7 +105,11 @@ if ($q = optional_param('q', '', PARAM_TEXT)) {
 		$sqlJoin .= " LEFT JOIN {exalib_item_category} AS ic$i ON item.id=ic$i.item_id";
 		$sqlJoin .= " LEFT JOIN {exalib_category} AS c$i ON ic$i.category_id=c$i.id";
 		// $sqlJoin .= " LEFT JOIN {exalib_item_category} AS ic$i ON item.id=ic$i.item_id AND ic$i.category_id=c$i";
-		$sqlWhere .= " AND (item.name LIKE ? OR item.authors LIKE ? OR item.source LIKE ? OR c$i.name LIKE ?) ";
+		$sqlWhere .= " AND (item.link LIKE ? OR item.source LIKE ? OR item.file LIKE ? OR item.name LIKE ? OR item.authors LIKE ? OR item.content LIKE ? OR item.link_titel LIKE ? OR c$i.name LIKE ?) ";
+		$sqlParams[] = "%$qparam%";
+		$sqlParams[] = "%$qparam%";
+		$sqlParams[] = "%$qparam%";
+		$sqlParams[] = "%$qparam%";
 		$sqlParams[] = "%$qparam%";
 		$sqlParams[] = "%$qparam%";
 		$sqlParams[] = "%$qparam%";
@@ -131,6 +138,8 @@ if ($q = optional_param('q', '', PARAM_TEXT)) {
 	$ITEMS = $DB->get_records_sql($sql, $sqlParams);
 	
 } elseif ($CURRENT_CATEGORY) {
+	$SHOW = 'category';
+
 	$sqlJoin = "	JOIN {exalib_item_category} AS ic ON (ic.item_id = item.id AND ic.category_id IN (".join(',', $CURRENT_CATEGORY_SUB_IDS)."))";
 
 	$count = $DB->get_field_sql("
@@ -153,6 +162,8 @@ if ($q = optional_param('q', '', PARAM_TEXT)) {
 	");
 } else {
 	// latest changes
+	$SHOW = 'latest_changes';
+
 	$ITEMS = $DB->get_records_sql("
 		SELECT item.*
 		FROM {exalib_item} AS item
@@ -240,9 +251,9 @@ echo $OUTPUT->header();
 <form method="get" action="<?php echo $url_search; ?>">
 	<?php echo html_writer::input_hidden_params($url_search); ?>
 	<input name="q" type="text" value="<?php p($q) ?>" />
-		<?php if ($category_id): ?>
+		<?php if ($CURRENT_CATEGORY): ?>
 		<select name="category_id">
-			<option value="<?php echo $category_id; ?>"><?php echo exalib_t('en:In this Category', 'de:in dieser Kategorie'); ?></option>
+			<option value="<?php echo $CURRENT_CATEGORY->id; ?>"><?php echo exalib_t('en:In this Category', 'de:in dieser Kategorie'); ?></option>
 			<option value="0"><?php echo exalib_t('en:Whole Library', 'de:ganze Bibliothek'); ?></option>
 		</select>
 		<?php endif; ?>
@@ -294,33 +305,23 @@ foreach ($topGroups as $id=>$cat) {
 </div>
 */
 
-if ($CURRENT_CATEGORY) {
-	if (IS_ADMIN_MODE) {
-		?><a href="<?php echo $url_add; ?>">Add new Entry</a><?php
-	}
-
-	echo '<h1 class="library_result_heading">'.exalib_t('en:Results', 'de:Ergebnisse').'</h1>';
-	
-	if (!$ITEMS) {
-		echo exalib_t('en:No Items found', 'de:Keine Einträge gefunden');
-	} else {
-		if ($pagingbar) echo $OUTPUT->render($pagingbar);
-		print_items($ITEMS, IS_ADMIN_MODE);
-		if ($pagingbar) echo $OUTPUT->render($pagingbar);
-	}
-} else {
-	echo '<h1 class="library_result_heading">'.exalib_t('de:Letzte Änderungen').'</h1>';
-	
-	print_items($ITEMS, IS_ADMIN_MODE);
-	
-	/*
-	? >
-	<div style="text-align: center; padding: 200px 60px 0 0;" class="libary_nores">
-		Please choose a category on the left to help narrow your search,<br />or simply type a keyword in the search box.
-	</div>
-	< ?php
-	*/
+if (IS_ADMIN_MODE) {
+	?><a href="<?php echo $url_add; ?>">Add new Entry</a><?php
 }
+
+if ($SHOW == 'latest_changes')
+	echo '<h1 class="library_result_heading">'.exalib_t('de:Letzte Änderungen').'</h1>';
+else 
+	echo '<h1 class="library_result_heading">'.exalib_t('en:Results', 'de:Ergebnisse').'</h1>';
+
+if (!$ITEMS) {
+	echo exalib_t('en:No Items found', 'de:Keine Einträge gefunden');
+} else {
+	if ($pagingbar) echo $OUTPUT->render($pagingbar);
+	print_items($ITEMS, IS_ADMIN_MODE);
+	if ($pagingbar) echo $OUTPUT->render($pagingbar);
+}
+
 ?>
 </div>
 </div>

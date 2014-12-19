@@ -2,9 +2,16 @@
 
 define('FILESYSTEMREPO_ID', 9);
 
-function exalib_t($x) {
-	global $SESSION;
+function exalib_get_current_lang() {
+	global $SESSION, $USER, $CFG;
 	
+	if (!empty($SESSION->lang)) return $SESSION->lang;
+	if (!empty($USER->lang)) return $USER->lang;
+	if (!empty($CFG->lang)) return $CFG->lang;
+	return null;
+}
+
+function exalib_t($x) {
 	$args = func_get_args();
 	$languageStrings = array();
 	$params = array();
@@ -20,10 +27,11 @@ function exalib_t($x) {
 			$params[] = $string;
 		}
 	}
-	if (empty($SESSION->lang))
-		$string = reset($languageStrings);
-	else if (isset($languageStrings[$SESSION->lang]))
-		$string = $languageStrings[$SESSION->lang];
+	
+	$lang = exalib_get_current_lang();
+
+	if ($lang && isset($languageStrings[$lang]))
+		$string = $languageStrings[$lang];
 	else
 		$string = reset($languageStrings);
 	
