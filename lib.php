@@ -100,7 +100,7 @@ function block_exalib_can_edit_item(stdClass $item) {
 }
 
 function print_items($ITEMS, $admin=false) {
-	global $CFG, $DB;
+	global $CFG, $DB, $OUTPUT;
 
 	foreach ($ITEMS as $item) {
 		
@@ -116,12 +116,7 @@ function print_items($ITEMS, $admin=false) {
 		if ($file) {
 			$linkUrl = "{$CFG->wwwroot}/pluginfile.php/{$file->get_contextid()}/block_exalib/item_file/".$file->get_itemid();
 			$linkTextPrefix = exalib_t('en:File', 'de:Datei');
-			if (preg_match('!\.([^\.]+)$!', $file->get_filename(), $matches)) {
-				$fileIcon = 'pix/'.$matches[1].'.png';
-				if (file_exists(__DIR__.'/'.$fileIcon)) {
-					$linkTextPrefix .= ' <img src="'.$fileIcon.'" />';
-				}
-			}
+			$linkTextPrefix .= ' '.$OUTPUT->pix_icon(file_file_icon($file), get_mimetype_description($file));
 			$linkText = $file->get_filename();
 			$targetNewWindow = true;
 		} elseif ($item->resource_id) {
