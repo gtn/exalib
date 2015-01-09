@@ -17,10 +17,6 @@ class block_exalib extends block_list {
         return false;
     }
     
-	function has_config() {
-	    return true;
-	}
-    
     function get_content() {
     	global $CFG, $COURSE, $USER;
 		
