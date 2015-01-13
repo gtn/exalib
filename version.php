@@ -17,14 +17,14 @@
 /**
  * scorm version information.
  *
- * @package    mod
- * @subpackage scorm
- * @copyright  1999 onwards Martin Dougiamas  {@link http://moodle.com}
+ * @package    block_exalib
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @copyright  gtn gmbh <office@gtn-solutions.com>
+ * @author       Daniel Prieler <dprieler@gtn-solutions.com>
  */
 
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->version   = 2015010900;      // The current module version (Date: YYYYMMDDXX)
-$plugin->requires  = 2012061700;    // Requires this Moodle version
+$plugin->requires  = 2013111801;    // Requires this Moodle version
 $plugin->component = 'block_exalib'; // Full name of the plugin (used for diagnostics)

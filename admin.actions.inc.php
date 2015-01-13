@@ -248,7 +248,7 @@ if ($show == 'edit' || $show == 'add') {
 			return block_exalib_category_manager::walkTree(function($cat, $subOutput) {
 				return '<div style="padding-left: '.(20*$cat->level).'px;"><input type="checkbox" name="CATEGORIES[]" value="'.$cat->id.'" '.
 						(in_array($cat->id, $this->_customdata['itemCategories'])?'checked ':'').'/>'.
-						($cat->level == 0 ? '<b>'.$cat->name.'</b>' : $cat->name).$cat->level.
+						($cat->level == 0 ? '<b>'.$cat->name.'</b>' : $cat->name).
 						'</div>'.$subOutput;
 			});
 		}
