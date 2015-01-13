@@ -14,7 +14,7 @@ if ($show == 'categories') {
 
 	echo '<div><a href="admin.php?show=category_add&parent_id=0">add main category</a></div>';
 	
-	block_exalib_category_manager::walkTree(function($level, $parent, $cat) {
+	block_exalib_category_manager::walkTree(function($cat) {
 	
 		echo '<div>&bullet; ';
 		
@@ -30,7 +30,7 @@ if ($show == 'categories') {
 		echo '<div style="padding-left: 30px;">';
 		echo '<a href="admin.php?show=category_add&parent_id='.$cat->id.'">add category here</a>';
 		
-	}, function($level) {
+	}, function() {
 		echo '</div>';
 	});
  
@@ -85,9 +85,9 @@ if (($show == 'category_add') || ($show == 'category_edit')) {
 		function definition() {
 			global $CFG;
 	 
-			block_exalib_category_manager::walkTree(function($level, $parent, $cat) {
-				$this->_category_select[$cat->id] = str_repeat('&nbsp;&nbsp;&nbsp;', $level).'&bullet; '.$cat->name;
-			});
+			block_exalib_category_manager::walkTree(function($cat) {
+				$this->_category_select[$cat->id] = str_repeat('&nbsp;&nbsp;&nbsp;', $cat->level).'&bullet; '.$cat->name;
+			}, false);
 
 			$mform =& $this->_form; // Don't forget the underscore! 
 	 
@@ -245,11 +245,11 @@ if ($show == 'edit' || $show == 'add') {
 		}
 
 		function get_categories() {
-			return block_exalib_category_manager::walkTree(function($level, $parent, $cat) {
-				return '<div style="padding-left: '.(20*$level).'px;"><input type="checkbox" name="CATEGORIES[]" value="'.$cat->id.'" '.
+			return block_exalib_category_manager::walkTree(function($cat, $subOutput) {
+				return '<div style="padding-left: '.(20*$cat->level).'px;"><input type="checkbox" name="CATEGORIES[]" value="'.$cat->id.'" '.
 						(in_array($cat->id, $this->_customdata['itemCategories'])?'checked ':'').'/>'.
-						($level == 0 ? '<b>'.$cat->name.'</b>' : $cat->name).
-						'</div>';
+						($cat->level == 0 ? '<b>'.$cat->name.'</b>' : $cat->name).$cat->level.
+						'</div>'.$subOutput;
 			});
 		}
 	}

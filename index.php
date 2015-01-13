@@ -65,6 +65,7 @@ if (IS_ADMIN_MODE) $PAGE->navbar->add('Administration', 'admin.php');
 
 $CURRENT_CATEGORY = block_exalib_category_manager::getCategory($category_id);
 $CURRENT_CATEGORY_SUB_IDS = $CURRENT_CATEGORY ? $CURRENT_CATEGORY->self_inc_all_sub_ids : array(-9999);
+$CURRENT_CATEGORY_PARENTS = block_exalib_category_manager::getCategoryParentIDs($category_id);
 
 if (IS_ADMIN_MODE) {
 	require('admin.actions.inc.php');
@@ -177,6 +178,11 @@ if ($q = optional_param('q', '', PARAM_TEXT)) {
 
 
 $PAGE->requires->css('/blocks/exalib/css/library.css');
+$PAGE->requires->css('/blocks/exalib/css/skin-lion/ui.easytree.css');
+
+$PAGE->requires->js('/blocks/exalib/js/jquery.js', true);
+$PAGE->requires->js('/blocks/exalib/js/jquery.easytree.js', true);
+$PAGE->requires->js('/blocks/exalib/js/exalib.js', true);
 		
 echo $OUTPUT->header();
 
@@ -266,29 +272,30 @@ if (IS_ADMIN_MODE && block_exalib_is_admin()) {
 	echo '<a href="admin.php?show=categories">Manage Categories</a>';
 }
 
-echo block_exalib_category_manager::walkTree(function($level, $parent, $cat) {
-	global $url_category, $category_id;
+echo '<div id="exalib-categories"><ul>';
+echo block_exalib_category_manager::walkTree(function($cat, $subOutput) {
+	global $url_category, $category_id, $CURRENT_CATEGORY_PARENTS;
 	
 	if (!IS_ADMIN_MODE && !$cat->cnt_inc_subs) {
 		// hide empty categories
 		return;
 	}
 	
-	echo '<div class="library_categories_item library_categories_item-level'.$level.($cat->id==$category_id?' selected':'').'">';
+	$output = '<li id="exalib-menu-item-'.$cat->id.'" class="'.
+		($subOutput ? 'isFolder' : '').
+		(in_array($cat->id, $CURRENT_CATEGORY_PARENTS)?' isExpanded':'').
+		($cat->id==$category_id?' isActive':'').'">';
+	$output .= '<a class="library_categories_item_title" href="'.$url_category->out(true, array('category_id' => $cat->id)).'">'.$cat->name.' ('.$cat->cnt_inc_subs.')'.$cat->level.'</a>';
 	
-	echo '<a class="library_categories_item_title" href="'.$url_category->out(true, array('category_id' => $cat->id)).'">'.$cat->name.' ('.$cat->cnt_inc_subs.')</a>';
-	
-	echo '</div>';
-
-	echo '<div class="library_categories_subgroup">';
-}, function($level, $parent, $cat) {
-	if (!IS_ADMIN_MODE && !$cat->cnt_inc_subs) {
-		// hide empty categories
-		return;
+	if ($subOutput) {
+		$output .= '<ul>'.$subOutput.'</ul>';
 	}
-
-	echo '</div>';
+	
+	echo '</li>';
+	
+	return $output;
 });
+echo '</ul></div>';
 
 ?>
 </div> 

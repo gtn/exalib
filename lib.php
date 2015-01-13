@@ -277,8 +277,30 @@ class block_exalib_category_manager {
 		return isset(self::$categories[$category_id]) ? self::$categories[$category_id] : null;
 	}
 	
-	static function walkTree($functionBefore, $functionAfter = null) {
+	static function getCategoryParentIDs($category_id) {
 		self::load();
+		
+		$parents = array();
+		for ($i = 0; $i < 100; $i++) {
+			$c = self::getCategory($category_id);
+			if ($c) {
+				$parents[] = $c->id;
+				$category_id = $c->parent_id;
+			} else {
+				break;
+			}
+		}
+		
+		return $parents;
+	}
+
+	static function walkTree($functionBefore, $functionAfter = true) {
+		self::load();
+		
+		if ($functionAfter === true) {
+			$functionAfter = $functionBefore;
+			$functionBefore = null;
+		}
 
 		return self::walkTreeItem($functionBefore, $functionAfter);
 	}
@@ -288,9 +310,11 @@ class block_exalib_category_manager {
 		
 		$output = '';
 		foreach (self::$categoriesByParent[$parent] as $cat) {
-			if ($functionBefore) $output .= $functionBefore($level, $parent, $cat);
-			$output .= self::walkTreeItem($functionBefore, $functionAfter, $level+1, $cat->id);
-			if ($functionAfter) $output .= $functionAfter($level, $parent, $cat);
+			if ($functionBefore) $output .= $functionBefore($cat);
+
+			$subOutput = self::walkTreeItem($functionBefore, $functionAfter, $level+1, $cat->id);
+			
+			if ($functionAfter) $output .= $functionAfter($cat, $subOutput);
 		}
 		return $output;
 	}
@@ -354,6 +378,9 @@ class block_exalib_category_manager {
 			
 			$cnt = $cat->cnt;
 			$cat_id = $cat->id;
+			
+			$cat->level = 0;
+			$level =& $cat->level;
 
 			// find parents
 			while (true) {
@@ -365,6 +392,7 @@ class block_exalib_category_manager {
 			
 				if (($cat->parent_id > 0) && isset(self::$categories[$cat->parent_id])) {
 					// $parentCat
+					$level++;
 					$cat =& self::$categories[$cat->parent_id];
 				} else {
 					break;
