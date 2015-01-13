@@ -285,7 +285,7 @@ echo block_exalib_category_manager::walkTree(function($cat, $subOutput) {
 		($subOutput ? 'isFolder' : '').
 		(in_array($cat->id, $CURRENT_CATEGORY_PARENTS)?' isExpanded':'').
 		($cat->id==$category_id?' isActive':'').'">';
-	$output .= '<a class="library_categories_item_title" href="'.$url_category->out(true, array('category_id' => $cat->id)).'">'.$cat->name.' ('.$cat->cnt_inc_subs.')'.$cat->level.'</a>';
+	$output .= '<a class="library_categories_item_title" href="'.$url_category->out(true, array('category_id' => $cat->id)).'">'.$cat->name.' ('.$cat->cnt_inc_subs.')'.'</a>';
 	
 	if ($subOutput) {
 		$output .= '<ul>'.$subOutput.'</ul>';
