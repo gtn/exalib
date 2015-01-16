@@ -228,7 +228,12 @@ function block_exalib_importlatein() {
 		$data->link=block_exalib_ersnull($item->url_id);
 		$data->modified_by=$item->lastmodby_id;
 		$data->created_by=$item->owner_id;
-		$data->source=block_exalib_ersnull($item->quelle);$data->file=block_exalib_ersnull($item->bildlink);
+		$data->source=block_exalib_ersnull($item->quelle);
+		$fle=block_exalib_ersnull($item->bildlink);
+		$fle=preg_replace("/^\/webimg/","http://www.eduhi.at/webimg",$fle);
+		$fle=preg_replace("/^webimg/","http://www.eduhi.at/webimg",$fle);
+		$data->file=$fle;
+		
 		$data->name=block_exalib_ersnull($item->titel);$data->authors=block_exalib_ersnull($item->autor);
 		$datum = new DateTime($item->erscheindatum);
 		$data->online_from=$datum->getTimestamp();
@@ -273,8 +278,11 @@ function block_exalib_importlatein() {
 	$news=$DB->get_records_sql("SELECT * FROM community_news WHERE del=0");
 
 	foreach ($news as $new) {
+		$fle=block_exalib_ersnull($new->imageurl);
+		$fle=preg_replace("/^\/webimg/","http://www.eduhi.at/webimg",$fle);
+		$fle=preg_replace("/^webimg/","http://www.eduhi.at/webimg",$fle);
 		
-		$last_recid=$DB->insert_record("exalib_item", array("resource_id"=>0,"link" =>block_exalib_ersnull($new->url),"source" =>  "","file" =>  block_exalib_ersnull($new->imageurl),"name" =>$new->titel,"authors" =>  block_exalib_ersnull($new->autor),"content" =>"<div class='news_short'>".$new->short."</div>".$new->beschreibung,"modified_by"=>$new->lastmodby_id,"created_by"=>$new->owner_id));
+		$last_recid=$DB->insert_record("exalib_item", array("resource_id"=>0,"link" =>block_exalib_ersnull($new->url),"source" =>  "","file" => $fle,"name" =>$new->titel,"authors" =>  block_exalib_ersnull($new->autor),"content" =>"<div class='news_short'>".$new->short."</div>".$new->beschreibung,"modified_by"=>$new->lastmodby_id,"created_by"=>$new->owner_id));
 		if (intval($last_recid)>0){
 			$DB->insert_record("exalib_item_category", array("item_id"=>$last_recid,"category_id" =>  $new->bereich));
 			//$sql='INSERT INTO {exalib_item_category} (item_id,category_id) VALUES ';
@@ -287,10 +295,12 @@ function block_exalib_importlatein() {
 	$newsltrs=$DB->get_records_sql("SELECT * FROM community_newsletter");
 
 	foreach ($newsltrs as $newsltr) {
+		$fle=block_exalib_ersnull($newsltr->attach_link);
+		if($fle!="") $fle="http://community.schule.at/uploads/".$fle;
 		$data=array("resource_id"=>0,
-		"link" =>"",
+		"link" =>$fle,
 		"source" => "",
-		"file" =>block_exalib_ersnull($newsltr->attach_link),
+		"file" =>"",
 		"name" =>block_exalib_ersnull($newsltr->betreff),
 		"authors" =>  block_exalib_ersnull($newsltr->u_owner),
 		"created_by"=>$newsltr->owner_id,
