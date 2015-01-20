@@ -1,10 +1,31 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-require 'inc.php';
+/**  
+ * detail.php
+ * @package    block_exalib
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @copyright  gtn gmbh <office@gtn-solutions.com>
+ * @author       Daniel Prieler <dprieler@gtn-solutions.com>
+ */
+require('inc.php');
 
 $itemid = required_param('itemid', PARAM_INT);
-if (!$item = $DB->get_record("exalib_item", array('id'=>$itemid))) {
-	print_error("item not found");
+if (!$item = $DB->get_record("exalib_item", array('id' => $itemid))) {
+    print_error("item not found");
 }
 
 
@@ -21,7 +42,7 @@ $PAGE->set_heading(get_string('heading', 'block_exalib'));
 
 echo $OUTPUT->header();
 
-// <script type="text/javascript">jwplayer.key="YOUR_JWPLAYER_LICENSE_KEY";</script>
+/* <script type="text/javascript">jwplayer.key="YOUR_JWPLAYER_LICENSE_KEY";</script> */
 
 ?>
 <script type="text/javascript" src="jwplayer/jwplayer.js"></script>
@@ -57,8 +78,8 @@ h1.libary_head {
 }
 
 a.exalib-blue-cat-lib {
-	margin-top: 5px;
-	margin-top: 5px;
+    margin-top: 5px;
+    margin-top: 5px;
     background: url([[pix:theme|bgbutton]]) repeat-x scroll 0 0 #003876;
     border: 1px solid #003F85;
     border-radius: 7px;
@@ -77,28 +98,36 @@ a.exalib-blue-cat-lib {
 <?php
 
 echo '<h2 class="head">'.$item->name.'</h2>';
-if ($item->source) echo '<div>Source: '.$item->source.'</div>';
-if ($item->authors) echo '<div>Authors: '.$item->authors.'</div>';
+if ($item->source) {
+    echo '<div>Source: '.$item->source.'</div>';
+}
+if ($item->authors) {
+    echo '<div>Authors: '.$item->authors.'</div>';
+}
 
-if ($item->content)
-	echo $item->content;
-elseif ($item->link) {
+if ($item->content) {
+    echo $item->content;
+} else if ($item->link) {
 
-	block_exalib_print_jwplayer(array(
-		'file'	=> $item->link,
-		'width'	=> "960",
-		'height' => "540",
-	));
+    block_exalib_print_jwplayer(array(
+        'file'    => $item->link,
+        'width'    => "960",
+        'height' => "540",
+    ));
 
 } else {
-	if ($item->background)
-		echo '<h3>Background</h3>'.$item->background;
-	if ($item->methods)
-		echo '<h3>Methods</h3>'.$item->methods;
-	if ($item->results)
-		echo '<h3>Results</h3>'.$item->results;
-	if ($item->conclusion)
-		echo '<h3>Conclusion</h3>'.$item->conclusion;
+    if ($item->background) {
+        echo '<h3>Background</h3>'.$item->background;
+    }
+    if ($item->methods) {
+        echo '<h3>Methods</h3>'.$item->methods;
+    }
+    if ($item->results) {
+        echo '<h3>Results</h3>'.$item->results;
+    }
+    if ($item->conclusion) {
+        echo '<h3>Conclusion</h3>'.$item->conclusion;
+    }
 }
 ?>
 <br /><br />

@@ -377,9 +377,9 @@ table.easytree-ext-columnview span.easytree-cv-right {
 /*** Helper object ************************************************************/
 div.easytree-drag-helper
 {
-    display:none; 
-    position: absolute; 
-    z-index: 1000; 
+    display:none;
+    position: absolute;
+    z-index: 1000;
     height:20px;
     width:20px;
 }

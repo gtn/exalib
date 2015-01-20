@@ -1,4 +1,3 @@
-
 window.jQueryExalib = jQuery.noConflict(true);
 
 (function($){

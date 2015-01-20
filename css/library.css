@@ -86,7 +86,6 @@ float: left;
 }
 
 .library_result {
-	
 	margin-left: 300px;
 }
 h1.library_result_heading {
@@ -103,7 +102,7 @@ h2.library_filter_heading {
 }
 
 
-/* --- Libary new Styles ----- */ 
+/* --- Libary new Styles ----- */
 
 .library_result .paging, .library_result .library_result_heading {
 	text-align: center;
@@ -128,17 +127,17 @@ h1.libary_head {
     -moz-border-right-colors: none !important;
     -moz-border-top-colors: none !important;
     background: none repeat scroll 0 0 rgba(0, 0, 0, 0) !important;
-    
+
     border-color: #C8C8C8;
     border-image: none !important;
     border-style: none;
     border-width: 0;
-    
+
     color: #003876;
-    
+
     border-bottom: 1px solid #C8C8C8 !important;
     padding-bottom: 20px !important;
-    
+
     font-size: 1.9em;
     font-weight: normal !important;
     margin-bottom: 35px !important;
@@ -265,5 +264,3 @@ input.libaryfront_searchsub[type="submit"] {
 .library-item div {
 	color: #666;
 }
-
-

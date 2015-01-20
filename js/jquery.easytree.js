@@ -222,7 +222,7 @@
                 }
             }
 
-            if (node.isLazy && !node.isExpanded) { // if opening a lazy node 
+            if (node.isLazy && !node.isExpanded) { // if opening a lazy node
                 var hasChildren = node.children && node.children.length > 0;
                 ret = true;
                 if (_settings.openLazyNode) { // fire openLazyNode event
@@ -415,7 +415,7 @@
                     resetDnd(_dnd);
                     return;
                 }
-            }            
+            }
 
             if (_dnd.targetNode && _dnd.sourceNode && canDrop) { // internal drop
                 if (!_dnd.targetNode.children) {
@@ -698,7 +698,6 @@
             }
 
             var s10 = new Date();
-
 
             var t1 = s2 - s1;
             var t2 = s3 - s2;

@@ -19,7 +19,7 @@
 				$all_cat.prop('checked', false);
 			}
 		});
-		
+
 		if ($all_cat.prop('checked')) {
 			$all_cat.triggerHandler('click');
 		} else {
