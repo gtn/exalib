@@ -27,72 +27,84 @@
  * @return block
  */
 function block_exalib_importlatein_urls() {
-    global $DB;
+	global $DB;
+	
+	$redownload = false;
+	
+	$fs = get_file_storage();
+	
+	$items = $DB->get_records_sql("
+		SELECT i.id, i.link, url.url, url.url_titel
+		FROM mdl_exalib_item i
+		LEFT JOIN community_artikel ON community_artikel.artikel_id = i.id
+		LEFT JOIN url ON community_artikel.url_ID=url.url_ID
+	");
+	
+	function is_download_file($url) {
+		return preg_match('!\.(jpg|docx?|xlsx?|pdf|pptx?|csv|odt|gif|mp3|zip|pps|rtf|png|bmp|m4a)$!i', $url);
+	}
+	
+	foreach ($items as $item) {
 
-    $redownload = false;
+		$data= new stdClass();
+		$data->id = $item->id;
+		$data->link = $item->url;
+		$data->link_titel = block_exalib_ersnull($item->url_titel);
 
-    $fs = get_file_storage();
+		$importFiles = array();
+		if (is_download_file($item->link)) {
+			$importFiles['link'] = $item->link;
+		} elseif (is_download_file($item->url)) {
+			$importFiles['url'] = $item->url;
+		}
 
-    $urls = $DB->get_records_sql("SELECT community_artikel.artikel_id,url.url_ID,url.url,url.url_titel
-        FROM url INNER JOIN community_artikel ON community_artikel.url_ID=url.url_ID");
+		if (count($importFiles) > 1) {
+			die('error #43222fds');
+		}
+		
+		if ($importFiles) {
+			$importFile = reset($importFiles);
+			if ($redownload) {
+				$fs->delete_area_files(context_system::instance()->id, 'block_exalib', 'item_file', $data->id);
+				$file = null;
+			} else {
+				$areafiles = $fs->get_area_files(context_system::instance()->id, 'block_exalib', 'item_file', $data->id, 'itemid', '', false);
+				$file = reset($areafiles);
+			}
 
-    foreach ($urls as $url) {
-        if (empty($url->url)) {
-            continue;
-        }
-
-        $data = new stdClass();
-        $data->id = $url->artikel_id;
-        $data->link = $url->url;
-        $data->link_titel = block_exalib_ersnull($url->url_titel);
-
-        if (preg_match('!schule.at!', $url->url)) {
-            // Only import schule.at stuff.
-            if (preg_match('!\.(jpg|docx?|xlsx?|pdf|pptx?|csv|odt|gif|mp3|zip|pps|rtf|png|bmp|m4a)$!i', $url->url)) {
-                // Only those filetypes.
-                if ($redownload) {
-                    $fs->delete_area_files(context_system::instance()->id, 'block_exalib', 'item_file', $data->id);
-                    $file = null;
-                } else {
-                    $areafiles = $fs->get_area_files(context_system::instance()->id, 'block_exalib', 'item_file',
-                        $data->id, 'itemid', '', false);
-                    $file = reset($areafiles);
-                }
-
-                if (!$file) {
-                    // Only download if not yet downloaded.
-
-                    /* ... Testing:
-                       $url->url = 'http://localhost/phpmyaasdfdsaf.jpg'; */
-
-                    echo "downloading ".$url->url."<br />\n";
-
-                    try {
-                        $fs->create_file_from_url(array(
-                            'component' => 'block_exalib',
-                            'contextid' => context_system::instance()->id,
-                            'filearea' => 'item_file',
-                            'filepath' => '/',
-                            'filename' => basename($url->url),
-                            'itemid' => $data->id
-                        ), $url->url);
-
-                        echo "  ok<br />\n";
-                    } catch (file_exception $e) {
-                        // Couldn't download.
-                        echo "  ERROR: ".$e->getMessage()."<br />\n";
-                    }
-                }
-                $data->link = '';
+			if (!$file) {
+                // Only download if not yet downloaded.
+				
+                /* ... Testing:
+                   $url->url = 'http://localhost/phpmyaasdfdsaf.jpg'; */
+				
+				echo "downloading ".print_r($importFiles, true)."<br />\n";
+				
+				try {
+					$fs->create_file_from_url(array(
+						'component' => 'block_exalib',
+						'contextid' => context_system::instance()->id,
+						'filearea' => 'item_file',
+						'filepath' => '/',
+						'filename' => basename($importFile),
+						'itemid' => $data->id
+					), $importFile);
+					
+					echo "  ok<br />\n";
+				} catch (file_exception $e) {
+                    // Couldn't download.
+					echo "  ERROR: ".$e->getMessage()."<br />\n";
+				}
+				$data->link = '';
             } else {
-                echo "ignored download: ".$url->url."<br />\n";
+                echo "already downloaded: ".print_r($importFiles, true)."<br />\n";
             }
-        }
-
-        $DB->update_record('exalib_item', $data);
-    }
-
-    echo "downloading all files finished";
+		}
+		
+		$DB->update_record('exalib_item', $data);
+	}
+	
+	echo "downloading all files finished";
 }
 
 /**
