@@ -29,29 +29,6 @@ if (!defined('IS_ADMIN_MODE')) {
 require('inc.php');
 
 
-if ($importlatein = optional_param('importlatein', '0', PARAM_TEXT)) {
-    block_exalib_require_admin();
-
-    require('importlatein.php');
-
-    if ($importlatein == '1') {
-        block_exalib_importlatein();
-    }
-    if ($importlatein == 'urls') {
-        block_exalib_importlatein_urls();
-    }
-    if ($importlatein == '2') {
-        block_exalib_importlatein2();
-    }
-    if ($importlatein == '3') {
-        block_exalib_importlatein3();
-    }
-    exit;
-}
-
-
-
-
 if (IS_ADMIN_MODE) {
     block_exalib_require_creator();
 } else {
