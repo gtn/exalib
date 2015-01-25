@@ -199,6 +199,15 @@ function print_items($items, $admin=false) {
             false);
         $file = reset($areafiles);
 
+        $areafiles = $fs->get_area_files(context_system::instance()->id,
+            'block_exalib',
+            'preview_image',
+            $item->id,
+            'itemid',
+            '',
+            false);
+        $preview_image = reset($areafiles);
+
         $linkurl = '';
         $linktext = '';
         $linktextprefix = '';
@@ -235,6 +244,11 @@ function print_items($items, $admin=false) {
         } else {
             echo '<div class="head">'.$item->name.'</div>';
         };
+        
+        if ($preview_image) {
+            $url = "{$CFG->wwwroot}/pluginfile.php/{$file->get_contextid()}/block_exalib/item_file/".$file->get_itemid()."?preview=thumb";
+            echo '<div><img src="'.$url.'" /></div>';
+        }
 
         if ($item->content) {
             echo '<div class="libary_content">'.$item->content.'</div>';
@@ -249,7 +263,7 @@ function print_items($items, $admin=false) {
         if ($item->time_created) {
             echo '<div><span class="libary_author">'.exalib_t('en:Created', 'de:Erstellt').':</span> '.
                 userdate($item->time_created);
-            if ($item->created_by && $tmpuser = $DB->get_record('user', array('id' => $item->created_by))) {
+        if ($item->created_by && $tmpuser = $DB->get_record('user', array('id' => $item->created_by))) {
                 echo ' '.exalib_t('en:by', 'de:von').' '.fullname($tmpuser);
             }
             echo '</div>';
@@ -395,7 +409,7 @@ function block_exalib_pluginfile($course, $cm, $context, $filearea, $args, $forc
     }
 
     session_get_instance()->write_close(); // Unlock session during fileserving.
-    send_stored_file($file, 0, 0, $forcedownload, array('preview' => $preview));
+    send_stored_file($file, 0, 0, $forcedownload, $options);
 }
 
 /**

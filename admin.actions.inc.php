@@ -234,6 +234,8 @@ if ($show == 'edit' || $show == 'add') {
             'block_exalib', 'item_content', $item->id);
         $item = file_prepare_standard_filemanager($item, 'file', $fileoptions, context_system::instance(),
             'block_exalib', 'item_file', $item->id);
+        $item = file_prepare_standard_filemanager($item, 'preview_image', $fileoptions, context_system::instance(),
+            'block_exalib', 'preview_image', $item->id);
     }
 
     require_once($CFG->libdir."/formslib.php");
@@ -269,6 +271,7 @@ if ($show == 'edit' || $show == 'add') {
             $mform->addElement('text', 'link', 'Link', 'size="100"');
             $mform->setType('link', PARAM_TEXT);
 
+            $mform->addElement('filemanager', 'preview_image_filemanager', 'Preview Image', null, $this->_customdata['fileoptions']);
             $mform->addElement('filemanager', 'file_filemanager', 'File', null, $this->_customdata['fileoptions']);
 
             $mform->addElement('editor', 'content_editor', 'Content', 'rows="20" cols="50" style="width: 95%"');
@@ -368,6 +371,13 @@ if ($show == 'edit' || $show == 'add') {
             context_system::instance(),
             'block_exalib',
             'item_file',
+            $fromform->id);
+        $fromform = file_postupdate_standard_filemanager($fromform,
+            'preview_image',
+            $fileoptions,
+            context_system::instance(),
+            'block_exalib',
+            'preview_image',
             $fromform->id);
 
         // Save categories.
