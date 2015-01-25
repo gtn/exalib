@@ -29,7 +29,7 @@ function block_exalib_importlatein_urls() {
 	$fs = get_file_storage();
 	
 	$items = $DB->get_records_sql("
-		SELECT i.id, i.link, url.url, url.url_titel
+		SELECT i.id, i.link, url.url, url.url_titel, i.file as preview_image
 		FROM mdl_exalib_item i
 		LEFT JOIN community_artikel ON community_artikel.artikel_id = i.id
 		LEFT JOIN url ON community_artikel.url_ID=url.url_ID
@@ -86,16 +86,53 @@ function block_exalib_importlatein_urls() {
 					), $importFile);
 					
 					echo "  ok<br />\n";
+                    $data->link = '';
 				} catch (file_exception $e) {
                     // Couldn't download.
 					echo "  ERROR: ".$e->getMessage()."<br />\n";
 				}
-				$data->link = '';
             } else {
                 echo "already downloaded: ".print_r($importFiles, true)."<br />\n";
+                $data->link = '';
             }
 		}
 		
+		if ($item->preview_image) {
+			if ($redownload) {
+				$fs->delete_area_files(context_system::instance()->id, 'block_exalib', 'preview_image', $data->id);
+				$file = null;
+			} else {
+				$areafiles = $fs->get_area_files(context_system::instance()->id, 'block_exalib', 'preview_image', $data->id, 'itemid', '', false);
+				$file = reset($areafiles);
+			}
+
+			if (!$file) {
+                // Only download if not yet downloaded.
+				
+				echo "downloading ".$item->preview_image."<br />\n";
+				
+				try {
+					$fs->create_file_from_url(array(
+						'component' => 'block_exalib',
+						'contextid' => context_system::instance()->id,
+						'filearea' => 'preview_image',
+						'filepath' => '/',
+						'filename' => basename($importFile),
+						'itemid' => $data->id
+					), $importFile);
+					
+					echo "  ok<br />\n";
+                    $data->file = '';
+				} catch (file_exception $e) {
+                    // Couldn't download.
+					echo "  ERROR: ".$e->getMessage()."<br />\n";
+				}
+            } else {
+                echo "already downloaded: ".$item->preview_image."<br />\n";
+                $data->file = '';
+            }
+		}
+
 		$DB->update_record('exalib_item', $data);
 	}
 	
