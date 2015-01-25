@@ -87,8 +87,8 @@ $show = null;
 if (IS_ADMIN_MODE) {
     $sqlwhere = "";
 } else {
-    $sqlwhere = "AND IFNULL(item.hidden,0)=0
-        AND (IFNULL(item.online_from,0)=0
+    $sqlwhere = "AND item.hidden=0
+        AND (item.online_from=0
         OR (item.online_from <= ".time()."
         AND item.online_to >= ".time()."))";
 }
@@ -166,7 +166,7 @@ if ($q = optional_param('q', '', PARAM_TEXT)) {
         JOIN {exalib_item_category} ic ON (item.id=ic.item_id AND ic.category_id IN (".join(',', $currentcategorysubids)."))
         WHERE 1=1 $sqlwhere
         GROUP BY item.id
-        ORDER BY GREATEST(IFNULL(time_created,0),IFNULL(time_modified,0)) DESC
+        ORDER BY GREATEST(time_created,time_modified) DESC
         LIMIT ".$page * $perpage.', '.$perpage."
     ");
 } else {
@@ -178,7 +178,7 @@ if ($q = optional_param('q', '', PARAM_TEXT)) {
         FROM {exalib_item} AS item
         WHERE 1=1 $sqlwhere
         GROUP BY item.id
-        ORDER BY GREATEST(IFNULL(time_created,0),IFNULL(time_modified,0)) DESC
+        ORDER BY GREATEST(time_created,time_modified) DESC
         LIMIT 20
     ");
 }

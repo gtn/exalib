@@ -344,6 +344,7 @@ if ($show == 'edit' || $show == 'add') {
             try {
                 $fromform->created_by = $USER->id;
                 $fromform->time_created = time();
+                $fromform->time_modified = 0;
                 $fromform->id = $DB->insert_record('exalib_item', $fromform);
             } catch (Exception $e) {
                 var_dump($e); exit;
