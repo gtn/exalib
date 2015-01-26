@@ -271,7 +271,8 @@ if ($show == 'edit' || $show == 'add') {
             $mform->addElement('text', 'link', 'Link', 'size="100"');
             $mform->setType('link', PARAM_TEXT);
 
-            $mform->addElement('filemanager', 'preview_image_filemanager', 'Preview Image', null, $this->_customdata['fileoptions']);
+            $mform->addElement('filemanager', 'preview_image_filemanager', 'Preview Image', null,
+                $this->_customdata['fileoptions']);
             $mform->addElement('filemanager', 'file_filemanager', 'File', null, $this->_customdata['fileoptions']);
 
             $mform->addElement('editor', 'content_editor', 'Content', 'rows="20" cols="50" style="width: 95%"');
