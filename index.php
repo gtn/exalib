@@ -87,8 +87,8 @@ $show = null;
 if (IS_ADMIN_MODE) {
     $sqlwhere = "";
 } else {
-    $sqlwhere = "AND item.hidden=0
-        AND (item.online_from=0
+    $sqlwhere = "AND (item.hidden=0 OR item.hidden IS NULL)
+        AND (item.online_from=0 OR item.online_from IS NULL
         OR (item.online_from <= ".time()."
         AND item.online_to >= ".time()."))";
 }

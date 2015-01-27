@@ -244,7 +244,7 @@ function print_items($items, $admin=false) {
         } else {
             echo '<div class="head">'.$item->name.'</div>';
         };
-
+        
         if ($previewimage) {
             $url = "{$CFG->wwwroot}/pluginfile.php/{$previewimage->get_contextid()}/block_exalib/item_file/".
                         $previewimage->get_itemid()."?preview=thumb";
@@ -264,7 +264,7 @@ function print_items($items, $admin=false) {
         if ($item->time_created) {
             echo '<div><span class="libary_author">'.exalib_t('en:Created', 'de:Erstellt').':</span> '.
                 userdate($item->time_created);
-            if ($item->created_by && $tmpuser = $DB->get_record('user', array('id' => $item->created_by))) {
+        if ($item->created_by && $tmpuser = $DB->get_record('user', array('id' => $item->created_by))) {
                 echo ' '.exalib_t('en:by', 'de:von').' '.fullname($tmpuser);
             }
             echo '</div>';
@@ -562,12 +562,12 @@ class block_exalib_category_manager {
         LEFT JOIN {exalib_item_category} ic ON (category.id=ic.category_id)
         LEFT JOIN {exalib_item} item ON item.id=ic.item_id ".
         (IS_ADMIN_MODE ?
-        '' : "AND item.hidden=0
+        '' : "AND item.hidden=0 OR item.hidden IS NULL
             AND (item.online_from=0 OR item.online_from IS NULL OR
                     (item.online_from <= ".time()." AND item.online_to >= ".time().")
                 )").
         " WHERE 1=1
-        ".(IS_ADMIN_MODE ? '' : "AND category.hidden=0")."
+        ".(IS_ADMIN_MODE ? '' : "AND category.hidden=0 OR category.hidden IS NULL")."
         GROUP BY category.id
         ORDER BY name");
         self::$categoriesbyparent = array();
