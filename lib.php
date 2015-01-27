@@ -246,8 +246,8 @@ function print_items($items, $admin=false) {
         };
 
         if ($previewimage) {
-            $url = "{$CFG->wwwroot}/pluginfile.php/{$file->get_contextid()}/block_exalib/item_file/".
-                        $file->get_itemid()."?preview=thumb";
+            $url = "{$CFG->wwwroot}/pluginfile.php/{$previewimage->get_contextid()}/block_exalib/item_file/".
+                        $previewimage->get_itemid()."?preview=thumb";
             echo '<div><img src="'.$url.'" /></div>';
         }
 
