@@ -30,7 +30,7 @@ function block_exalib_importlatein_urls() {
 	
 	$items = $DB->get_records_sql("
 		SELECT i.id, i.link, url.url, url.url_titel, i.file as preview_image
-		FROM mdl_exalib_item i
+		FROM {exalib_item} i
 		LEFT JOIN community_artikel ON community_artikel.artikel_id = i.id
 		LEFT JOIN url ON community_artikel.url_ID=url.url_ID
 	");
@@ -264,11 +264,12 @@ function block_exalib_importlatein2() {
         $data = new stdClass();
         $data->id = $item->artikel_id;
 
-        if (empty($item->verfallsdatum)) {
+        if (empty($item->verfallsdatum) || $item->verfallsdatum==0) {
             $data->online_to = 5555555555;
         } else {
             $datum = new DateTime($item->verfallsdatum);
             $data->online_to = $datum->getTimestamp();
+            if(empty($data->online_to)) $data->online_to = 5555555555;
         }
         $DB->update_record('exalib_item', $data);
     }
