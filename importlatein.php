@@ -28,11 +28,16 @@ function block_exalib_importlatein_urls() {
 	
 	$fs = get_file_storage();
 	
+	$startl = optional_param('startl', '0', PARAM_TEXT);
+	$endl = optional_param('endl', '5000', PARAM_TEXT);
+	
 	$items = $DB->get_records_sql("
 		SELECT i.id, i.link, url.url, url.url_titel, i.file as preview_image
 		FROM {exalib_item} i
 		LEFT JOIN community_artikel ON community_artikel.artikel_id = i.id
 		LEFT JOIN url ON community_artikel.url_ID=url.url_ID
+		ORDER BY i.id
+		LIMIT ".$startl." , ".$endl."
 	");
 	
 	function is_download_file($url) {
