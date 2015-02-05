@@ -1,5 +1,5 @@
 <?php
-require('inc.php');
+require('../inc.php');
 
 block_exalib_require_admin();
 
