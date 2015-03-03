@@ -64,6 +64,8 @@ function block_exalib_importlatein_urls() {
 		
 		if ($importFiles) {
 			$importFile = reset($importFiles);
+            $importFile = str_replace('//www.eduhi.at/', '//172.27.6.1/', $importFile);
+            
 			if ($redownload) {
 				$fs->delete_area_files(context_system::instance()->id, 'block_exalib', 'item_file', $data->id);
 				$file = null;
@@ -103,6 +105,7 @@ function block_exalib_importlatein_urls() {
 		}
 		
 		if ($item->preview_image) {
+            $item->preview_image = str_replace('//www.eduhi.at/', '//172.27.6.1/', $item->preview_image);
 			if ($redownload) {
 				$fs->delete_area_files(context_system::instance()->id, 'block_exalib', 'preview_image', $data->id);
 				$file = null;
