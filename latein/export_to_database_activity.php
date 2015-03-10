@@ -91,12 +91,18 @@ function exalib_export_to_database_activity($fromexalibcategoryid, $toactivityda
     var_dump(count($items));
 
     foreach ($items as $item) {
+    		if(is_null($item->time_created)) $tcr="1262350852";
+    		else $tcr=$item->time_created;
+    		
+    		if(is_null($item->time_modified)) $tmf=$tcr;
+    		else $tmf=$item->time_modified;
+    		
         $newid = $DB->insert_record('data_records', array(
             'userid' => $item->userid ? $item->userid : $USER->id,
             'groupid' => 0,
             'dataid' => $dataid,
-            'timecreated' => $item->time_created,
-            'timemodified' => $item->time_modified,
+            'timecreated' => $tcr,
+            'timemodified' => $tmf,
             'approved' => 1,
         ));
 
