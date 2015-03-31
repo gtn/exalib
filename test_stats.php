@@ -46,8 +46,6 @@ WHERE 1=1
 GROUP BY item.id
 ORDER BY item.name");
 
-var_dump(count($items));
-
 $stats = array();
 
 $fs = get_file_storage();

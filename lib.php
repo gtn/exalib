@@ -109,7 +109,7 @@ function block_exalib_is_admin() {
  */
 function block_exalib_require_use() {
     if (!has_capability('block/exalib:use', context_system::instance())) {
-        throw new require_login_exception('You are no allowed to view Library Content');
+        throw new require_login_exception(get_string('notallowed', 'block_exalib'));
     }
 }
 
@@ -120,7 +120,7 @@ function block_exalib_require_use() {
 function block_exalib_require_open() {
     block_exalib_require_use();
     if (!has_capability('block/exalib:use', context_system::instance())) {
-        throw new require_login_exception('You are no allowed to view Library Content');
+        throw new require_login_exception(get_string('notallowed', 'block_exalib'));
     }
 }
 
@@ -131,7 +131,7 @@ function block_exalib_require_open() {
 function block_exalib_require_creator() {
     block_exalib_require_use();
     if (!block_exalib_is_creator()) {
-        throw new require_login_exception('You are no Exalib Creator');
+        throw new require_login_exception(get_string('nocreator', 'block_exalib'));
     }
 }
 
@@ -142,7 +142,7 @@ function block_exalib_require_creator() {
 function block_exalib_require_admin() {
     block_exalib_require_use();
     if (!block_exalib_is_admin()) {
-        throw new require_login_exception('You are no Exalib Admin');
+        throw new require_login_exception(get_string('noadmin', 'block_exalib'));
     }
 }
 
@@ -153,7 +153,7 @@ function block_exalib_require_admin() {
  */
 function block_exalib_require_can_edit_item(stdClass $item) {
     if (!block_exalib_can_edit_item($item)) {
-        throw new require_login_exception('You are no allowed to edit this Item');
+        throw new require_login_exception(get_string('noedit', 'block_exalib'));
     }
 }
 
@@ -215,7 +215,7 @@ function print_items($items, $admin=false) {
 
         if ($file) {
             $linkurl = "{$CFG->wwwroot}/pluginfile.php/{$file->get_contextid()}/block_exalib/item_file/".$file->get_itemid();
-            $linktextprefix = exalib_t('en:File', 'de:Datei');
+            $linktextprefix = get_string('file', 'block_exalib');
             $linktextprefix .= ' '.$OUTPUT->pix_icon(file_file_icon($file), get_mimetype_description($file));
             $linktext = $file->get_filename();
             $targetnewwindow = true;
@@ -226,7 +226,7 @@ function print_items($items, $admin=false) {
                 $linkurl = 'detail.php?itemid='.$item->id;
             } else if (strpos($item->link, 'filesystemrepo://') === 0) {
                 $linkurl = 'file.php?itemid='.$item->id;
-                $linktext = exalib_t('Download');
+                $linktext = get_string('download', 'block_exalib');
                 $targetnewwindow = true;
             } else {
                 $linkurl = $item->link;
@@ -255,17 +255,17 @@ function print_items($items, $admin=false) {
             echo '<div class="libary_content">'.$item->content.'</div>';
         }
         if ($item->source) {
-            echo '<div><span class="libary_author">'.exalib_t('en:Source', 'de:Quelle').':</span> '.$item->source.'</div>';
+            echo '<div><span class="libary_author">'.get_string('source', 'block_exalib').':</span> '.$item->source.'</div>';
         }
         if ($item->authors) {
-            echo '<div><span class="libary_author">'.exalib_t('en:Authors', 'de:Autoren').':</span> '.$item->authors.'</div>';
+            echo '<div><span class="libary_author">'.get_string('authors', 'block_exalib').':</span> '.$item->authors.'</div>';
         }
 
         if ($item->time_created) {
-            echo '<div><span class="libary_author">'.exalib_t('en:Created', 'de:Erstellt').':</span> '.
+            echo '<div><span class="libary_author">'.get_string('created', 'block_exalib').':</span> '.
                 userdate($item->time_created);
         if ($item->created_by && $tmpuser = $DB->get_record('user', array('id' => $item->created_by))) {
-                echo ' '.exalib_t('en:by', 'de:von').' '.fullname($tmpuser);
+                echo ' '.get_string('by', 'block_exalib').' '.fullname($tmpuser);
             }
             echo '</div>';
         }
@@ -273,7 +273,7 @@ function print_items($items, $admin=false) {
             echo '<div><span class="libary_author">'.exalib_t('en:Last Modified', 'de:Zulätzt geändert').':</span> '.
                 userdate($item->time_modified);
             if ($item->modified_by && $tmpuser = $DB->get_record('user', array('id' => $item->modified_by))) {
-                echo ' '.exalib_t('en:by', 'de:von').' '.fullname($tmpuser);
+                echo ' '.get_string('by', 'block_exalib').' '.fullname($tmpuser);
             }
             echo '</div>';
         }
@@ -288,8 +288,8 @@ function print_items($items, $admin=false) {
         }
         if ($admin && block_exalib_can_edit_item($item)) {
             echo '<span class="library-item-buttons">';
-            echo '<a href="admin.php?show=edit&id='.$item->id.'">'.exalib_t('en:Edit', 'de:Ändern').'</a>';
-            echo ' | <a href="admin.php?show=delete&id='.$item->id.'"">'.exalib_t('en:Delete', 'de:Löschen').'</a>';
+            echo '<a href="admin.php?show=edit&id='.$item->id.'">'.get_string('edit', 'block_exalib').'</a>';
+            echo ' | <a href="admin.php?show=delete&id='.$item->id.'"">'.get_string('delete', 'block_exalib').'</a>';
             echo '</span>';
         }
 
@@ -519,11 +519,11 @@ class block_exalib_category_manager {
 
         $mainid = $DB->insert_record('exalib_category', array(
             'parent_id' => 0,
-            'name' => 'Main Category'
+            'name' => get_string('maincat', 'block_exalib')
         ));
         $subid = $DB->insert_record('exalib_category', array(
             'parent_id' => $mainid,
-            'name' => 'Sub Category'
+            'name' => get_string('subcat', 'block_exalib')
         ));
 
         $itemid = $DB->insert_record('exalib_item', array(

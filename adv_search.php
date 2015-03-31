@@ -426,7 +426,7 @@ input.libaryfront_searchsub[type="submit"] {
 <div class="exalib">
 
 
-        <h3>Welcome to the <?php echo get_string('heading', 'block_exalib');  ?>!</h3>
+        <h3><?php echo get_string('welcome', 'block_exalib')?></h3>
         
         <div class="libary_top_search">
         <form method="get" action="adv_search.php">
@@ -443,55 +443,55 @@ input.libaryfront_searchsub[type="submit"] {
                         <label><input type="checkbox" id="search-all-categories" value="Abstracts" <?php 
 if (count($categoryids) == 0) {
     echo 'checked="checked"';
-}?>>All</label>&nbsp;&nbsp;&nbsp;&nbsp;
+}?>><?php echo get_string('all', 'block_exalib')?></label>&nbsp;&nbsp;&nbsp;&nbsp;
                         <label><input type="checkbox" name="category_ids[]" value="11" <?php
 if (in_array(11, $categoryids)) {
     echo 'checked="checked"';
-} ?> />Abstracts</label>&nbsp;&nbsp;&nbsp;&nbsp;
+} ?> /><?php echo get_string('abstracts', 'block_exalib')?></label>&nbsp;&nbsp;&nbsp;&nbsp;
                         <label><input type="checkbox" name="category_ids[]" value="12" <?php
 if (in_array(12, $categoryids)) {
     echo 'checked="checked"';
-}?> />Documents</label>&nbsp;&nbsp;&nbsp;&nbsp;
+}?> /><?php echo get_string('documents', 'block_exalib')?></label>&nbsp;&nbsp;&nbsp;&nbsp;
                         <label><input type="checkbox" name="category_ids[]" value="13" <?php
 if (in_array(13, $categoryids)) {
     echo 'checked="checked"';
-}?> />Images</label>&nbsp;&nbsp;&nbsp;&nbsp;
+}?> /><?php echo get_string('images', 'block_exalib')?></label>&nbsp;&nbsp;&nbsp;&nbsp;
                         <label><input type="checkbox" name="category_ids[]" value="14" <?php
 if (in_array(14, $categoryids)) {
     echo 'checked="checked"';
-}?> />Podcasts</label>&nbsp;&nbsp;&nbsp;&nbsp;
+}?> /><?php echo get_string('podcasts', 'block_exalib')?></label>&nbsp;&nbsp;&nbsp;&nbsp;
                         <label><input type="checkbox" name="category_ids[]" value="15" <?php
 if (in_array(15, $categoryids)) {
     echo 'checked="checked"';
-}?> />Webcasts</label>&nbsp;&nbsp;&nbsp;&nbsp;
+}?> /><?php echo get_string('webcasts', 'block_exalib')?></label>&nbsp;&nbsp;&nbsp;&nbsp;
                         <div style="clear:both;"></div>
                     </td>
                 </tr>
                 
                 <tr>
                     <td style="">
-                    search by:&nbsp;
+                    <?php echo get_string('searchby', 'block_exalib')?>&nbsp;
                     
                             
                               <select name="search_by">
-                                  <option value="all">all</option>
+                                  <option value="all"><?php echo get_string('all', 'block_exalib')?></option>
                                   <option value="title" <?php {
 if ($searchby == 'title') {
     echo 'selected="selected"';
-}?>>Title</option>
+}?>><?php echo get_string('title', 'block_exalib')?></option>
                                   <option value="author" <?php {
 if ($searchby == 'author') {
     echo 'selected="selected"';
-}?>>Author</option>
+}?>><?php echo get_string('author', 'block_exalib')?></option>
                                   <option value="source" <?php {
 if ($searchby == 'source') {
     echo 'selected="selected"';
-}?>>Source</option>
+}?>><?php echo get_string('source', 'block_exalib')?></option>
                               </select>
             
                     </td>
                     <td style="text-align:right;vertical-align: bottom;">
-                        <input value="Search" type="submit">
+                        <input value="<?php echo get_string('search', 'block_exalib');?>" type="submit">
                     </td>
                 </tr>
             </tbody></table>
@@ -514,7 +514,7 @@ if ($searchby == 'source') {
             <table style="width: 100%;">
                 <tbody>
                 <tr>
-                    <td style="width:40px;">Filter: </td>
+                    <td style="width:40px;"><?php echo get_string('filter', 'block_exalib')?></td>
                     <td>
                     
                             
@@ -532,7 +532,7 @@ if ($searchby == 'source') {
                               </select>
                     </td>
                     <td style="text-align:right;vertical-align: bottom;">
-                        <input value="Apply Filter" type="submit">
+                        <input value="<?php echo get_string('applyfilter', 'block_exalib');?>" type="submit">
                     </td>
                 </tr>
             </tbody></table>
@@ -549,7 +549,7 @@ endif;
 <?php
 if ($items !== null) {
     if (!$items) {
-        echo 'No Items found';
+        echo get_string('noitemsfound', 'block_exalib');
     } else {
         if ($pagingbar) {
             echo $OUTPUT->render($pagingbar);
@@ -560,16 +560,10 @@ if ($items !== null) {
         };
     }
 }
-/*  else {
-    ?>
-    <div style="text-align: center; padding: 200px 60px 0 0;" class="libary_nores">
-        Not found
-    </div>
-    <?php
-}
-*/
+
 ?>
 </div>
 </div>
 <?php
 echo $OUTPUT->footer();
+?>

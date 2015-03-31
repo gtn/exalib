@@ -61,7 +61,7 @@ $filterid = 0;
 /* $FILTER_CATEGORY = $DB->get_record("exalib_category", array('id' => $filterid));
  if ($FILTER_CATEGORY) $PAGE->navbar->add($FILTER_CATEGORY->name); */
 if (IS_ADMIN_MODE) {
-    $PAGE->navbar->add('Administration', 'admin.php');
+    $PAGE->navbar->add(get_string('administration', 'block_exalib'), 'admin.php');
 }
 
 
@@ -203,15 +203,15 @@ echo $OUTPUT->header();
 
 if (false && !$filterid) {
         ?>
-        <h1 class="libary_head">Welcome to the <?php echo get_string('heading', 'block_exalib');  ?>!</h1>
+        <h1 class="libary_head"><?php echo get_string('welcome', 'block_exalib');  ?></h1>
 
 
         <div class="libary_top_cat">
-            <a class="exalib-blue-cat-lib" href="<?php echo $CFG->wwwroot; ?>/blocks/exalib/index.php?category_id=11">Abstracts</a>
-            <a class="exalib-blue-cat-lib" href="<?php echo $CFG->wwwroot; ?>/blocks/exalib/index.php?category_id=12">Documents</a>
-            <a class="exalib-blue-cat-lib" href="<?php echo $CFG->wwwroot; ?>/blocks/exalib/index.php?category_id=13">Images</a>
-            <a class="exalib-blue-cat-lib" href="<?php echo $CFG->wwwroot; ?>/blocks/exalib/index.php?category_id=14">Podcasts</a>
-            <a class="exalib-blue-cat-lib" href="<?php echo $CFG->wwwroot; ?>/blocks/exalib/index.php?category_id=15">Webcasts</a>
+            <a class="exalib-blue-cat-lib" href="<?php echo $CFG->wwwroot; ?>/blocks/exalib/index.php?category_id=11"><?php echo get_string('abstracts', 'block_exalib')?></a>
+            <a class="exalib-blue-cat-lib" href="<?php echo $CFG->wwwroot; ?>/blocks/exalib/index.php?category_id=12"><?php echo get_string('documents', 'block_exalib')?></a>
+            <a class="exalib-blue-cat-lib" href="<?php echo $CFG->wwwroot; ?>/blocks/exalib/index.php?category_id=13"><?php echo get_string('images', 'block_exalib')?></a>
+            <a class="exalib-blue-cat-lib" href="<?php echo $CFG->wwwroot; ?>/blocks/exalib/index.php?category_id=14"><?php echo get_string('podcasts', 'block_exalib')?></a>
+            <a class="exalib-blue-cat-lib" href="<?php echo $CFG->wwwroot; ?>/blocks/exalib/index.php?category_id=15"><?php echo get_string('webcasts', 'block_exalib')?></a>
 
 
         </div>
@@ -238,14 +238,14 @@ if (false && !$filterid) {
             <br /><br /><br />
             <form method="get" action="search.php">
                 <input name="q" type="text" value="<?php p($q) ?>" style="width: 240px;" class="libaryfront_search" />
-                <input value="<?php echo exalib_t('en:Search', 'de:Suchen'); ?>" type="submit" class="libaryfront_searchsub">
+                <input value="<?php echo get_string('search', 'block_exalib'); ?>" type="submit" class="libaryfront_searchsub">
             </form>
 <?php 
     else:
 ?>
             <form method="get" action="search.php">
                 <input name="q" type="text" value="<?php p($q) ?>" style="width: 240px;" class="libaryfront_search" />
-                <input value="<?php echo exalib_t('en:Search', 'de:Suchen'); ?>" type="submit" class="libaryfront_searchsub">
+                <input value="<?php echo get_string('search', 'block_exalib'); ?>" type="submit" class="libaryfront_searchsub">
             </form>
 <?php
     endif;
@@ -253,10 +253,10 @@ if (false && !$filterid) {
 
 <?php
     if ($items !== null) {
-        echo '<h1 class="library_result_heading">'.exalib_t('en:Results', 'de:Ergebnisse').'</h1>';
+        echo '<h1 class="library_result_heading">'.get_string('results', 'block_exalib').'</h1>';
 
         if (!$items) {
-            exalib_t('en:No Items found', 'de:Keine Einträge gefunden');
+            echo get_string('noitemsfound', 'block_exalib');
         } else {
             if ($pagingbar) {
                 echo $OUTPUT->render($pagingbar);
@@ -290,19 +290,19 @@ if ($currentcategory) {
         <?php if ($currentcategory): ?>
         <select name="category_id">
             <option value="<?php echo $currentcategory->id; ?>">
-            <?php echo exalib_t('en:In this Category', 'de:in dieser Kategorie'); ?></option>
-            <option value="0"><?php echo exalib_t('en:Whole Library', 'de:ganze Bibliothek'); ?></option>
+            <?php echo get_string('inthiscat', 'block_exalib'); ?></option>
+            <option value="0"><?php echo get_string('wholelib', 'block_exalib'); ?></option>
         </select>
         <?php
 endif;
 ?>
-    <input value="<?php echo exalib_t('en:Search', 'de:Suchen'); ?>" type="submit">
+    <input value="<?php echo get_string('search', 'block_exalib') ?>" type="submit">
 </form>
 
 <?php
 
 if (IS_ADMIN_MODE && block_exalib_is_admin()) {
-    echo '<a href="admin.php?show=categories">Manage Categories</a>';
+    echo '<a href="admin.php?show=categories">'.get_string('managecats', 'block_exalib').'</a>';
 }
 
 echo '<div id="exalib-categories"><ul>';
@@ -337,28 +337,18 @@ echo '</ul></div>';
 
 <?php
 
-/*
-<div class="library_top_filter">
-    <a href="index.php"><!--â˜�&nbsp;&nbsp;-->All Categories</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-foreach ($topGroups as $id => $cat) {
-    echo '<a href="index.php?category_id='.$id.'"'.($id==$filterid?' style="color: #007BB6;">Â»':'>Â»').
-        '&nbsp;&nbsp;'.$cat.'</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
-}
-</div>
-*/
-
 if (IS_ADMIN_MODE) {
-    ?><a href="<?php echo $urladd; ?>">Add new Entry</a><?php
+    ?><a href="<?php echo $urladd; ?>"><?php echo get_string('newentry', 'block_exalib')?></a><?php
 }
 
 if ($show == 'latest_changes') {
-    echo '<h1 class="library_result_heading">'.exalib_t('de:Letzte Änderungen').'</h1>';
+    echo '<h1 class="library_result_heading">'.get_string('latest', 'block_exalib').'</h1>';
 } else {
-    echo '<h1 class="library_result_heading">'.exalib_t('en:Results', 'de:Ergebnisse').'</h1>';
+    echo '<h1 class="library_result_heading">'.get_string('results', 'block_exalib').'</h1>';
 };
 
 if (!$items) {
-    echo exalib_t('en:No Items found', 'de:Keine Einträge gefunden');
+    echo get_string('noitemsfound', 'block_exalib');
 } else {
     if ($pagingbar) {
         echo $OUTPUT->render($pagingbar);

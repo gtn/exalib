@@ -29,4 +29,77 @@ $string['exalib:admin'] = 'Gesamten Inhalt verwalten';
 $string['block/exalib:open'] = 'Einträge und Dateien öffnen';
 $string['exalib:addinstance'] = 'Exalib Instanz zu Kurs hinzufügen';
 
+
+//admin-actions-inc
 $string['edit_content'] = 'Bibliothekinhalt verwalten';
+$string['edit'] = 'Bearbeiten';
+$string['delete'] = 'Löschen';
+$string['addcat'] = 'Kategorie hier ergänzen';
+$string['name'] = 'Name';
+$string['parent'] = 'Übergeordnete Kategorie';
+$string['source'] = 'Quelle';
+$string['content'] = 'Inhalt';
+$string['previmg'] = 'Vorschaubild';
+$string['linktitle'] = 'Link Titel';
+$string['link'] = 'Link';
+$string['file'] = 'Datei';
+$string['authors'] = 'Autoren';
+$string['onlineset'] = 'Anzeige-Einstellungen';
+$string['onlinefrom'] = 'Verfügbar vom';
+$string['onlineto'] = 'bis zum';
+$string['hidden'] = 'Ausblenden';
+$string['categories'] = 'Kategorien';
+$string['groups'] = 'Gruppen';
+$string['addmaincat'] = 'Hauptkategorie hinzufügen';
+$string['deletecat'] = 'Kategorie ';
+$string['deletecat2'] = ' wirklich löschen?';
+
+
+//adv-search
+$string['welcome'] = 'Willkommen in der Exabis Bibliothek!';
+$string['all'] = 'Alle';
+$string['abstracts'] = 'Abstracts';
+$string['documents'] = 'Dokumente';
+$string['images'] = 'Bilder';
+$string['podcasts'] = 'Podcasts';
+$string['webcasts'] = 'Webcasts';
+$string['searchby'] = 'Suche mittels: ';
+$string['title'] = 'Titel';
+$string['author'] = 'Autor';
+$string['search'] = 'Suchen';
+$string['filter'] = 'Filter: ';
+$string['applyfilter'] = 'Filter anwenden';
+$string['noitemsfound'] = 'Keine Einträge gefunden';
+
+
+//block_exalib
+$string['managecontent'] = 'Inhalte bearbeiten';
+
+
+//detail
+$string['itemnotfound'] = 'Eintrag nicht gefunden';
+$string['background'] = 'Hintergrund';
+$string['methods'] = 'Methoden';
+$string['results'] = 'Ergebnisse';
+$string['conclusion'] = 'Schlussfolgerung';
+$string['back'] = 'zurück';
+
+
+//index
+$string['administration'] = 'Administration';
+$string['inthiscat'] = 'In dieser Kategorie';
+$string['wholelib'] = 'Ganze Bibliothek';
+$string['managecats'] = 'Kategorien verwalten';
+$string['latest'] = 'Letzte Änderungen';
+$string['newentry'] = 'Neuen Eintrag hinzufügen';
+
+//lib
+$string['notallowed'] = 'Du bist nicht berechtigt den Bibliotheksinhalt anzusehen.';
+$string['nocreator'] = 'Du kannst keinen Bibliotheksinhalt erstellen';
+$string['noadmin'] = 'Du bist kein Exalib Admin';
+$string['noedit'] = 'Du bist nicht berechtigt diesen Eintrag zu editieren';
+$string['download'] = 'Download';
+$string['created'] = 'Erstellt';
+$string['by'] = 'von';
+$string['maincat'] = 'Hauptkategorie';
+$string['subcat'] = 'Subkategorie';

@@ -25,7 +25,7 @@ require('inc.php');
 
 $itemid = required_param('itemid', PARAM_INT);
 if (!$item = $DB->get_record("exalib_item", array('id' => $itemid))) {
-    print_error("item not found");
+    print_error(get_string('itemnotfound', 'block_exalib'));
 }
 
 
@@ -117,21 +117,21 @@ if ($item->content) {
 
 } else {
     if ($item->background) {
-        echo '<h3>Background</h3>'.$item->background;
+        echo '<h3>'.get_string('background', 'block_exalib').'</h3>'.$item->background;
     }
     if ($item->methods) {
-        echo '<h3>Methods</h3>'.$item->methods;
+        echo '<h3>'.get_string('methods', 'block_exalib').'</h3>'.$item->methods;
     }
     if ($item->results) {
-        echo '<h3>Results</h3>'.$item->results;
+        echo '<h3>'.get_string('results' ,'block_exalib').'</h3>'.$item->results;
     }
     if ($item->conclusion) {
-        echo '<h3>Conclusion</h3>'.$item->conclusion;
+        echo '<h3>'.get_string('conclusion', 'block_exalib').'</h3>'.$item->conclusion;
     }
 }
 ?>
 <br /><br />
-<a class="exalib-blue-cat-lib" href="javascript:history.back();">back</a>
+<a class="exalib-blue-cat-lib" href="javascript:history.back();"><?php echo get_string('back', 'block_exalib')?></a>
 </div>
 <?php
 echo $OUTPUT->footer();

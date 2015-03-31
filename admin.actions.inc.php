@@ -34,7 +34,7 @@ if ($show == 'categories') {
 
     echo $OUTPUT->header();
 
-    echo '<div><a href="admin.php?show=category_add&parent_id=0">add main category</a></div>';
+    echo '<div><a href="admin.php?show=category_add&parent_id=0">'.get_string('addmaincat', 'block_exalib').'</a></div>';
 
     block_exalib_category_manager::walktree(function($cat) {
 
@@ -43,14 +43,14 @@ if ($show == 'categories') {
         echo $cat->name.' ('.$cat->cnt_inc_subs.') ';
 
         echo '<span class="library_categories_item_buttons"><span>';
-        echo '<a href="admin.php?show=category_edit&category_id='.$cat->id.'">edit</a>';
-        echo ' | <a href="admin.php?show=category_delete&category_id='.$cat->id.'">delete</a>';
+        echo '<a href="admin.php?show=category_edit&category_id='.$cat->id.'">'.get_string('edit', 'block_exalib').'</a>';
+        echo ' | <a href="admin.php?show=category_delete&category_id='.$cat->id.'">'.get_string('delete', 'block_exalib').'</a>';
         echo '</span></span>';
 
         echo '</div>';
 
         echo '<div style="padding-left: 30px;">';
-        echo '<a href="admin.php?show=category_add&parent_id='.$cat->id.'">add category here</a>';
+        echo '<a href="admin.php?show=category_add&parent_id='.$cat->id.'">'.get_string('addcat', 'block_exalib').'</a>';
 
     }, function() {
         echo '</div>';
@@ -79,7 +79,7 @@ if ($show == 'category_delete') {
         echo $OUTPUT->header();
 
         echo '<br />';
-        echo $OUTPUT->confirm('delete category '.block_exalib_category_manager::getcategory($categoryid)->name.'?',
+        echo $OUTPUT->confirm(get_string('deletecat', 'block_exalib').block_exalib_category_manager::getcategory($categoryid)->name.get_string('deletecat2', 'block_exalib'),
             new moodle_url('admin.php', $optionsyes),
             new moodle_url('admin.php', $optionsno));
 
@@ -127,11 +127,11 @@ if (($show == 'category_add') || ($show == 'category_edit')) {
 
             $mform =& $this->_form; // Don't forget the underscore!
 
-            $mform->addElement('text', 'name', 'Name', 'size="100"');
+            $mform->addElement('text', 'name', get_string('name', 'block_exalib'), 'size="100"');
             $mform->setType('name', PARAM_TEXT);
             $mform->addRule('name', 'Name required', 'required', null, 'server');
 
-            $mform->addElement('select', 'parent_id', 'Parent', $this->_category_select);
+            $mform->addElement('select', 'parent_id', get_string('parent', 'block_exalib'), $this->_category_select);
 
             /* ... $mform->addElement('static', 'description', 'Groups', $this->get_categories()); /*...*/
 
@@ -257,48 +257,49 @@ if ($show == 'edit' || $show == 'add') {
 
             $mform =& $this->_form; // Don't forget the underscore!
 
-            $mform->addElement('text', 'name', 'Name', 'size="100"');
+            $mform->addElement('text', 'name', get_string('name', 'block_exalib'), 'size="100"');
             $mform->setType('name', PARAM_TEXT);
             $mform->addRule('name', 'Name required', 'required', null, 'server');
 
-            $mform->addElement('text', 'source', 'Source', 'size="100"');
+            $mform->addElement('text', 'source', get_string('source', 'block_exalib'), 'size="100"');
             $mform->setType('source', PARAM_TEXT);
 
-            $mform->addElement('header', 'contentheader', 'Content');
+            $mform->addElement('header', 'contentheader', get_string('content', 'block_exalib'));
 
-            $mform->addElement('text', 'link_titel', 'Link Titel', 'size="100"');
+            $mform->addElement('text', 'link_titel', get_string('linktitle', 'block_exalib'), 'size="100"');
             $mform->setType('link_titel', PARAM_TEXT);
 
-            $mform->addElement('text', 'link', 'Link', 'size="100"');
+            $mform->addElement('text', 'link', get_string('link', 'block_exalib'), 'size="100"');
             $mform->setType('link', PARAM_TEXT);
 
-            $mform->addElement('filemanager', 'preview_image_filemanager', 'Preview Image', null,
+            $mform->addElement('filemanager', 'preview_image_filemanager', get_string('previmg', 'block_exalib'), null,
                 $this->_customdata['fileoptions']);
-            $mform->addElement('filemanager', 'file_filemanager', 'File', null, $this->_customdata['fileoptions']);
+                
+            $mform->addElement('filemanager', 'file_filemanager', get_string('file', 'block_exalib'), null, $this->_customdata['fileoptions']);
 
-            $mform->addElement('editor', 'content_editor', 'Content', 'rows="20" cols="50" style="width: 95%"');
+            $mform->addElement('editor', 'content_editor', get_string('content', 'block_exalib'), 'rows="20" cols="50" style="width: 95%"');
             $mform->setType('content', PARAM_RAW);
 
-            $mform->addElement('text', 'authors', 'Authors', 'size="100"');
+            $mform->addElement('text', 'authors', get_string('authors', 'block_exalib'), 'size="100"');
             $mform->setType('authors', PARAM_TEXT);
 
-            $mform->addElement('header', 'onlineheader', 'Online Settings');
+            $mform->addElement('header', 'onlineheader', get_string('onlineset', 'block_exalib'));
 
-            $mform->addElement('date_selector', 'online_from', 'Online From', array(
+            $mform->addElement('date_selector', 'online_from', get_string('onlinefrom', 'block_exalib'), array(
                 'startyear' => 2014,
                 'stopyear'  => date('Y'),
                 'optional'  => true
             ));
-            $mform->addElement('date_selector', 'online_to', 'Online To', array(
+            $mform->addElement('date_selector', 'online_to', get_string('onlineto', 'block_exalib'), array(
                 'startyear' => 2014,
                 'stopyear'  => date('Y'),
                 'optional'  => true
             ));
-            $mform->addElement('checkbox', 'hidden', 'Hidden');
+            $mform->addElement('checkbox', 'hidden', get_string('hidden', 'block_exalib'));
 
-            $mform->addElement('header', 'categoriesheader', 'Categories');
+            $mform->addElement('header', 'categoriesheader', get_string('categories', 'block_exalib'));
 
-            $mform->addElement('static', 'categories', 'Groups', $this->get_categories());
+            $mform->addElement('static', 'categories', get_string('groups', 'block_exalib'), $this->get_categories());
 
             $this->add_action_buttons();
         }

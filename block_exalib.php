@@ -92,11 +92,11 @@ class block_exalib extends block_list {
             alt="'.get_string("heading", "block_exalib").'" />';
 
         if (block_exalib_is_creator()) {
-            $this->content->items[] = '<a title="'.exalib_t('en:Manage Library Content', 'de:Inhalte bearbeiten').'"
+            $this->content->items[] = '<a title="'.get_string('managecontent', 'block_exalib').'"
                 href="' . $CFG->wwwroot . '/blocks/exalib/admin.php?courseid=' . $COURSE->id . '">'.
-                exalib_t('en:Manage Library Content', 'de:Inhalte bearbeiten') . '</a>';
+                get_string('managecontent', 'block_exalib'). '</a>';
             $this->content->icons[] = '<img src="'.$CFG->wwwroot.'/blocks/exalib/pix/module_config.png"
-                height="16" width="23" alt="'.exalib_t('en:Manage Library Content', 'de:Inhalte bearbeiten').'" />';
+                height="16" width="23" alt="'.get_string('managecontent', 'block_exalib').'" />';
         }
 
         return $this->content;
