@@ -73,10 +73,6 @@ if (IS_ADMIN_MODE) {
     require('admin.actions.inc.php');
 }
 
-
-
-
-
 $perpage = 20;
 $page    = optional_param('page', 0, PARAM_INT);
 
@@ -141,9 +137,9 @@ if ($q = optional_param('q', '', PARAM_TEXT)) {
     $sqljoin
     WHERE 1=1 $sqlwhere
     GROUP BY item.id
-    ORDER BY name
-    LIMIT ".$page * $perpage.', '.$perpage;
-    $items = $DB->get_records_sql($sql, $sqlparams);
+    ORDER BY name";
+    
+    $items = $DB->get_recordset_sql($sql, $sqlparams, $page * $perpage, $perpage);
 
 } else if ($currentcategory) {
     $show = 'category';
@@ -151,38 +147,44 @@ if ($q = optional_param('q', '', PARAM_TEXT)) {
     $sqljoin = "    JOIN {exalib_item_category} ic ON (ic.item_id = item.id
         AND ic.category_id IN (".join(',', $currentcategorysubids)."))";
 
-    $count = $DB->get_field_sql("
+    $sql = "
         SELECT COUNT(DISTINCT item.id)
         FROM {exalib_item} item
         JOIN {exalib_item_category} ic ON (item.id=ic.item_id AND ic.category_id IN (".join(',', $currentcategorysubids)."))
-        ORDER BY item.name
-    ");
+    ";
+   
+    $count = $DB->get_field_sql($sql);
 
     $pagingbar = new paging_bar($count, $page, $perpage, $urlpage);
 
-    $items = $DB->get_records_sql("
+    $sql = "
         SELECT item.*
         FROM {exalib_item} item
         JOIN {exalib_item_category} ic ON (item.id=ic.item_id AND ic.category_id IN (".join(',', $currentcategorysubids)."))
         WHERE 1=1 $sqlwhere
         GROUP BY item.id
         ORDER BY GREATEST(time_created,time_modified) DESC
-        LIMIT ".$page * $perpage.', '.$perpage."
-    ");
+    ";
+   
+    $items = $DB->get_recordset_sql($sql, array(), $page * $perpage, $perpage);
 } else {
     // Latest changes.
     $show = 'latest_changes';
 
-    $items = $DB->get_records_sql("
+    $sql = "
         SELECT item.*
         FROM {exalib_item} AS item
         WHERE 1=1 $sqlwhere
         GROUP BY item.id
         ORDER BY GREATEST(time_created,time_modified) DESC
-        LIMIT 20
-    ");
+    ";
+    
+    $items = $DB->get_recordset_sql($sql, array(), 0, 20);
 }
 
+
+
+if(!$items->valid())	$items=Array();
 
 
 $PAGE->requires->css('/blocks/exalib/css/library.css');
@@ -337,9 +339,9 @@ echo '</ul></div>';
 
 /*
 <div class="library_top_filter">
-    <a href="index.php"><!--☐&nbsp;&nbsp;-->All Categories</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <a href="index.php"><!--â˜�&nbsp;&nbsp;-->All Categories</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 foreach ($topGroups as $id => $cat) {
-    echo '<a href="index.php?category_id='.$id.'"'.($id==$filterid?' style="color: #007BB6;">»':'>»').
+    echo '<a href="index.php?category_id='.$id.'"'.($id==$filterid?' style="color: #007BB6;">Â»':'>Â»').
         '&nbsp;&nbsp;'.$cat.'</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
 }
 </div>

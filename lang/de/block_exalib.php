@@ -14,14 +14,19 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**  
- * inc.php
- * @package    block_exalib
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+/**
+ * @package   block_exalib
  * @copyright  gtn gmbh <office@gtn-solutions.com>
- * @author       Daniel Prieler <dprieler@gtn-solutions.com>
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+$string['pluginname'] = 'Exabis Bibliothek';
+$string['heading'] = 'Exabis Bibliothek';
 
-require(dirname(__FILE__).'/lib.php');
-require_once(dirname(__FILE__).'/../../config.php');
+$string['exalib:use'] = 'Exalib verwenden: Betrachten & Suchen';
+$string['exalib:open'] = 'Dateien öffnen innerhalb von Exalib';
+$string['exalib:creator'] = 'Inhalt erstellen und eigenen Inhalt verwalten';
+$string['exalib:admin'] = 'Gesamten Inhalt verwalten';
+$string['block/exalib:open'] = 'Einträge und Dateien öffnen';
+$string['exalib:addinstance'] = 'Exalib Instanz zu Kurs hinzufügen';
 
+$string['edit_content'] = 'Bibliothekinhalt verwalten';
