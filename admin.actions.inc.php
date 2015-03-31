@@ -25,6 +25,7 @@ require_once($CFG->libdir.'/formslib.php');
 require_once($CFG->libdir.'/filelib.php');
 
 $show = optional_param('show', '', PARAM_TEXT);
+$categories_request =  optional_param_array('CATEGORIES', null, PARAM_INT);
 
 if ($show == 'categories') {
     block_exalib_require_admin();
@@ -379,15 +380,16 @@ if ($show == 'edit' || $show == 'add') {
             'preview_image',
             $fromform->id);
 
+        
         // Save categories.
         $DB->delete_records('exalib_item_category', array("item_id" => $fromform->id));
-        foreach ($_REQUEST['CATEGORIES'] as $tmp => $categoryidforinsert) {
+        foreach ($categories_request as $tmp => $categoryidforinsert) {
             $DB->execute('INSERT INTO {exalib_item_category} (item_id, category_id) VALUES (?, ?)',
                 array($fromform->id, $categoryidforinsert));
         }
 
-        if (!$categoryid && is_array($_REQUEST['CATEGORIES'])) {
-            $categoryid = reset($_REQUEST['CATEGORIES']);
+        if (!$categoryid && is_array($categories_request)) {
+            $categoryid = reset($categories_request);
             // Read first category.
         }
         redirect('admin.php?category_id='.$categoryid);
