@@ -69,7 +69,6 @@ if ($categoryids) {
         }
     }
 
-
     $sqljoin .= " JOIN {exalib_item_category} ic_filter ON (ic_filter.item_id = item.id AND (ic_filter.category_id IN (".
         join(',', $filterids).")))";
     if ($subfilterid) {
@@ -122,8 +121,6 @@ if ($categoryids) {
     ORDER BY name
     LIMIT ".$page * $perpage.', '.$perpage;
     $items = $DB->get_records_sql($sql, $sqlparams);
-
-
 
     // SUBFILTER.
     $sql = "SELECT c.category_id AS id, COUNT(item.id) AS cnt

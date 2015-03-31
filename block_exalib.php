@@ -64,6 +64,7 @@ class block_exalib extends block_list {
         global $CFG, $COURSE, $USER;
 
         $context = context_system::instance();
+        
         if (!has_capability('block/exalib:use', $context)) {
             $this->content = '';
             return $this->content;

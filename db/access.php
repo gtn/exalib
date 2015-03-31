@@ -55,40 +55,35 @@
 
 
 $capabilities = array(
-    'block/exalib:use' => array(
-        'captype' => 'read',
-        'contextlevel' => CONTEXT_SYSTEM,
-        'archetypes' => array(
-            'student' => CAP_ALLOW,
-            'teacher' => CAP_ALLOW,
-            'editingteacher' => CAP_ALLOW,
-            'manager' => CAP_ALLOW
-        )
-    ),
+   	'block/exalib:use' => array(
+			'captype' => 'write',
+			'contextlevel' => CONTEXT_SYSTEM,
+			'legacy' => array(
+					'user' => CAP_ALLOW
+			)
+	),
     'block/exalib:open' => array(
         'captype' => 'read',
         'contextlevel' => CONTEXT_SYSTEM,
-        'archetypes' => array(
-            'student' => CAP_ALLOW,
-            'teacher' => CAP_ALLOW,
-            'editingteacher' => CAP_ALLOW,
-            'manager' => CAP_ALLOW
-        )
+        'legacy' => array(
+				'user' => CAP_ALLOW
+		)
     ),
     'block/exalib:creator' => array(
         'captype' => 'write',
-        'contextlevel' => CONTEXT_SYSTEM,
-        'archetypes' => array(
-            'teacher' => CAP_ALLOW,
-            'editingteacher' => CAP_ALLOW,
-            'manager' => CAP_ALLOW
-        )
+		'contextlevel' => CONTEXT_COURSE,
+		'legacy' => array(
+				'editingteacher' => CAP_ALLOW,
+				'teacher' => CAP_ALLOW,
+				'manager' => CAP_ALLOW
+		)
     ),
     'block/exalib:admin' => array(
         'captype' => 'write',
         'contextlevel' => CONTEXT_SYSTEM,
-        'archetypes' => array(
-        )
+        'legacy' => array(
+				'manager' => CAP_ALLOW
+		)
     ),
     'block/exalib:addinstance' => array(
         'captype' => 'write',
@@ -99,4 +94,12 @@ $capabilities = array(
         ),
         'clonepermissionsfrom' => 'moodle/site:manageblocks'
     ),
+    'block/exalib:myaddinstance' => array(
+       'captype' => 'write',
+		'contextlevel' => CONTEXT_SYSTEM,
+		'archetypes' => array(
+				'user' => CAP_PREVENT
+		),
+		'clonepermissionsfrom' => 'moodle/my:manageblocks'
+    )
 );

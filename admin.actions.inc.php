@@ -316,8 +316,6 @@ if ($show == 'edit' || $show == 'add') {
         }
     }
 
-
-
     $itemcategories = $DB->get_records_sql_menu("SELECT category.id, category.id AS val
     FROM {exalib_category} category
     LEFT JOIN {exalib_item_category} ic ON category.id=ic.category_id
