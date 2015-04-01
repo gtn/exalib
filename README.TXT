@@ -10,7 +10,7 @@ This block is fore Moodle 2.7+ versions, it will not work for versions below 201
 
 If you have any problems installing this block or suggestions for improvement please mailto: office@gtn-solutions.com
 
-* question filter - Description *
+* exalib - Description *
 The block can be accessed from within any course. The admin can add any kind of document using the "manage library" link of the block.
 New entries can be made with references to the source, links, file, content and author. Also categories can be defined with the link "manage categories".
 With the search box the library can be searched as a whole or within each category.
