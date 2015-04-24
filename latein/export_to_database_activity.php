@@ -69,8 +69,10 @@ function exalib_export_to_database_activity($fromexalibcategoryid, $toactivityda
     }
 
     // Delete old data.
-    $DB->execute("DELETE FROM {data_content} WHERE recordid IN (SELECT id from {data_records} WHERE dataid=$dataid)");
-    $DB->delete_records('data_records', array('dataid' => $dataid));
+    if (@!$_GET['skip_delete']) {
+        $DB->execute("DELETE FROM {data_content} WHERE recordid IN (SELECT id from {data_records} WHERE dataid=$dataid)");
+        $DB->delete_records('data_records', array('dataid' => $dataid));
+    }
     // TODO: also delete files? not needed, delete it before insert
     /* ...For code checker... $DB->execute("DELETE FROM {mdl_files}
         WHERE component='mod_data' AND filearea='content' AND itemid IN ()"); */
@@ -91,18 +93,12 @@ function exalib_export_to_database_activity($fromexalibcategoryid, $toactivityda
     var_dump(count($items));
 
     foreach ($items as $item) {
-    		if(is_null($item->time_created)) $tcr="1262350852";
-    		else $tcr=$item->time_created;
-    		
-    		if(is_null($item->time_modified)) $tmf=$tcr;
-    		else $tmf=$item->time_modified;
-    		
         $newid = $DB->insert_record('data_records', array(
             'userid' => $item->userid ? $item->userid : $USER->id,
             'groupid' => 0,
             'dataid' => $dataid,
-            'timecreated' => $tcr,
-            'timemodified' => $tmf,
+            'timecreated' => $item->time_created,
+            'timemodified' => $item->time_modified,
             'approved' => 1,
         ));
 
