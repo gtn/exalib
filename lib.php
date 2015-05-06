@@ -525,13 +525,13 @@ class block_exalib_category_manager {
         FROM {exalib_category} category
         LEFT JOIN {exalib_item_category} ic ON (category.id=ic.category_id)
         LEFT JOIN {exalib_item} item ON item.id=ic.item_id ".
-        (IS_ADMIN_MODE ?
+        (BLOCK_EXALIB_IS_ADMIN_MODE ?
         '' : "AND (item.hidden=0 OR item.hidden IS NULL)
             AND (item.online_from=0 OR item.online_from IS NULL OR
                     (item.online_from <= ".time()." AND item.online_to >= ".time().")
                 )").
         " WHERE 1=1
-        ".(IS_ADMIN_MODE ? '' : "AND (category.hidden=0 OR category.hidden IS NULL)")."
+        ".(BLOCK_EXALIB_IS_ADMIN_MODE ? '' : "AND (category.hidden=0 OR category.hidden IS NULL)")."
         GROUP BY category.id
         ORDER BY name");
         self::$categoriesbyparent = array();

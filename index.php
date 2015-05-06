@@ -22,14 +22,14 @@
  * @author       Daniel Prieler <dprieler@gtn-solutions.com>
  */
 
-if (!defined('IS_ADMIN_MODE')) {
-    define('IS_ADMIN_MODE', 0);
+if (!defined('BLOCK_EXALIB_IS_ADMIN_MODE')) {
+    define('BLOCK_EXALIB_IS_ADMIN_MODE', 0);
 }
 
 require('inc.php');
 
 
-if (IS_ADMIN_MODE) {
+if (BLOCK_EXALIB_IS_ADMIN_MODE) {
     block_exalib_require_creator();
 } else {
     block_exalib_require_use();
@@ -60,7 +60,7 @@ $filterid = 0;
 
 /* $FILTER_CATEGORY = $DB->get_record("exalib_category", array('id' => $filterid));
  if ($FILTER_CATEGORY) $PAGE->navbar->add($FILTER_CATEGORY->name); */
-if (IS_ADMIN_MODE) {
+if (BLOCK_EXALIB_IS_ADMIN_MODE) {
     $PAGE->navbar->add(get_string('administration', 'block_exalib'), 'admin.php');
 }
 
@@ -69,7 +69,7 @@ $currentcategory = block_exalib_category_manager::getcategory($categoryid);
 $currentcategorysubids = $currentcategory ? $currentcategory->self_inc_all_sub_ids : array(-9999);
 $currentcategoryparents = block_exalib_category_manager::getcategoryparentids($categoryid);
 
-if (IS_ADMIN_MODE) {
+if (BLOCK_EXALIB_IS_ADMIN_MODE) {
     require('admin.actions.inc.php');
 }
 
@@ -80,7 +80,7 @@ $items = null;
 $pagingbar = null;
 $show = null;
 
-if (IS_ADMIN_MODE) {
+if (BLOCK_EXALIB_IS_ADMIN_MODE) {
     $sqlwhere = "";
 } else {
     $sqlwhere = "AND (item.hidden=0 OR item.hidden IS NULL)
@@ -301,7 +301,7 @@ endif;
 
 <?php
 
-if (IS_ADMIN_MODE && block_exalib_is_admin()) {
+if (BLOCK_EXALIB_IS_ADMIN_MODE && block_exalib_is_admin()) {
     echo '<a href="admin.php?show=categories">'.get_string('managecats', 'block_exalib').'</a>';
 }
 
@@ -309,7 +309,7 @@ echo '<div id="exalib-categories"><ul>';
 echo block_exalib_category_manager::walktree(function($cat, $suboutput) {
     global $urlcategory, $categoryid, $currentcategoryparents;
 
-    if (!IS_ADMIN_MODE && !$cat->cnt_inc_subs) {
+    if (!BLOCK_EXALIB_IS_ADMIN_MODE && !$cat->cnt_inc_subs) {
         // Hide empty categories.
         return;
     }
@@ -337,7 +337,7 @@ echo '</ul></div>';
 
 <?php
 
-if (IS_ADMIN_MODE) {
+if (BLOCK_EXALIB_IS_ADMIN_MODE) {
     ?><a href="<?php echo $urladd; ?>"><?php echo get_string('newentry', 'block_exalib')?></a><?php
 }
 
@@ -353,7 +353,7 @@ if (!$items) {
     if ($pagingbar) {
         echo $OUTPUT->render($pagingbar);
     };
-    print_items($items, IS_ADMIN_MODE);
+    print_items($items, BLOCK_EXALIB_IS_ADMIN_MODE);
     if ($pagingbar) {
         echo $OUTPUT->render($pagingbar);
     };

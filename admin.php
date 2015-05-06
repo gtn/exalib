@@ -21,6 +21,6 @@
  * @copyright  gtn gmbh <office@gtn-solutions.com>
  * @author       Daniel Prieler <dprieler@gtn-solutions.com>
  */
-define('IS_ADMIN_MODE', 1);
+define('BLOCK_EXALIB_IS_ADMIN_MODE', 1);
 
 require('index.php');
