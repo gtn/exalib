@@ -1,0 +1,1 @@
+<?php$plugins = array(    'exalib-main' => array(        'files' => array(            'exalib-1.0.0.js',        ),     ),    'easytree' => array(        'files' => array(            'jquery.easytree-1.0.1.js',        ),     ),);

@@ -192,9 +192,9 @@ if(!$items->valid())	$items=Array();
 $PAGE->requires->css('/blocks/exalib/css/library.css');
 $PAGE->requires->css('/blocks/exalib/css/skin-lion/ui.easytree.css');
 
-$PAGE->requires->js('/blocks/exalib/js/jquery.js', true);
-$PAGE->requires->js('/blocks/exalib/js/jquery.easytree.js', true);
-$PAGE->requires->js('/blocks/exalib/js/exalib.js', true);
+$PAGE->requires->jquery();
+$PAGE->requires->jquery_plugin('exalib-main', 'block_exalib');
+$PAGE->requires->jquery_plugin('easytree', 'block_exalib');
 
 echo $OUTPUT->header();
 
