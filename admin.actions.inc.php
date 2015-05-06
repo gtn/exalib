@@ -67,7 +67,7 @@ if ($show == 'category_delete') {
     $categoryid = required_param('category_id', PARAM_INT);
 
     if (data_submitted() && $confirm && confirm_sesskey()) {
-        $DB->delete_records('exalib_category', array(
+        $DB->delete_records('block_exalib_category', array(
             'id' => required_param('category_id', PARAM_INT)
         ));
         redirect('admin.php?show=categories');
@@ -97,7 +97,7 @@ if (($show == 'category_add') || ($show == 'category_edit')) {
             'parent_id' => required_param('parent_id', PARAM_INT)
         );
     } else {
-        $category = $DB->get_record('exalib_category', array('id' => required_param('category_id', PARAM_INT)));
+        $category = $DB->get_record('block_exalib_category', array('id' => required_param('category_id', PARAM_INT)));
     }
 
     require_once("$CFG->libdir/formslib.php");
@@ -158,10 +158,10 @@ if (($show == 'category_add') || ($show == 'category_edit')) {
 
         if (!empty($category->id)) {
             $fromform->id = $category->id;
-            $DB->update_record('exalib_category', $fromform);
+            $DB->update_record('block_exalib_category', $fromform);
         } else {
             try {
-                $fromform->id = $DB->insert_record('exalib_category', $fromform);
+                $fromform->id = $DB->insert_record('block_exalib_category', $fromform);
             } catch (Exception $e) {
                 var_dump($e); exit;
             }
@@ -186,15 +186,15 @@ if (($show == 'category_add') || ($show == 'category_edit')) {
 
 if ($show == 'delete') {
     $id = required_param('id', PARAM_INT);
-    $item = $DB->get_record('exalib_item', array('id' => $id));
+    $item = $DB->get_record('block_exalib_item', array('id' => $id));
 
     block_exalib_require_can_edit_item($item);
 
     $confirm = optional_param("confirm", "", PARAM_BOOL);
 
     if (data_submitted() && $confirm && confirm_sesskey()) {
-        $DB->delete_records('exalib_item', array('id' => $id));
-        $DB->delete_records('exalib_item_category', array("item_id" => $id));
+        $DB->delete_records('block_exalib_item', array('id' => $id));
+        $DB->delete_records('block_exalib_item_category', array("item_id" => $id));
         redirect('admin.php');
         exit;
     } else {
@@ -226,7 +226,7 @@ if ($show == 'edit' || $show == 'add') {
         block_exalib_require_creator();
     } else {
         $id = required_param('id', PARAM_INT);
-        $item = $DB->get_record('exalib_item', array('id' => $id));
+        $item = $DB->get_record('block_exalib_item', array('id' => $id));
 
         block_exalib_require_can_edit_item($item);
 
@@ -319,8 +319,8 @@ if ($show == 'edit' || $show == 'add') {
     }
 
     $itemcategories = $DB->get_records_sql_menu("SELECT category.id, category.id AS val
-    FROM {exalib_category} category
-    LEFT JOIN {exalib_item_category} ic ON category.id=ic.category_id
+    FROM {block_exalib_category} category
+    LEFT JOIN {block_exalib_item_category} ic ON category.id=ic.category_id
     WHERE ic.item_id=?", array($id));
 
     if (!$itemcategories && $categoryid) {
@@ -349,7 +349,7 @@ if ($show == 'edit' || $show == 'add') {
                 $fromform->created_by = $USER->id;
                 $fromform->time_created = time();
                 $fromform->time_modified = 0;
-                $fromform->id = $DB->insert_record('exalib_item', $fromform);
+                $fromform->id = $DB->insert_record('block_exalib_item', $fromform);
             } catch (Exception $e) {
                 var_dump($e); exit;
             }
@@ -363,7 +363,7 @@ if ($show == 'edit' || $show == 'add') {
             'block_exalib',
             'item_content',
             $fromform->id);
-        $DB->update_record('exalib_item', $fromform);
+        $DB->update_record('block_exalib_item', $fromform);
 
         // Save file.
         $fromform = file_postupdate_standard_filemanager($fromform,
@@ -383,9 +383,9 @@ if ($show == 'edit' || $show == 'add') {
 
         
         // Save categories.
-        $DB->delete_records('exalib_item_category', array("item_id" => $fromform->id));
+        $DB->delete_records('block_exalib_item_category', array("item_id" => $fromform->id));
         foreach ($categories_request as $tmp => $categoryidforinsert) {
-            $DB->execute('INSERT INTO {exalib_item_category} (item_id, category_id) VALUES (?, ?)',
+            $DB->execute('INSERT INTO {block_exalib_item_category} (item_id, category_id) VALUES (?, ?)',
                 array($fromform->id, $categoryidforinsert));
         }
 

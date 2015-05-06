@@ -58,7 +58,7 @@ $PAGE->set_heading(get_string('heading', 'block_exalib'));
 $categoryid = optional_param('category_id', '', PARAM_INT);
 $filterid = 0;
 
-/* $FILTER_CATEGORY = $DB->get_record("exalib_category", array('id' => $filterid));
+/* $FILTER_CATEGORY = $DB->get_record("block_exalib_category", array('id' => $filterid));
  if ($FILTER_CATEGORY) $PAGE->navbar->add($FILTER_CATEGORY->name); */
 if (BLOCK_EXALIB_IS_ADMIN_MODE) {
     $PAGE->navbar->add(get_string('administration', 'block_exalib'), 'admin.php');
@@ -100,16 +100,16 @@ if ($q = optional_param('q', '', PARAM_TEXT)) {
     $sqlparams = array();
 
     if ($currentcategory) {
-        $sqljoin .= " JOIN {exalib_item_category} ic
+        $sqljoin .= " JOIN {block_exalib_item_category} ic
             ON (ic.item_id = item.id AND ic.category_id IN (".join(',', $currentcategorysubids)."))";
     }
 
     foreach ($qparams as $i => $qparam) {
         $qparam = $DB->sql_like_escape($qparam);
         
-        $sqljoin .= " LEFT JOIN {exalib_item_category} ic$i ON item.id=ic$i.item_id";
-        $sqljoin .= " LEFT JOIN {exalib_category} c$i ON ic$i.category_id=c$i.id";
-        // $sqljoin .= " LEFT JOIN {exalib_item_category} ic$i ON item.id=ic$i.item_id AND ic$i.category_id=c$i";
+        $sqljoin .= " LEFT JOIN {block_exalib_item_category} ic$i ON item.id=ic$i.item_id";
+        $sqljoin .= " LEFT JOIN {block_exalib_category} c$i ON ic$i.category_id=c$i.id";
+        // $sqljoin .= " LEFT JOIN {block_exalib_item_category} ic$i ON item.id=ic$i.item_id AND ic$i.category_id=c$i";
         $sqlwhere .= " AND (item.link LIKE ? OR item.source LIKE ? OR item.file LIKE ? OR item.name LIKE ?
             OR item.authors LIKE ? OR item.content LIKE ? OR item.link_titel LIKE ? OR c$i.name LIKE ?) ";
         $sqlparams[] = "%$qparam%";
@@ -122,10 +122,10 @@ if ($q = optional_param('q', '', PARAM_TEXT)) {
         $sqlparams[] = "%$qparam%";
     }
 
-    // JOIN {exalib_item_category} AS ic ON item.id=ic.item_id AND ic.category_id=?
+    // JOIN {block_exalib_item_category} AS ic ON item.id=ic.item_id AND ic.category_id=?
 
     $sql = "SELECT COUNT(*) FROM (SELECT item.id
-    FROM {exalib_item} AS item
+    FROM {block_exalib_item} AS item
     $sqljoin
     WHERE 1=1 $sqlwhere
     GROUP BY item.id
@@ -135,7 +135,7 @@ if ($q = optional_param('q', '', PARAM_TEXT)) {
     $pagingbar = new paging_bar($count, $page, $perpage, $urlpage);
 
     $sql = "SELECT item.*
-    FROM {exalib_item} item
+    FROM {block_exalib_item} item
     $sqljoin
     WHERE 1=1 $sqlwhere
     GROUP BY item.id
@@ -146,13 +146,13 @@ if ($q = optional_param('q', '', PARAM_TEXT)) {
 } else if ($currentcategory) {
     $show = 'category';
 
-    $sqljoin = "    JOIN {exalib_item_category} ic ON (ic.item_id = item.id
+    $sqljoin = "    JOIN {block_exalib_item_category} ic ON (ic.item_id = item.id
         AND ic.category_id IN (".join(',', $currentcategorysubids)."))";
 
     $sql = "
         SELECT COUNT(DISTINCT item.id)
-        FROM {exalib_item} item
-        JOIN {exalib_item_category} ic ON (item.id=ic.item_id AND ic.category_id IN (".join(',', $currentcategorysubids)."))
+        FROM {block_exalib_item} item
+        JOIN {block_exalib_item_category} ic ON (item.id=ic.item_id AND ic.category_id IN (".join(',', $currentcategorysubids)."))
     ";
    
     $count = $DB->get_field_sql($sql);
@@ -161,8 +161,8 @@ if ($q = optional_param('q', '', PARAM_TEXT)) {
 
     $sql = "
         SELECT item.*
-        FROM {exalib_item} item
-        JOIN {exalib_item_category} ic ON (item.id=ic.item_id AND ic.category_id IN (".join(',', $currentcategorysubids)."))
+        FROM {block_exalib_item} item
+        JOIN {block_exalib_item_category} ic ON (item.id=ic.item_id AND ic.category_id IN (".join(',', $currentcategorysubids)."))
         WHERE 1=1 $sqlwhere
         GROUP BY item.id
         ORDER BY GREATEST(time_created,time_modified) DESC
@@ -175,7 +175,7 @@ if ($q = optional_param('q', '', PARAM_TEXT)) {
 
     $sql = "
         SELECT item.*
-        FROM {exalib_item} AS item
+        FROM {block_exalib_item} AS item
         WHERE 1=1 $sqlwhere
         GROUP BY item.id
         ORDER BY GREATEST(time_created,time_modified) DESC
@@ -199,7 +199,7 @@ $PAGE->requires->jquery_plugin('easytree', 'block_exalib');
 echo $OUTPUT->header();
 
 ?>
-<div class="exalib_lib">
+<div class="block_exalib_lib">
 
 <?php
 

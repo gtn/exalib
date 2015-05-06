@@ -26,7 +26,7 @@
  * get current lang
  * @return lang
  */
-function exalib_get_current_lang() {
+function block_exalib_get_current_lang() {
     global $SESSION, $USER, $CFG;
 
     if (!empty($SESSION->lang)) {
@@ -42,11 +42,11 @@ function exalib_get_current_lang() {
 }
 
 /**
- * exalib_t
+ * block_exalib_t
  * @param string $x 
  * @return string
  */
-function exalib_t($x) {
+function block_exalib_t($x) {
     $args = func_get_args();
     $languagestrings = array();
     $params = array();
@@ -63,7 +63,7 @@ function exalib_t($x) {
         }
     }
 
-    $lang = exalib_get_current_lang();
+    $lang = block_exalib_get_current_lang();
 
     if ($lang && isset($languagestrings[$lang])) {
         $string = $languagestrings[$lang];
@@ -265,7 +265,7 @@ function print_items($items, $admin=false) {
             echo '</div>';
         }
         if ($item->time_modified) {
-            echo '<div><span class="libary_author">'.exalib_t('en:Last Modified', 'de:Zulätzt geändert').':</span> '.
+            echo '<div><span class="libary_author">'.block_exalib_t('en:Last Modified', 'de:Zulätzt geändert').':</span> '.
                 userdate($item->time_modified);
             if ($item->modified_by && $tmpuser = $DB->get_record('user', array('id' => $item->modified_by))) {
                 echo ' '.get_string('by', 'block_exalib').' '.fullname($tmpuser);
@@ -477,20 +477,20 @@ class block_exalib_category_manager {
     public static function createdefaultcategories() {
         global $DB;
 
-        if ($DB->get_records('exalib_category', null, '', 'id', 0, 1)) {
+        if ($DB->get_records('block_exalib_category', null, '', 'id', 0, 1)) {
             return;
         }
 
-        $mainid = $DB->insert_record('exalib_category', array(
+        $mainid = $DB->insert_record('block_exalib_category', array(
             'parent_id' => 0,
             'name' => get_string('maincat', 'block_exalib')
         ));
-        $subid = $DB->insert_record('exalib_category', array(
+        $subid = $DB->insert_record('block_exalib_category', array(
             'parent_id' => $mainid,
             'name' => get_string('subcat', 'block_exalib')
         ));
 
-        $itemid = $DB->insert_record('exalib_item', array(
+        $itemid = $DB->insert_record('block_exalib_item', array(
             'resource_id' => '',
             'link' => '',
             'source' => '',
@@ -501,7 +501,7 @@ class block_exalib_category_manager {
             'name' => 'Test Entry'
         ));
 
-        $DB->insert_record('exalib_item_category', array(
+        $DB->insert_record('block_exalib_item_category', array(
             'item_id' => $itemid,
             'category_id' => $mainid
         ));
@@ -522,9 +522,9 @@ class block_exalib_category_manager {
         self::createdefaultcategories();
 
         self::$categories = $DB->get_records_sql("SELECT category.*, count(DISTINCT item.id) AS cnt
-        FROM {exalib_category} category
-        LEFT JOIN {exalib_item_category} ic ON (category.id=ic.category_id)
-        LEFT JOIN {exalib_item} item ON item.id=ic.item_id ".
+        FROM {block_exalib_category} category
+        LEFT JOIN {block_exalib_item_category} ic ON (category.id=ic.category_id)
+        LEFT JOIN {block_exalib_item} item ON item.id=ic.item_id ".
         (BLOCK_EXALIB_IS_ADMIN_MODE ?
         '' : "AND (item.hidden=0 OR item.hidden IS NULL)
             AND (item.online_from=0 OR item.online_from IS NULL OR

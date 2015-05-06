@@ -24,7 +24,7 @@
 require('inc.php');
 
 $itemid = required_param('itemid', PARAM_INT);
-if (!$item = $DB->get_record("exalib_item", array('id' => $itemid))) {
+if (!$item = $DB->get_record('block_exalib_item', array('id' => $itemid))) {
     print_error(get_string('itemnotfound', 'block_exalib'));
 }
 

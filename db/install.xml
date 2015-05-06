@@ -4,7 +4,7 @@
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
   <TABLES>
-    <TABLE NAME="exalib_category" COMMENT="exalib_category">
+    <TABLE NAME="block_exalib_category" COMMENT="block_exalib_category">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="20" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="parent_id" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false"/>
@@ -15,7 +15,7 @@
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
       </KEYS>
     </TABLE>
-    <TABLE NAME="exalib_item_category" COMMENT="exalib_item_category">
+    <TABLE NAME="block_exalib_item_category" COMMENT="block_exalib_item_category">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="20" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="item_id" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false"/>
@@ -25,7 +25,7 @@
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
       </KEYS>
     </TABLE>
-    <TABLE NAME="exalib_item" COMMENT="exalib_item">
+    <TABLE NAME="block_exalib_item" COMMENT="block_exalib_item">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="20" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="resource_id" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false"/>

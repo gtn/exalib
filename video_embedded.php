@@ -26,7 +26,7 @@ require('inc.php');
 block_exalib_require_view();
 
 if ($itemid = optional_param('itemid', 0, PARAM_INT)) {
-    if (!$item = $DB->get_record("exalib_item", array('id' => $itemid))) {
+    if (!$item = $DB->get_record('block_exalib_item', array('id' => $itemid))) {
         print_error(get_string('itemnotfound', 'block_exalib'));
     }
 
