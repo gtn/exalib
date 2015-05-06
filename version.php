@@ -25,8 +25,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2015033103;      // The current module version (Date: YYYYMMDDXX)
-$plugin->requires  = 2013111801;    // Requires this Moodle version
+$plugin->version   = 2015050601;      // The current module version (Date: YYYYMMDDXX)
+$plugin->requires  = 2014051200;    // Requires this Moodle version
 $plugin->component = 'block_exalib'; // Full name of the plugin (used for diagnostics).
-$plugin->maturity = MATURITY_RC; // MATURITY_STABLE.
+$plugin->maturity = MATURITY_STABLE; // MATURITY_STABLE.
 $plugin->release = 'v2.6-r1';

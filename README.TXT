@@ -3,7 +3,7 @@ exalib
 GTN-Solutions
 
 This plugin is a simple library where uploads of documents and other resources can be done course-independently by admin available to everyone.
-This block is fore Moodle 2.7+ versions, it will not work for versions below 2012061700
+This block is for Moodle 2.7+ versions, it will not work for versions below 2014051200
 
 
 * exalib - Bugs, Feature Requests, and Improvements *
