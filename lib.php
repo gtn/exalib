@@ -21,7 +21,6 @@
  * @copyright  gtn gmbh <office@gtn-solutions.com>
  * @author       Daniel Prieler <dprieler@gtn-solutions.com>
  */
-define('FILESYSTEMREPO_ID', 9);
 
 /**
  * get current lang
@@ -224,10 +223,6 @@ function print_items($items, $admin=false) {
         } else if ($item->link) {
             if (strpos($item->link, 'rtmp://') === 0) {
                 $linkurl = 'detail.php?itemid='.$item->id;
-            } else if (strpos($item->link, 'filesystemrepo://') === 0) {
-                $linkurl = 'file.php?itemid='.$item->id;
-                $linktext = get_string('download', 'block_exalib');
-                $targetnewwindow = true;
             } else {
                 $linkurl = $item->link;
                 $linktext = trim($item->link_titel) ? $item->link_titel : $item->link;
@@ -348,37 +343,6 @@ function block_exalib_print_jwplayer($options) {
         }
     </script>
     <?php
-}
-
-/**
- * send stored file
- * @param integer $itemid 
- * @return nothing
- */
-function block_exalib_send_stored_file($itemid) {
-    global $DB, $CFG;
-
-    $item = $DB->get_record('exalib_item', array('id' => $itemid));
-    if (!$item) {
-        send_file_not_found();
-        die('file not found');
-    }
-
-    if (preg_match('!^filesystemrepo://(.*)$!', $item->link, $matches)) {
-        require_once($CFG->dirroot . '/repository/lib.php');
-
-        $repo = repository::get_repository_by_id(FILESYSTEMREPO_ID, SYSCONTEXTID);
-        $file = $repo->get_file(urldecode(trim($matches[1])));
-        if (!$file || !file_exists($file['path'])) {
-            send_file_not_found();
-            return;
-        }
-
-        send_file($file['path'], basename($file['path']));
-    } else {
-        send_file_not_found();
-        die('file not found #2');
-    }
 }
 
 /**
