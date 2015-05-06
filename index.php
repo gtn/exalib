@@ -105,6 +105,8 @@ if ($q = optional_param('q', '', PARAM_TEXT)) {
     }
 
     foreach ($qparams as $i => $qparam) {
+        $qparam = $DB->sql_like_escape($qparam);
+        
         $sqljoin .= " LEFT JOIN {exalib_item_category} ic$i ON item.id=ic$i.item_id";
         $sqljoin .= " LEFT JOIN {exalib_category} c$i ON ic$i.category_id=c$i.id";
         // $sqljoin .= " LEFT JOIN {exalib_item_category} ic$i ON item.id=ic$i.item_id AND ic$i.category_id=c$i";
