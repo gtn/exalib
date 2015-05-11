@@ -22,7 +22,11 @@
  * @author       Daniel Prieler <dprieler@gtn-solutions.com>
  */
 
-require('../inc.php');
+if (file_exists('../inc.php')) {
+    require('../inc.php');
+} else {
+    require('../../exalib/inc.php');
+}
 
 block_exalib_require_admin();
 define('IS_ADMIN_MODE', true);
@@ -57,16 +61,8 @@ function exalib_export_to_database_activity($fromexalibcategoryid, $toactivityda
     if (empty($fields)) {
         die('no fields');
     }
+    $GLOBALS['latein_fields'] = array_change_key_case($fields, CASE_LOWER);
 
-    if (!empty($fields['Gruppe'])) {
-        $fcc = 1; // Ok.
-    } else if (isset($fields['Schulstufe'])) {
-        $fields['Gruppe'] = $fields['Schulstufe'];
-    } else if (isset($fields['Modul'])) {
-        $fields['Gruppe'] = $fields['Modul'];
-    } else {
-        die('no gruppe field');
-    }
 
     // Delete old data.
     if (@!$_GET['skip_delete']) {
@@ -90,6 +86,31 @@ function exalib_export_to_database_activity($fromexalibcategoryid, $toactivityda
         -- LIMIT 10
     ");
 
+    function block_exalib_latein_has_field($name) {
+        $fields = $GLOBALS['latein_fields'];
+        $name = strtolower($name);
+        
+        if (isset($fields[$name])) {
+            return $fields[$name];
+        } elseif ($name == 'gruppe') {
+            if (isset($fields['schulstufe'])) {
+                return $fields['schulstufe'];
+            } else if (isset($fields['modul'])) {
+                return $fields['modul'];
+            }
+        }
+        
+        return null;
+    }
+    
+    function block_exalib_latein_get_field($name) {
+        if ($id = block_exalib_latein_has_field($name)) {
+            return $id;
+        } else {
+            die('field not found: '.$name);
+        }
+    }
+
     var_dump(count($items));
 
     foreach ($items as $item) {
@@ -103,30 +124,38 @@ function exalib_export_to_database_activity($fromexalibcategoryid, $toactivityda
         ));
 
         $DB->insert_record('data_content', array(
-            'fieldid' => $fields['Titel'],
+            'fieldid' => block_exalib_latein_get_field('Titel'),
             'recordid' => $newid,
             'content' => $item->name,
         ));
         $DB->insert_record('data_content', array(
-            'fieldid' => $fields['Beschreibung'],
+            'fieldid' => block_exalib_latein_get_field('Beschreibung'),
             'recordid' => $newid,
             'content' => $item->content,
         ));
         $DB->insert_record('data_content', array(
-            'fieldid' => $fields['erstellt am'],
+            'fieldid' => block_exalib_latein_get_field('erstellt am'),
             'recordid' => $newid,
             'content' => $item->time_created,
         ));
         $DB->insert_record('data_content', array(
-            'fieldid' => $fields['Autor'],
+            'fieldid' => block_exalib_latein_get_field('Autor'),
             'recordid' => $newid,
             'content' => $item->authors,
         ));
         $DB->insert_record('data_content', array(
-            'fieldid' => $fields['Gruppe'],
+            'fieldid' => block_exalib_latein_get_field('Gruppe'),
             'recordid' => $newid,
             'content' => $item->category,
         ));
+        
+        if (block_exalib_latein_has_field('Link')) {
+            $DB->insert_record('data_content', array(
+                'fieldid' => block_exalib_latein_get_field('Link'),
+                'recordid' => $newid,
+                'content' => $item->link,
+            ));
+        }
 
         $areafiles = $fs->get_area_files(context_system::instance()->id,
             'block_exalib',
@@ -138,14 +167,14 @@ function exalib_export_to_database_activity($fromexalibcategoryid, $toactivityda
         $file = reset($areafiles);
         if (!$file) {
             $DB->insert_record('data_content', array(
-                'fieldid' => $fields['Datei'],
+                'fieldid' => block_exalib_latein_get_field('Datei'),
                 'recordid' => $newid,
                 'content' => null,
             ));
         } else {
             var_dump($item->name);
             $newfileid = $DB->insert_record('data_content', array(
-                'fieldid' => $fields['Datei'],
+                'fieldid' => block_exalib_latein_get_field('Datei'),
                 'recordid' => $newid,
                 'content' => $file->get_filename(),
             ));
@@ -170,7 +199,7 @@ function exalib_export_to_database_activity($fromexalibcategoryid, $toactivityda
     $categories = array_unique($categories);
     asort($categories);
     $DB->update_record('data_fields', array(
-        'id' => $fields['Gruppe'],
+        'id' => block_exalib_latein_get_field('Gruppe'),
         'param1' => join("\n", $categories)
     ));
 }
