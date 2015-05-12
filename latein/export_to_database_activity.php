@@ -29,7 +29,8 @@ if (file_exists('../inc.php')) {
 }
 
 block_exalib_require_admin();
-define('IS_ADMIN_MODE', true);
+define('BLOCK_EXALIB_IS_ADMIN_MODE', true);
+
 
 
 /**
@@ -41,6 +42,9 @@ define('IS_ADMIN_MODE', true);
 function exalib_export_to_database_activity($fromexalibcategoryid, $toactivitydataid) {
     global $DB, $USER;
 
+    $dbman = $DB->get_manager();
+    $tablePrefix = $dbman->table_exists(new xmldb_table('block_exalib_item')) ? 'block_exalib_' : 'exalib_';
+    
     $fs = get_file_storage();
     $dataid = $toactivitydataid;
 
@@ -74,11 +78,11 @@ function exalib_export_to_database_activity($fromexalibcategoryid, $toactivityda
         WHERE component='mod_data' AND filearea='content' AND itemid IN ()"); */
 
     $items = $DB->get_records_sql("
-        SELECT item.*, c.name AS category, u.id AS userid FROM {exalib_item} item
+        SELECT item.*, c.name AS category, u.id AS userid FROM {{$tablePrefix}item} item
         LEFT JOIN {user} u ON u.id = item.created_by
-        JOIN {exalib_item_category} ic
+        JOIN {{$tablePrefix}item_category} ic
             ON (item.id=ic.item_id AND ic.category_id IN (".join(',', $category->self_inc_all_sub_ids)."))
-        JOIN {exalib_category} c ON ic.category_id=c.id
+        JOIN {{$tablePrefix}category} c ON ic.category_id=c.id
 
         -- WHERE item.name LIKE '%politische%'
         GROUP BY item.id
