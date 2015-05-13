@@ -17,6 +17,9 @@ if ($importlatein == '2') {
 if ($importlatein == '3') {
 	block_exalib_importlatein3();
 }
+if ($importlatein == '4') {
+	block_exalib_importlatein4();
+}
 
 die('done');
 
@@ -458,6 +461,36 @@ function block_exalib_importlatein() {
 
     $transaction->allow_commit();
 }
+
+function block_exalib_importlatein4() {
+    global $DB, $CFG;
+    echo "News Urls Update<br />\n";
+
+    /* bei den news wurde die url nicht mitübernommen, noch dazuschreiben */
+    $news = $DB->get_records_sql("Select n.id,CONVERT (n.titel USING utf8) as name,n.url FROM community_news as n WHERE url !='' ORDER BY titel ASC");
+    foreach ($news as $new) {
+    	$titel=str_replace('"',"'",$new->name);
+    	$titel=str_replace('?',"",$titel);
+
+    	$sql = 'SELECT i.* FROM {exalib_item} i WHERE i.name like "'.$titel.'" AND (i.link IS NULL OR i.link="") ORDER BY name';
+    	echo $sql."<br>";
+    	
+    	if ($items = $DB->get_records_sql($sql)){
+    		//echo "drinnen";
+	    	//$items = $DB->get_records('exalib_item',array('name'=>$new->titel));
+	    	foreach ($items as $item){
+	    		echo "<br>Itemid: ".$item->id." -- newsid: ".$new->id." news url: ".$new->url;
+	    		$data = new stdClass();
+	    		$data->id=$item->id;
+	    		$data->link=$new->url;
+	    		$DB->update_record('exalib_item', $data);
+	    	}
+	    	
+	    }
+
+    }
+}
+
 
 /**
  * block exalib invert hidden
