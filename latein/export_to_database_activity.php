@@ -122,8 +122,8 @@ function exalib_export_to_database_activity($fromexalibcategoryid, $toactivityda
             'userid' => $item->userid ? $item->userid : $USER->id,
             'groupid' => 0,
             'dataid' => $dataid,
-            'timecreated' => $item->time_created,
-            'timemodified' => $item->time_modified,
+            'timecreated' => $item->time_created ? $item->time_created : 0,
+            'timemodified' => $item->time_modified ? $item->time_modified : 0,
             'approved' => 1,
         ));
 
@@ -140,7 +140,7 @@ function exalib_export_to_database_activity($fromexalibcategoryid, $toactivityda
         $DB->insert_record('data_content', array(
             'fieldid' => block_exalib_latein_get_field('erstellt am'),
             'recordid' => $newid,
-            'content' => $item->time_created,
+            'content' => $item->time_created ? $item->time_created : 0,
         ));
         $DB->insert_record('data_content', array(
             'fieldid' => block_exalib_latein_get_field('Autor'),
