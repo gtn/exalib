@@ -360,20 +360,37 @@ function block_exalib_pluginfile($course, $cm, $context, $filearea, $args, $forc
     block_exalib_require_open();
 
     $fs = get_file_storage();
-    $areafiles = $fs->get_area_files(get_context_instance(CONTEXT_SYSTEM)->id,
-        'block_exalib',
-        'item_file',
-        $args[0],
-        'itemid',
-        '',
-        false);
-    $file = reset($areafiles);
+
+    $file = null;
+
+    if (isset($options['preview']) && $options['preview'] == 'thumb') {
+        // first try to get thumbnail
+        $areafiles = $fs->get_area_files(context_system::instance()->id,
+            'block_exalib',
+            'preview_image',
+            $args[0],
+            'itemid',
+            '',
+            false);
+        $file = reset($areafiles);
+    }
+
+    if (!$file) {
+        // get actual file
+        $areafiles = $fs->get_area_files(context_system::instance()->id,
+            'block_exalib',
+            'item_file',
+            $args[0],
+            'itemid',
+            '',
+            false);
+        $file = reset($areafiles);
+    }
 
     if (!$file) {
         send_file_not_found();
     }
 
-    session_get_instance()->write_close(); // Unlock session during fileserving.
     send_stored_file($file, 0, 0, $forcedownload, $options);
 }
 
