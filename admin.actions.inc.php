@@ -1,26 +1,22 @@
 <?php
-// This file is part of Moodle - http://moodle.org/
+// This file is part of Exabis Library
 //
-// Moodle is free software: you can redistribute it and/or modify
+// (c) 2016 GTN - Global Training Network GmbH <office@gtn-solutions.com>
+//
+// Exabis Library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// Moodle is distributed in the hope that it will be useful,
+// This script is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
-// You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+// You can find the GNU General Public License at <http://www.gnu.org/licenses/>.
+//
+// This copyright notice MUST APPEAR in all copies of the script!
 
-/**
- * admin.actions.inc.php
- * @package    block_exalib
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @copyright  gtn gmbh <office@gtn-solutions.com>
- * @author       Daniel Prieler <dprieler@gtn-solutions.com>
- */
 require_once($CFG->libdir.'/formslib.php');
 require_once($CFG->libdir.'/filelib.php');
 
@@ -409,4 +405,3 @@ if ($show == 'edit' || $show == 'add') {
 
     exit;
 }
-
