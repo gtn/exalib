@@ -278,8 +278,8 @@ function print_items($items, $admin=false) {
         }
         if ($admin && block_exalib_can_edit_item($item)) {
             echo '<span class="library-item-buttons">';
-            echo '<a href="admin.php?show=edit&id='.$item->id.'">'.get_string('edit', 'block_exalib').'</a>';
-            echo ' | <a href="admin.php?show=delete&id='.$item->id.'"">'.get_string('delete', 'block_exalib').'</a>';
+            echo '<input type="button" href="admin.php?show=edit&id='.$item->id.'" value="'.get_string('edit', 'block_exalib').'" onclick="document.location.href=this.getAttribute(\'href\');" />';
+            echo '<input type="button" href="admin.php?show=delete&id='.$item->id.'" value="'.get_string('delete', 'block_exalib').'" onclick="document.location.href=this.getAttribute(\'href\');" />';
             echo '</span>';
         }
 

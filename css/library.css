@@ -1,5 +1,6 @@
 .library-item {
 	display: block;
+	position: relative;
 	border: 1px solid white;
 	padding: 5px 10px;
 	margin: 5px 0;
@@ -11,6 +12,9 @@
     box-shadow: 0 1px 0 #FFFFFF inset;
 }
 .library-item-buttons {
+	position: absolute;
+	top: 5px;
+	right: 5px;
 	display: none;
 }
 .library-item:hover .library-item-buttons {

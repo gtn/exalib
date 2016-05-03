@@ -299,7 +299,7 @@ endif;
 <?php
 
 if (BLOCK_EXALIB_IS_ADMIN_MODE && block_exalib_is_admin()) {
-    echo '<a href="admin.php?show=categories">'.get_string('managecats', 'block_exalib').'</a>';
+    echo '<input type="button" href="admin.php?show=categories" value="'.get_string('managecats', 'block_exalib').'" onclick="document.location.href=this.getAttribute(\'href\');" />';
 }
 
 echo '<div id="exalib-categories"><ul>';
@@ -335,7 +335,7 @@ echo '</ul></div>';
 <?php
 
 if (BLOCK_EXALIB_IS_ADMIN_MODE) {
-    ?><a href="<?php echo $urladd; ?>"><?php echo get_string('newentry', 'block_exalib')?></a><?php
+    ?><input type="button" href="<?php echo $urladd; ?>" onclick="document.location.href=this.getAttribute('href');" value="<?php echo get_string('newentry', 'block_exalib')?>" /><?php
 }
 
 if ($show == 'latest_changes') {
