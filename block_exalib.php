@@ -17,7 +17,7 @@
 //
 // This copyright notice MUST APPEAR in all copies of the script!
 
-require_once(__DIR__.'/lib.php');
+require __DIR__.'/inc.php';
 
 class block_exalib extends block_list {
 
@@ -51,7 +51,7 @@ class block_exalib extends block_list {
 	 * @return content
 	 */
 	public function get_content() {
-		global $CFG, $COURSE, $OUTPUT;
+		global $CFG, $COURSE;
 
 		$context = context_system::instance();
 
@@ -76,14 +76,14 @@ class block_exalib extends block_list {
 		$this->content->icons = array();
 		$this->content->footer = '';
 
-		$icon = '<img src="'.$OUTPUT->pix_url('module_search', 'block_exalib').'" class="icon" alt="" />';
+		$icon = '<img src="'.block_exalib_get_renderer()->pix_url('module_search', 'block_exalib').'" class="icon" alt="" />';
 		$this->content->items[] = '<a title="'.get_string('heading', 'block_exalib').'"
             href="'.$CFG->wwwroot.'/blocks/exalib/index.php?courseid='.$COURSE->id.'">'.$icon.
 			get_string('heading', 'block_exalib').
 			'</a>';
 
 		if (block_exalib_is_creator()) {
-			$icon = '<img src="'.$OUTPUT->pix_url('module_config', 'block_exalib').'" class="icon" alt="" />';
+			$icon = '<img src="'.block_exalib_get_renderer()->pix_url('module_config', 'block_exalib').'" class="icon" alt="" />';
 			$this->content->items[] = '<a title="'.get_string('managecontent', 'block_exalib').'"
                 href="'.$CFG->wwwroot.'/blocks/exalib/admin.php?courseid='.$COURSE->id.'">'.$icon.
 				get_string('managecontent', 'block_exalib').'</a>';

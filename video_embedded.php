@@ -17,7 +17,7 @@
 //
 // This copyright notice MUST APPEAR in all copies of the script!
 
-require('inc.php');
+require __DIR__.'/inc.php';
 
 block_exalib_require_view();
 
@@ -40,14 +40,13 @@ $PAGE->set_url('/blocks/exalib');
 $PAGE->set_context(context_system::instance());
 $PAGE->set_pagelayout('embedded');
 
-$PAGE->set_heading(get_string('heading', 'block_exalib'));
-
 $width = optional_param('width', 'auto', PARAM_TEXT);
 $height = optional_param('height', $width > 0 ? $width / 610 * 510 : 'auto', PARAM_TEXT);
 
 /* <script type="text/javascript">jwplayer.key="YOUR_JWPLAYER_LICENSE_KEY";</script> */
 
-echo $OUTPUT->header();
+$output = block_exalib_get_renderer();
+echo $output->header();
 
 ?>
 <script type="text/javascript" src="jwplayer/jwplayer.js"></script>
@@ -71,4 +70,4 @@ html, body {
         'autostart' => optional_param('autostart', 0, PARAM_INT)
     ));
 
-echo $OUTPUT->footer();
+echo $output->footer();

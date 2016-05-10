@@ -17,7 +17,7 @@
 //
 // This copyright notice MUST APPEAR in all copies of the script!
 
-require('inc.php');
+require __DIR__.'/inc.php';
 
 $itemid = required_param('itemid', PARAM_INT);
 if (!$item = $DB->get_record('block_exalib_item', array('id' => $itemid))) {
@@ -34,9 +34,9 @@ $PAGE->set_url('/blocks/exalib');
 $PAGE->set_context(context_system::instance());
 $PAGE->set_pagelayout('login');
 
-$PAGE->set_heading(get_string('heading', 'block_exalib'));
+$output = block_exalib_get_renderer();
 
-echo $OUTPUT->header();
+echo $output->header();
 
 /* <script type="text/javascript">jwplayer.key="YOUR_JWPLAYER_LICENSE_KEY";</script> */
 
@@ -130,4 +130,4 @@ if ($item->content) {
 <a class="exalib-blue-cat-lib" href="javascript:history.back();"><?php echo get_string('back', 'block_exalib')?></a>
 </div>
 <?php
-echo $OUTPUT->footer();
+echo $output->footer();

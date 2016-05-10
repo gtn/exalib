@@ -19,4 +19,4 @@
 
 define('BLOCK_EXALIB_IS_ADMIN_MODE', 1);
 
-require('index.php');
+require __DIR__.'/index.php';

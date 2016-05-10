@@ -23,12 +23,14 @@ require_once($CFG->libdir.'/filelib.php');
 $show = optional_param('show', '', PARAM_TEXT);
 $categories_request =  optional_param_array('CATEGORIES', null, PARAM_INT);
 
+$output = block_exalib_get_renderer();
+
 if ($show == 'categories') {
     block_exalib_require_admin();
 
     $PAGE->navbar->add('Categories');
 
-    echo $OUTPUT->header();
+    echo $output->header();
 
     echo '<div><a href="admin.php?show=category_add&parent_id=0">'.get_string('addmaincat', 'block_exalib').'</a></div>';
 
@@ -52,7 +54,7 @@ if ($show == 'categories') {
         echo '</div>';
     });
 
-    echo $OUTPUT->footer();
+    echo $output->footer();
     exit;
 }
 
@@ -72,14 +74,14 @@ if ($show == 'category_delete') {
         $optionsyes = array('category_id' => $categoryid, 'show' => 'category_delete', 'confirm' => 1, 'sesskey' => sesskey());
         $optionsno = array();
 
-        echo $OUTPUT->header();
+        echo $output->header();
 
         echo '<br />';
-        echo $OUTPUT->confirm(get_string('deletecat', 'block_exalib').block_exalib_category_manager::getcategory($categoryid)->name.get_string('deletecat2', 'block_exalib'),
+        echo $output->confirm(get_string('deletecat', 'block_exalib').block_exalib_category_manager::getcategory($categoryid)->name.get_string('deletecat2', 'block_exalib'),
             new moodle_url('admin.php', $optionsyes),
             new moodle_url('admin.php', $optionsno));
 
-        echo $OUTPUT->footer();
+        echo $output->footer();
         exit;
     }
     exit;
@@ -169,12 +171,12 @@ if (($show == 'category_add') || ($show == 'category_edit')) {
     } else {
         // Display form.
 
-        echo $OUTPUT->header();
+        echo $output->header();
 
         $categoryeditform->set_data($category);
         $categoryeditform->display();
 
-        echo $OUTPUT->footer();
+        echo $output->footer();
     }
 
     exit;
@@ -197,14 +199,14 @@ if ($show == 'delete') {
         $optionsyes = array('id' => $id, 'show' => 'delete', 'confirm' => 1, 'sesskey' => sesskey());
         $optionsno = array();
 
-        echo $OUTPUT->header();
+        echo $output->header();
 
         echo '<br />';
-        echo $OUTPUT->confirm('delete '.$item->name.'?',
+        echo $output->confirm('delete '.$item->name.'?',
             new moodle_url('admin.php', $optionsyes),
             new moodle_url('admin.php', $optionsno));
 
-        echo $OUTPUT->footer();
+        echo $output->footer();
         exit;
     }
 }
@@ -395,12 +397,12 @@ if ($show == 'edit' || $show == 'add') {
     } else {
         // Display form.
 
-        echo $OUTPUT->header();
+        echo $output->header();
 
         $itemeditform->set_data($item);
         $itemeditform->display();
 
-        echo $OUTPUT->footer();
+        echo $output->footer();
     }
 
     exit;

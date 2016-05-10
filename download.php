@@ -17,7 +17,7 @@
 //
 // This copyright notice MUST APPEAR in all copies of the script!
 
-require_once('lib.php');
+require __DIR__.'/inc.php';
 block_exalib_require_open();
 
 $file = $_REQUEST['file'];

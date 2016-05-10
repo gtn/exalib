@@ -19,7 +19,6 @@
 
 $string['pluginname'] = 'Exabis Bibliothek';
 $string['heading'] = 'Exabis Bibliothek';
-
 $string['exalib:use'] = 'Exalib verwenden: Betrachten & Suchen';
 $string['exalib:open'] = 'Dateien öffnen innerhalb von Exalib';
 $string['exalib:creator'] = 'Inhalt erstellen und eigenen Inhalt verwalten';
@@ -28,7 +27,7 @@ $string['block/exalib:open'] = 'Einträge und Dateien öffnen';
 $string['exalib:addinstance'] = 'Exalib Instanz zu Kurs hinzufügen';
 
 
-//admin-actions-inc
+// admin-actions-inc
 $string['edit_content'] = 'Bibliothekinhalt verwalten';
 $string['edit'] = 'Bearbeiten';
 $string['delete'] = 'Löschen';
@@ -53,7 +52,7 @@ $string['deletecat'] = 'Kategorie ';
 $string['deletecat2'] = ' wirklich löschen?';
 
 
-//adv-search
+// adv-search
 $string['welcome'] = 'Willkommen in der Exabis Bibliothek!';
 $string['all'] = 'Alle';
 $string['abstracts'] = 'Abstracts';
@@ -70,11 +69,11 @@ $string['applyfilter'] = 'Filter anwenden';
 $string['noitemsfound'] = 'Keine Einträge gefunden';
 
 
-//block_exalib
+// block_exalib
 $string['managecontent'] = 'Inhalte bearbeiten';
 
 
-//detail
+// detail
 $string['itemnotfound'] = 'Eintrag nicht gefunden';
 $string['background'] = 'Hintergrund';
 $string['methods'] = 'Methoden';
@@ -83,7 +82,7 @@ $string['conclusion'] = 'Schlussfolgerung';
 $string['back'] = 'zurück';
 
 
-//index
+// index
 $string['administration'] = 'Administration';
 $string['inthiscat'] = 'In dieser Kategorie';
 $string['wholelib'] = 'Ganze Bibliothek';
@@ -91,13 +90,14 @@ $string['managecats'] = 'Kategorien verwalten';
 $string['latest'] = 'Letzte Änderungen';
 $string['newentry'] = 'Neuen Eintrag hinzufügen';
 
-//lib
+
+// lib
 $string['notallowed'] = 'Du bist nicht berechtigt den Bibliotheksinhalt anzusehen.';
 $string['nocreator'] = 'Du kannst keinen Bibliotheksinhalt erstellen';
 $string['noadmin'] = 'Du bist kein Exalib Admin';
 $string['noedit'] = 'Du bist nicht berechtigt diesen Eintrag zu editieren';
 $string['download'] = 'Download';
 $string['created'] = 'Erstellt';
-$string['by'] = 'von';
+$string['by_person'] = 'von {$a}';
 $string['maincat'] = 'Hauptkategorie';
 $string['subcat'] = 'Subkategorie';

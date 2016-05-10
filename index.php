@@ -21,7 +21,7 @@ if (!defined('BLOCK_EXALIB_IS_ADMIN_MODE')) {
     define('BLOCK_EXALIB_IS_ADMIN_MODE', 0);
 }
 
-require('inc.php');
+require __DIR__.'/inc.php';
 
 
 if (BLOCK_EXALIB_IS_ADMIN_MODE) {
@@ -44,8 +44,6 @@ $PAGE->set_url($urlpage);
 $PAGE->set_context(context_system::instance());
 /* ...For code checker... $PAGE->set_pagelayout('login'); */
 $PAGE->navbar->add(get_string('heading', 'block_exalib'), $urloverview);
-
-$PAGE->set_heading(get_string('heading', 'block_exalib'));
 
 // $topGroups = array(11 => 'Abstracts', 12 => 'Documents', 13 => 'Images', 14 => 'Podcasts', 15 => 'Webcasts');
 
@@ -191,7 +189,9 @@ $PAGE->requires->jquery();
 $PAGE->requires->jquery_plugin('exalib-main', 'block_exalib');
 $PAGE->requires->jquery_plugin('easytree', 'block_exalib');
 
-echo $OUTPUT->header();
+$output = block_exalib_get_renderer();
+
+echo $output->header('library');
 
 ?>
 <div class="block_exalib_lib">
@@ -256,18 +256,18 @@ if (false && !$filterid) {
             echo get_string('noitemsfound', 'block_exalib');
         } else {
             if ($pagingbar) {
-                echo $OUTPUT->render($pagingbar);
+                echo $output->render($pagingbar);
             };
             print_items($items);
             if ($pagingbar) {
-                echo $OUTPUT->render($pagingbar);
+                echo $output->render($pagingbar);
             };
         }
     }
 ?>
         </div>
         <?php
-        echo $OUTPUT->footer();
+        echo $output->footer();
         exit;
 }
 ?>
@@ -297,10 +297,6 @@ endif;
 </form>
 
 <?php
-
-if (BLOCK_EXALIB_IS_ADMIN_MODE && block_exalib_is_admin()) {
-    echo '<input type="button" href="admin.php?show=categories" value="'.get_string('managecats', 'block_exalib').'" onclick="document.location.href=this.getAttribute(\'href\');" />';
-}
 
 echo '<div id="exalib-categories"><ul>';
 echo block_exalib_category_manager::walktree(function($cat, $suboutput) {
@@ -348,11 +344,11 @@ if (!$items) {
     echo get_string('noitemsfound', 'block_exalib');
 } else {
     if ($pagingbar) {
-        echo $OUTPUT->render($pagingbar);
+        echo $output->render($pagingbar);
     };
     print_items($items, BLOCK_EXALIB_IS_ADMIN_MODE);
     if ($pagingbar) {
-        echo $OUTPUT->render($pagingbar);
+        echo $output->render($pagingbar);
     };
 }
 
@@ -360,4 +356,4 @@ if (!$items) {
 </div>
 </div>
 <?php
-echo $OUTPUT->footer();
+echo $output->footer();
