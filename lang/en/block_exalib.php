@@ -19,7 +19,6 @@
 
 $string['pluginname'] = 'Exabis Library';
 $string['heading'] = 'Exabis Library';
-
 $string['exalib:use'] = 'Use Exalib: Viewing and Searching';
 $string['exalib:open'] = 'Open Files in Exalib';
 $string['exalib:creator'] = 'Create Content and manage own Content';
@@ -28,7 +27,12 @@ $string['block/exalib:open'] = 'Open Items and Files';
 $string['exalib:addinstance'] = 'Add Instance to Course';
 
 
-//admin-actions-inc
+// tabs
+$string['tab_managecontent'] = 'Manage Library Content';
+$string['tab_managecats'] = 'Manage Categories';
+
+
+// admin-actions-inc
 $string['edit_content'] = 'Manage Library Content';
 $string['edit'] = 'edit';
 $string['delete'] = 'delete';
@@ -53,7 +57,7 @@ $string['deletecat'] = 'Delete category ';
 $string['deletecat2'] = '?';
 
 
-//adv_search
+// adv-search
 $string['welcome'] = 'Welcome to Exabis Library';
 $string['all'] = 'All';
 $string['abstracts'] = 'Abstracts';
@@ -70,11 +74,7 @@ $string['applyfilter'] = 'Apply Filter';
 $string['noitemsfound'] = 'No items found';
 
 
-//block_exalib
-$string['managecontent'] = 'Manage Library Content';
-
-
-//detail
+// detail
 $string['itemnotfound'] = 'item not found';
 $string['background'] = 'Background';
 $string['methods'] = 'Methods';
@@ -83,22 +83,21 @@ $string['conclusion'] = 'Conclusion';
 $string['back'] = 'back';
 
 
-//index
+// index
 $string['administration'] = 'Administration';
 $string['inthiscat'] = 'In this Category';
 $string['wholelib'] = 'Whole Library';
-$string['managecats'] = 'Manage Categories';
 $string['latest'] = 'Latest Changes';
 $string['newentry'] = 'Add new Entry';
 
 
-//lib
+// lib
 $string['notallowed'] = 'You are no allowed to view Library Content';
 $string['nocreator'] = 'You are no Exalib Creator';
 $string['noadmin'] = 'You are no Exalib Admin';
 $string['noedit'] = 'You are no allowed to edit this Item';
 $string['download'] = 'Download';
 $string['created'] = 'Created';
-$string['by'] = 'by';
+$string['by_person'] = 'by {$a}';
 $string['maincat'] = 'Main Category';
 $string['subcat'] = 'Sub Category';

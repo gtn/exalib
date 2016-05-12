@@ -84,9 +84,9 @@ class block_exalib extends block_list {
 
 		if (block_exalib_is_creator()) {
 			$icon = '<img src="'.block_exalib_get_renderer()->pix_url('module_config', 'block_exalib').'" class="icon" alt="" />';
-			$this->content->items[] = '<a title="'.get_string('managecontent', 'block_exalib').'"
+			$this->content->items[] = '<a title="'.get_string('tab_managecontent', 'block_exalib').'"
                 href="'.$CFG->wwwroot.'/blocks/exalib/admin.php?courseid='.$COURSE->id.'">'.$icon.
-				get_string('managecontent', 'block_exalib').'</a>';
+				get_string('tab_managecontent', 'block_exalib').'</a>';
 		}
 
 		return $this->content;

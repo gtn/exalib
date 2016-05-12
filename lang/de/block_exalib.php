@@ -27,6 +27,11 @@ $string['block/exalib:open'] = 'Einträge und Dateien öffnen';
 $string['exalib:addinstance'] = 'Exalib Instanz zu Kurs hinzufügen';
 
 
+// tabs
+$string['tab_managecontent'] = 'Inhalte bearbeiten';
+$string['tab_managecats'] = 'Kategorien verwalten';
+
+
 // admin-actions-inc
 $string['edit_content'] = 'Bibliothekinhalt verwalten';
 $string['edit'] = 'Bearbeiten';
@@ -69,10 +74,6 @@ $string['applyfilter'] = 'Filter anwenden';
 $string['noitemsfound'] = 'Keine Einträge gefunden';
 
 
-// block_exalib
-$string['managecontent'] = 'Inhalte bearbeiten';
-
-
 // detail
 $string['itemnotfound'] = 'Eintrag nicht gefunden';
 $string['background'] = 'Hintergrund';
@@ -86,7 +87,6 @@ $string['back'] = 'zurück';
 $string['administration'] = 'Administration';
 $string['inthiscat'] = 'In dieser Kategorie';
 $string['wholelib'] = 'Ganze Bibliothek';
-$string['managecats'] = 'Kategorien verwalten';
 $string['latest'] = 'Letzte Änderungen';
 $string['newentry'] = 'Neuen Eintrag hinzufügen';
 

@@ -28,7 +28,7 @@ if (!$item = $DB->get_record('block_exalib_item', array('id' => $itemid))) {
 $PAGE->set_url('/blocks/exalib/detail.php?itemid='.$itemid, array());
 $PAGE->set_course($SITE);
 
-block_exalib_require_open();
+block_exalib_require_view_item($item);
 
 $PAGE->set_url('/blocks/exalib');
 $PAGE->set_context(context_system::instance());

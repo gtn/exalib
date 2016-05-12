@@ -28,9 +28,7 @@ $output = block_exalib_get_renderer();
 if ($show == 'categories') {
     block_exalib_require_admin();
 
-    $PAGE->navbar->add('Categories');
-
-    echo $output->header();
+    echo $output->header('tab_managecats');
 
     echo '<div><a href="admin.php?show=category_add&parent_id=0">'.get_string('addmaincat', 'block_exalib').'</a></div>';
 
@@ -214,7 +212,7 @@ if ($show == 'delete') {
 if ($show == 'edit' || $show == 'add') {
     $categoryid = optional_param('category_id', '', PARAM_INT);
     $textfieldoptions = array('trusttext' => true, 'subdirs' => true, 'maxfiles' => 99, 'context' => context_system::instance());
-    $fileoptions = array('subdirs' => false, 'maxfiles' => 1);
+    $fileoptions = array('subdirs' => false, 'maxfiles' => 5);
 
     if ($show == 'add') {
         $id = 0;

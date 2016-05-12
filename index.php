@@ -53,9 +53,11 @@ $filterid = 0;
 
 /* $FILTER_CATEGORY = $DB->get_record("block_exalib_category", array('id' => $filterid));
  if ($FILTER_CATEGORY) $PAGE->navbar->add($FILTER_CATEGORY->name); */
+/*
 if (BLOCK_EXALIB_IS_ADMIN_MODE) {
     $PAGE->navbar->add(get_string('administration', 'block_exalib'), 'admin.php');
 }
+*/
 
 
 $currentcategory = block_exalib_category_manager::getcategory($categoryid);
@@ -191,7 +193,7 @@ $PAGE->requires->jquery_plugin('easytree', 'block_exalib');
 
 $output = block_exalib_get_renderer();
 
-echo $output->header('library');
+echo $output->header(BLOCK_EXALIB_IS_ADMIN_MODE ? 'tab_managecontent' : null);
 
 ?>
 <div class="block_exalib_lib">
