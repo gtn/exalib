@@ -1,3 +1,4 @@
+<?php
 // This file is part of Exabis Library
 //
 // (c) 2016 GTN - Global Training Network GmbH <office@gtn-solutions.com>
@@ -16,8 +17,8 @@
 //
 // This copyright notice MUST APPEAR in all copies of the script!
 
-$(function(){
-	if ($('#exalib-categories').length) {
-		var easytree = $('#exalib-categories').easytree();
-	}
-});
+namespace block_exalib;
+
+const CATEGORY_TAGS = 1;
+const CATEGORY_SCHULSTUFE = 2;
+const CATEGORY_SCHULFORM = 3;

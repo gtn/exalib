@@ -1,4 +1,3 @@
-<?php
 // This file is part of Exabis Library
 //
 // (c) 2016 GTN - Global Training Network GmbH <office@gtn-solutions.com>
@@ -17,4 +16,19 @@
 //
 // This copyright notice MUST APPEAR in all copies of the script!
 
-$plugins = array(    'exalib-main' => array(        'files' => array(            'exalib-1.0.0.js',        ),     ),    'easytree' => array(        'files' => array(            'jquery.easytree-1.0.1.js',        ),     ),);
+$(function () {
+	if ($('#exalib-categories').length) {
+		var easytree = $('#exalib-categories').easytree();
+	}
+});
+
+$(document).on('click', '.library-item', function(event){
+	if ($(event.target).closest('a, input').length) {
+		// a link or button inside was pressed
+		return;
+	}
+
+	// click the first link (header link)
+	$(this).find('> a')[0].click();
+	return;
+});

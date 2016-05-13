@@ -28,33 +28,34 @@ $string['exalib:addinstance'] = 'Add Instance to Course';
 
 
 // tabs
+$string['tab_mine'] = 'My Entries';
 $string['tab_managecontent'] = 'Manage Library Content';
 $string['tab_managecats'] = 'Manage Categories';
 
 
 // admin-actions-inc
 $string['edit_content'] = 'Manage Library Content';
-$string['edit'] = 'edit';
-$string['delete'] = 'delete';
-$string['addcat'] = 'add category here';
+$string['edit'] = 'Edit';
+$string['delete'] = 'Delete';
+$string['addcat'] = 'Add subcategory';
 $string['name'] = 'Name';
 $string['parent'] = 'Parent';
 $string['source'] = 'Source';
+$string['abstract'] = 'Zusammenfassung';
 $string['content'] = 'Content';
 $string['previmg'] = 'Preview Image';
 $string['linktitle'] = 'Link Title';
 $string['link'] = 'Link';
-$string['file'] = 'File';
+$string['files'] = 'Files';
 $string['authors'] = 'Authors';
 $string['onlineset'] = 'Online Settings';
 $string['onlinefrom'] = 'Online From';
 $string['onlineto'] = 'Online To';
-$string['hidden'] = 'Hidden';
+$string['online'] = 'Visible';
 $string['categories'] = 'Categories';
 $string['groups'] = 'Groups';
 $string['addmaincat'] = 'add main category';
-$string['deletecat'] = 'Delete category ';
-$string['deletecat2'] = '?';
+$string['deletecat'] = 'Delete category {$a}?';
 
 
 // adv-search
@@ -81,6 +82,7 @@ $string['methods'] = 'Methods';
 $string['results'] = 'Results';
 $string['conclusion'] = 'Conclusion';
 $string['back'] = 'back';
+$string['terms_of_use'] = 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.';
 
 
 // index
@@ -101,3 +103,4 @@ $string['created'] = 'Created';
 $string['by_person'] = 'by {$a}';
 $string['maincat'] = 'Main Category';
 $string['subcat'] = 'Sub Category';
+$string['delete_confirmation'] = 'Do you really want to delete "{$a}"?';

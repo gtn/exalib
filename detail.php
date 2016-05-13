@@ -24,22 +24,38 @@ if (!$item = $DB->get_record('block_exalib_item', array('id' => $itemid))) {
     print_error(get_string('itemnotfound', 'block_exalib'));
 }
 
-
-$PAGE->set_url('/blocks/exalib/detail.php?itemid='.$itemid, array());
-$PAGE->set_course($SITE);
+$type = optional_param('type', '', PARAM_TEXT);
+$back = optional_param('back', '', PARAM_LOCALURL);
+if ($back) {
+    $back = (new moodle_url($back))->out(false);
+} else {
+    $back = 'javascript:history.back();';
+}
 
 block_exalib_require_view_item($item);
 
-$PAGE->set_url('/blocks/exalib');
-$PAGE->set_context(context_system::instance());
-$PAGE->set_pagelayout('login');
+$fs = get_file_storage();
+$files = $fs->get_area_files(context_system::instance()->id,
+    'block_exalib',
+    'item_file',
+    $item->id,
+    'itemid',
+    '',
+    false);
 
 $output = block_exalib_get_renderer();
+
+if ($type == 'mine') {
+    $output->set_tabs('tab_mine');
+} elseif ($type == 'admin') {
+    $output->set_tabs('tab_managecontent');
+}
 
 echo $output->header();
 
 /* <script type="text/javascript">jwplayer.key="YOUR_JWPLAYER_LICENSE_KEY";</script> */
 
+/*
 ?>
 <script type="text/javascript" src="jwplayer/jwplayer.js"></script>
 <style>
@@ -85,13 +101,8 @@ a.exalib-blue-cat-lib {
     padding: 3px 20px;
 }
 </style>
-
-<div class="exalib">
-
-<h1 class="libary_head"><?php echo get_string('heading', 'block_exalib');  ?></h1>
-
-
-<?php
+<?
+*/
 
 echo '<h2 class="head">'.$item->name.'</h2>';
 if ($item->source) {
@@ -103,6 +114,7 @@ if ($item->authors) {
 
 if ($item->content) {
     echo $item->content;
+/*
 } else if ($item->link) {
 
     block_exalib_print_jwplayer(array(
@@ -110,24 +122,25 @@ if ($item->content) {
         'width'    => "960",
         'height' => "540",
     ));
-
-} else {
-    if ($item->background) {
-        echo '<h3>'.get_string('background', 'block_exalib').'</h3>'.$item->background;
-    }
-    if ($item->methods) {
-        echo '<h3>'.get_string('methods', 'block_exalib').'</h3>'.$item->methods;
-    }
-    if ($item->results) {
-        echo '<h3>'.get_string('results' ,'block_exalib').'</h3>'.$item->results;
-    }
-    if ($item->conclusion) {
-        echo '<h3>'.get_string('conclusion', 'block_exalib').'</h3>'.$item->conclusion;
-    }
+*/
 }
+
+if ($files) {
+    echo '<div>';
+    echo '<span class="libary_author">'.\block_exalib\get_string('files').':</span> ';
+
+    foreach ($files as $file) {
+        echo '<a href="'.block_exalib_get_url_for_file($file).'" target="_blank">'.
+            block_exalib_get_renderer()->pix_icon(file_file_icon($file), get_mimetype_description($file)).
+            ' '.$file->get_filename().'</a>&nbsp;&nbsp;&nbsp;';
+    }
+    echo '</div>';
+}
+
 ?>
 <br /><br />
-<a class="exalib-blue-cat-lib" href="javascript:history.back();"><?php echo get_string('back', 'block_exalib')?></a>
+<a class="exalib-blue-cat-lib" href="<?php echo $back ?>"><?php echo get_string('back', 'block_exalib')?></a>
 </div>
 <?php
+
 echo $output->footer();

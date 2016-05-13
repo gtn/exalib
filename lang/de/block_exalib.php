@@ -28,33 +28,34 @@ $string['exalib:addinstance'] = 'Exalib Instanz zu Kurs hinzufügen';
 
 
 // tabs
+$string['tab_mine'] = 'Meine Fälle';
 $string['tab_managecontent'] = 'Inhalte bearbeiten';
-$string['tab_managecats'] = 'Kategorien verwalten';
+$string['tab_managecats'] = 'Kategorien barbeiten';
 
 
 // admin-actions-inc
 $string['edit_content'] = 'Bibliothekinhalt verwalten';
 $string['edit'] = 'Bearbeiten';
 $string['delete'] = 'Löschen';
-$string['addcat'] = 'Kategorie hier ergänzen';
+$string['addcat'] = 'Unterkategorie einfügen';
 $string['name'] = 'Name';
 $string['parent'] = 'Übergeordnete Kategorie';
 $string['source'] = 'Quelle';
+$string['abstract'] = 'Abstract';
 $string['content'] = 'Inhalt';
 $string['previmg'] = 'Vorschaubild';
 $string['linktitle'] = 'Link Titel';
 $string['link'] = 'Link';
-$string['file'] = 'Datei';
+$string['files'] = 'Dateien';
 $string['authors'] = 'Autoren';
 $string['onlineset'] = 'Anzeige-Einstellungen';
 $string['onlinefrom'] = 'Verfügbar vom';
 $string['onlineto'] = 'bis zum';
-$string['hidden'] = 'Ausblenden';
+$string['online'] = 'Online Anzeigen';
 $string['categories'] = 'Kategorien';
 $string['groups'] = 'Gruppen';
 $string['addmaincat'] = 'Hauptkategorie hinzufügen';
-$string['deletecat'] = 'Kategorie ';
-$string['deletecat2'] = ' wirklich löschen?';
+$string['deletecat'] = 'Kategorie {$a} wirklich löschen?';
 
 
 // adv-search
@@ -81,6 +82,7 @@ $string['methods'] = 'Methoden';
 $string['results'] = 'Ergebnisse';
 $string['conclusion'] = 'Schlussfolgerung';
 $string['back'] = 'zurück';
+$string['terms_of_use'] = 'Sie müssen die Nutzungsbestimmungen aktzeptieren: Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.';
 
 
 // index
@@ -101,3 +103,4 @@ $string['created'] = 'Erstellt';
 $string['by_person'] = 'von {$a}';
 $string['maincat'] = 'Hauptkategorie';
 $string['subcat'] = 'Subkategorie';
+$string['delete_confirmation'] = 'Soll "{$a}" wirklich gelöscht werden?';

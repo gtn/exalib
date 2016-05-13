@@ -53,12 +53,16 @@ return [
 
 
 	// tabs
+	'tab_mine' => [
+		'Meine Fälle',
+		'My Entries',
+	],
 	'tab_managecontent' => [
 		'Inhalte bearbeiten',
 		'Manage Library Content',
 	],
 	'tab_managecats' => [
-		'Kategorien verwalten',
+		'Kategorien barbeiten',
 		'Manage Categories',
 	],
 
@@ -70,15 +74,15 @@ return [
 	],
 	'edit' => [
 		'Bearbeiten',
-		'edit',
+		'Edit',
 	],
 	'delete' => [
 		'Löschen',
-		'delete',
+		'Delete',
 	],
 	'addcat' => [
-		'Kategorie hier ergänzen',
-		'add category here',
+		'Unterkategorie einfügen',
+		'Add subcategory',
 	],
 	'name' => [
 		'Name',
@@ -91,6 +95,10 @@ return [
 	'source' => [
 		'Quelle',
 		'Source',
+	],
+	'abstract' => [
+		'Abstract',
+		'Zusammenfassung',
 	],
 	'content' => [
 		'Inhalt',
@@ -108,9 +116,9 @@ return [
 		'Link',
 		'Link',
 	],
-	'file' => [
-		'Datei',
-		'File',
+	'files' => [
+		'Dateien',
+		'Files',
 	],
 	'authors' => [
 		'Autoren',
@@ -128,9 +136,9 @@ return [
 		'bis zum',
 		'Online To',
 	],
-	'hidden' => [
-		'Ausblenden',
-		'Hidden',
+	'online' => [
+		'Online Anzeigen',
+		'Visible',
 	],
 	'categories' => [
 		'Kategorien',
@@ -145,12 +153,8 @@ return [
 		'add main category',
 	],
 	'deletecat' => [
-		'Kategorie ',
-		'Delete category ',
-	],
-	'deletecat2' => [
-		' wirklich löschen?',
-		'?',
+		'Kategorie {$a} wirklich löschen?',
+		'Delete category {$a}?',
 	],
 
 
@@ -240,6 +244,12 @@ return [
 	],
 
 
+	'terms_of_use' => [
+		'Sie müssen die Nutzungsbestimmungen aktzeptieren: Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.',
+		'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.',
+	],
+
+
 	// index
 	'administration' => [
 		'Administration',
@@ -299,5 +309,9 @@ return [
 	'subcat' => [
 		'Subkategorie',
 		'Sub Category',
+	],
+	'delete_confirmation' => [
+		'Soll "{$a}" wirklich gelöscht werden?',
+		'Do you really want to delete "{$a}"?',
 	],
 ];

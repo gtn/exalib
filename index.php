@@ -41,12 +41,6 @@ $urladd = new moodle_url($urlpage, array('show' => 'add'));
 $urlcategory = new moodle_url($urlpage, array('page' => null, 'q' => null, 'category_id' => null));
 
 $PAGE->set_url($urlpage);
-$PAGE->set_context(context_system::instance());
-/* ...For code checker... $PAGE->set_pagelayout('login'); */
-$PAGE->navbar->add(get_string('heading', 'block_exalib'), $urloverview);
-
-// $topGroups = array(11 => 'Abstracts', 12 => 'Documents', 13 => 'Images', 14 => 'Podcasts', 15 => 'Webcasts');
-
 
 $categoryid = optional_param('category_id', '', PARAM_INT);
 $filterid = 0;
@@ -78,7 +72,7 @@ $show = null;
 if (BLOCK_EXALIB_IS_ADMIN_MODE) {
     $sqlwhere = "";
 } else {
-    $sqlwhere = "AND (item.hidden=0 OR item.hidden IS NULL)
+    $sqlwhere = "AND item.online
         AND (item.online_from=0 OR item.online_from IS NULL
         OR (item.online_from <= ".time()."
         AND item.online_to >= ".time()."))";
@@ -183,14 +177,6 @@ if ($q = optional_param('q', '', PARAM_TEXT)) {
 
 if(!$items->valid())	$items=Array();
 
-
-$PAGE->requires->css('/blocks/exalib/css/library.css');
-$PAGE->requires->css('/blocks/exalib/css/skin-lion/ui.easytree.css');
-
-$PAGE->requires->jquery();
-$PAGE->requires->jquery_plugin('exalib-main', 'block_exalib');
-$PAGE->requires->jquery_plugin('easytree', 'block_exalib');
-
 $output = block_exalib_get_renderer();
 
 echo $output->header(BLOCK_EXALIB_IS_ADMIN_MODE ? 'tab_managecontent' : null);
@@ -200,6 +186,7 @@ echo $output->header(BLOCK_EXALIB_IS_ADMIN_MODE ? 'tab_managecontent' : null);
 
 <?php
 
+/*
 if (false && !$filterid) {
         ?>
         <h1 class="libary_head"><?php echo get_string('welcome', 'block_exalib');  ?></h1>
@@ -272,6 +259,7 @@ if (false && !$filterid) {
         echo $output->footer();
         exit;
 }
+*/
 ?>
 
 <h1 class="libary_head"><?php
@@ -348,7 +336,7 @@ if (!$items) {
     if ($pagingbar) {
         echo $output->render($pagingbar);
     };
-    print_items($items, BLOCK_EXALIB_IS_ADMIN_MODE);
+    $output->item_list(BLOCK_EXALIB_IS_ADMIN_MODE ? 'admin' : 'public', $items);
     if ($pagingbar) {
         echo $output->render($pagingbar);
     };

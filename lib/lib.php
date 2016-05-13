@@ -18,6 +18,7 @@
 // This copyright notice MUST APPEAR in all copies of the script!
 
 require __DIR__.'/common.php';
+require __DIR__.'/config.php';
 
 use \block_exalib\globals as g;
 
@@ -119,10 +120,33 @@ function block_exalib_require_can_edit_item(stdClass $item) {
 
 /**
  * wrote own function, so eclipse knows which type the output renderer is
- * @return \block_exastud_renderer
+ * @return \block_exalib_renderer
  */
-function block_exalib_get_renderer() {
-	return g::$PAGE->get_renderer('block_exalib');
+function block_exalib_get_renderer($init = true) {
+	if ($init) {
+		block_exalib_init_page();
+	}
+
+	static $renderer = null;
+	if ($renderer) {
+		return $renderer;
+	}
+
+	return $renderer = g::$PAGE->get_renderer('block_exalib');
+}
+
+function block_exalib_init_page() {
+	static $init = true;
+	if (!$init) {
+		return;
+	}
+	$init = false;
+
+	g::$PAGE->set_course(g::$SITE);
+
+	if (!g::$PAGE->has_set_url()) {
+		g::$PAGE->set_url(block_exalib_new_moodle_url());
+	}
 }
 
 function block_exalib_is_kasuistik() {
@@ -153,129 +177,6 @@ function block_exalib_can_edit_item(stdClass $item) {
 	} else {
 		return false;
 	};
-}
-
-/**
- * print items
- * @param array $items
- * @param boolean $admin
- * @return wrapped items
- */
-function print_items($items, $admin = false) {
-	global $CFG, $DB;
-
-	foreach ($items as $item) {
-
-		$fs = get_file_storage();
-		$files = $fs->get_area_files(context_system::instance()->id,
-			'block_exalib',
-			'item_file',
-			$item->id,
-			'itemid',
-			'',
-			false);
-
-		$areafiles = $fs->get_area_files(context_system::instance()->id,
-			'block_exalib',
-			'preview_image',
-			$item->id,
-			'itemid',
-			'',
-			false);
-		$previewimage = reset($areafiles);
-
-		$linkurl = '';
-		$linktext = '';
-		$linktextprefix = '';
-		$targetnewwindow = false;
-
-		if ($item->resource_id) {
-			$linkurl = '/mod/resource/view.php?id='.$item->resource_id;
-		} else if ($item->link) {
-			if (strpos($item->link, 'rtmp://') === 0) {
-				$linkurl = 'detail.php?itemid='.$item->id.'&back='.g::$PAGE->url->out_as_local_url();
-			} else {
-				$linkurl = $item->link;
-				$linktext = trim($item->link_titel) ? $item->link_titel : $item->link;
-				$targetnewwindow = true;
-			}
-		} else if ($item->content) {
-			$linkurl = 'detail.php?itemid='.$item->id.'&back='.g::$PAGE->url->out_as_local_url();
-		}
-
-		echo '<div class="library-item">';
-
-		if ($linkurl) {
-			echo '<a class="head" href="'.$linkurl.($targetnewwindow ? '" target="_blank' : '').'">'.$item->name.'</a>';
-		} else {
-			echo '<div class="head">'.$item->name.'</div>';
-		};
-
-		if ($previewimage) {
-			$url = "{$CFG->wwwroot}/pluginfile.php/{$previewimage->get_contextid()}/block_exalib/item_file/".
-				$previewimage->get_itemid()."?preview=thumb";
-			echo '<div><img src="'.$url.'" /></div>';
-		}
-
-		/*
-		if ($item->content) {
-			echo '<div class="libary_content">'.$item->content.'</div>';
-		}
-		*/
-		if ($item->source) {
-			echo '<div><span class="libary_author">'.get_string('source', 'block_exalib').':</span> '.$item->source.'</div>';
-		}
-		if ($item->authors) {
-			echo '<div><span class="libary_author">'.get_string('authors', 'block_exalib').':</span> '.$item->authors.'</div>';
-		}
-
-		if ($item->time_created) {
-			echo '<div><span class="libary_author">'.get_string('created', 'block_exalib').':</span> '.
-				userdate($item->time_created);
-			if ($item->created_by && $tmpuser = $DB->get_record('user', array('id' => $item->created_by))) {
-				echo ' '.get_string('by_person', 'block_exalib', fullname($tmpuser));
-			}
-			echo '</div>';
-		}
-		if ($item->time_modified) {
-			echo '<div><span class="libary_author">'.\block_exalib\trans(['en:Last Modified', 'de:Zulätzt geändert']).':</span> '.
-				userdate($item->time_modified);
-			if ($item->modified_by && $tmpuser = $DB->get_record('user', array('id' => $item->modified_by))) {
-				echo ' '.get_string('by_person', 'block_exalib', fullname($tmpuser));
-			}
-			echo '</div>';
-		}
-
-		if ($linktext) {
-			echo '<div>';
-			if ($linktextprefix) {
-				echo '<span class="libary_author">'.$linktextprefix.'</span> ';
-			};
-			echo '<a href="'.$linkurl.($targetnewwindow ? '" target="_blank"' : '').'">'.$linktext.'</a>';
-			echo '</div>';
-		}
-
-		if ($files) {
-			echo '<div>';
-			echo '<span class="libary_author">'.\block_exalib\get_string('files').':</span> ';
-
-			foreach ($files as $file) {
-				echo '<a href="'.block_exalib_get_url_for_file($file).'" target="_blank">'.
-					block_exalib_get_renderer()->pix_icon(file_file_icon($file), get_mimetype_description($file)).
-					' '.$file->get_filename().'</a>&nbsp;&nbsp;&nbsp;';
-			}
-			echo '</div>';
-		}
-
-		if ($admin && block_exalib_can_edit_item($item)) {
-			echo '<span class="library-item-buttons">';
-			echo '<input type="button" href="admin.php?show=edit&id='.$item->id.'" value="'.get_string('edit', 'block_exalib').'" onclick="document.location.href=this.getAttribute(\'href\');" />';
-			echo '<input type="button" href="admin.php?show=delete&id='.$item->id.'" value="'.get_string('delete', 'block_exalib').'" onclick="document.location.href=this.getAttribute(\'href\');" />';
-			echo '</span>';
-		}
-
-		echo '</div>';
-	}
 }
 
 /**
@@ -381,7 +282,7 @@ class block_exalib_category_manager {
 
 	/**
 	 * walk tree
-	 * @param function $functionbefore
+	 * @param \Closure $functionbefore
 	 * @param boolean $functionafter
 	 * @return tree item
 	 */
@@ -398,8 +299,8 @@ class block_exalib_category_manager {
 
 	/**
 	 * walk tree item
-	 * @param Callback $functionbefore
-	 * @param Callback $functionafter
+	 * @param \Closure $functionbefore
+	 * @param \Closure $functionafter
 	 * @param integer $level
 	 * @param integer $parent
 	 * @return output
@@ -436,10 +337,13 @@ class block_exalib_category_manager {
 			return;
 		}
 
-		$DB->execute("INSERT INTO {block_exalib_category} (id, parent_id, name, hidden) VALUES (1, 0, 'Tags', 0)");
+		$DB->execute("INSERT INTO {block_exalib_category} (id, parent_id, name, online) VALUES
+ 			(".\block_exalib\CATEGORY_TAGS.", 0, 'Tags', 1)");
 		if (block_exalib_is_kasuistik()) {
-			$DB->execute("INSERT INTO {block_exalib_category} (id, parent_id, name, hidden) VALUES (2, 0, 'Schulstufe', 0)");
-			$DB->execute("INSERT INTO {block_exalib_category} (id, parent_id, name, hidden) VALUES (3, 0, 'Schulform', 0)");
+			$DB->execute("INSERT INTO {block_exalib_category} (id, parent_id, name, online) VALUES 
+				(".\block_exalib\CATEGORY_SCHULSTUFE.", 0, 'Schulstufe', 1)");
+			$DB->execute("INSERT INTO {block_exalib_category} (id, parent_id, name, online) VALUES
+				(".\block_exalib\CATEGORY_SCHULFORM.", 0, 'Schulform', 1)");
 		}
 
 		$DB->execute("ALTER TABLE {block_exalib_category} AUTO_INCREMENT=1001");
@@ -465,48 +369,292 @@ class block_exalib_category_manager {
         	LEFT JOIN {block_exalib_item_category} ic ON (category.id=ic.category_id)
         	LEFT JOIN {block_exalib_item} item ON item.id=ic.item_id 
         	WHERE 1=1
-        	".(BLOCK_EXALIB_IS_ADMIN_MODE ? '' : "
-	            AND (category.hidden=0 OR category.hidden IS NULL)
-    	        AND (item.hidden=0 OR item.hidden IS NULL)
+        	".(defined('BLOCK_EXALIB_IS_ADMIN_MODE') && BLOCK_EXALIB_IS_ADMIN_MODE ? '' : "
+	            AND category.online
+    	        AND item.online
         	    AND (item.online_from=0 OR item.online_from IS NULL OR
                     (item.online_from <= ".time()." AND item.online_to >= ".time()."))
 			")."
 			GROUP BY category.id
 			ORDER BY name
 		");
-        self::$categoriesbyparent = array();
+		self::$categoriesbyparent = array();
 
-        foreach (self::$categories as &$cat) {
+		foreach (self::$categories as &$cat) {
 
-            self::$categoriesbyparent[$cat->parent_id][$cat->id] = &$cat;
+			self::$categoriesbyparent[$cat->parent_id][$cat->id] = &$cat;
 
-            $cnt = $cat->cnt;
-            $catid = $cat->id;
+			$cnt = $cat->cnt;
+			$catid = $cat->id;
 
-            $cat->level = 0;
-            $level =& $cat->level;
+			$cat->level = 0;
+			$level =& $cat->level;
 
-            // Find parents.
-            while (true) {
-                if (!isset($cat->cnt_inc_subs)) {
-                    $cat->cnt_inc_subs = 0;
-                };
-                $cat->cnt_inc_subs += $cnt;
+			// Find parents.
+			while (true) {
+				if (!isset($cat->cnt_inc_subs)) {
+					$cat->cnt_inc_subs = 0;
+				};
+				$cat->cnt_inc_subs += $cnt;
 
-                if (!isset($cat->self_inc_all_sub_ids)) {
-                    $cat->self_inc_all_sub_ids = array();
-                };
-                $cat->self_inc_all_sub_ids[] = $catid;
+				if (!isset($cat->self_inc_all_sub_ids)) {
+					$cat->self_inc_all_sub_ids = array();
+				};
+				$cat->self_inc_all_sub_ids[] = $catid;
 
-                if (($cat->parent_id > 0) && isset(self::$categories[$cat->parent_id])) {
-                    // ParentCat.
-                    $level++;
-                    $cat =& self::$categories[$cat->parent_id];
-                } else {
-                    break;
-                }
-            }
-        }
-        unset($cat);
-    }
+				if (($cat->parent_id > 0) && isset(self::$categories[$cat->parent_id])) {
+					// ParentCat.
+					$level++;
+					$cat =& self::$categories[$cat->parent_id];
+				} else {
+					break;
+				}
+			}
+		}
+		unset($cat);
+	}
+}
+
+function block_exalib_get_reviewers() {
+	// TODO
+	return g::$DB->get_records('user');
+}
+
+function block_exalib_handle_item_edit($type = '', $show) {
+	global $CFG, $USER;
+
+	require_once($CFG->libdir.'/formslib.php');
+
+	$categoryid = optional_param('category_id', '', PARAM_INT);
+	$textfieldoptions = array('trusttext' => true, 'subdirs' => true, 'maxfiles' => 99, 'context' => context_system::instance());
+	$fileoptions = array('subdirs' => false, 'maxfiles' => 5);
+
+	if ($show == 'add') {
+		$id = 0;
+		$item = new StdClass;
+		$item->contentformat = FORMAT_HTML;
+
+		// block_exalib_require_creator();
+	} else {
+		$id = required_param('id', PARAM_INT);
+		$item = g::$DB->get_record('block_exalib_item', array('id' => $id));
+
+		block_exalib_require_can_edit_item($item);
+
+		$item->contentformat = FORMAT_HTML;
+		$item = file_prepare_standard_editor($item, 'content', $textfieldoptions, context_system::instance(),
+			'block_exalib', 'item_content', $item->id);
+		$item = file_prepare_standard_filemanager($item, 'file', $fileoptions, context_system::instance(),
+			'block_exalib', 'item_file', $item->id);
+		$item = file_prepare_standard_filemanager($item, 'preview_image', $fileoptions, context_system::instance(),
+			'block_exalib', 'preview_image', $item->id);
+	}
+
+	/**
+	 * Items edit form
+	 * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+	 * @copyright  gtn gmbh <office@gtn-solutions.com>
+	 */
+	class itemeditform extends moodleform {
+
+		/**
+		 * Definition
+		 * @return nothing
+		 */
+		public function definition() {
+			$mform =& $this->_form;
+
+			$mform->addElement('text', 'name', get_string('name', 'block_exalib'), 'size="100"');
+			$mform->setType('name', PARAM_TEXT);
+			$mform->addRule('name', 'Name required', 'required', null, 'server');
+
+			if (!block_exalib_is_kasuistik()) {
+				$mform->addElement('text', 'source', get_string('source', 'block_exalib'), 'size="100"');
+				$mform->setType('source', PARAM_TEXT);
+			} else {
+				$values = block_exalib_get_reviewers();
+				$mform->addElement('select', 'reviewerid', \block_exalib\trans('de:Reviewer'), $values);
+				$mform->addRule('reviewer_id', get_string('requiredelement', 'form'), 'required');
+
+				/*
+				$values = g::$DB->get_records_sql_menu("
+			        SELECT c.id, c.name
+			        FROM {block_exalib_category} c
+			        WHERE parent_id=".\block_exalib\CATEGORY_SCHULSTUFE."
+			   	");
+				$mform->addElement('select', 'schulstufeid', \block_exalib\trans('de:Schulstufe'), $values);
+				$mform->addRule('schulstufeid', get_string('requiredelement', 'form'), 'required');
+
+				$values = g::$DB->get_records_sql_menu("
+			        SELECT c.id, c.name
+			        FROM {block_exalib_category} c
+			        WHERE parent_id=".\block_exalib\CATEGORY_SCHULFORM."
+			   	");
+				$mform->addElement('select', 'schulformid', \block_exalib\trans('de:Schulform'), $values);
+				$mform->addRule('schulformid', get_string('requiredelement', 'form'), 'required');
+				*/
+			}
+
+			$mform->addElement('text', 'authors', get_string('authors', 'block_exalib'), 'size="100"');
+			$mform->setType('authors', PARAM_TEXT);
+
+			$mform->addElement('header', 'contentheader', get_string('content', 'block_exalib'));
+
+			if (!block_exalib_is_kasuistik()) {
+				$mform->addElement('text', 'link_titel', get_string('linktitle', 'block_exalib'), 'size="100"');
+				$mform->setType('link_titel', PARAM_TEXT);
+			}
+
+			$mform->addElement('text', 'link', get_string('link', 'block_exalib'), 'size="100"');
+			$mform->setType('link', PARAM_TEXT);
+
+			$mform->addElement('editor', 'abstract_editor', get_string('abstract', 'block_exalib'), 'rows="10" cols="50" style="width: 95%"');
+			$mform->setType('abstract', PARAM_RAW);
+
+			$mform->addElement('editor', 'content_editor', get_string('content', 'block_exalib'), 'rows="20" cols="50" style="width: 95%"');
+			$mform->setType('content', PARAM_RAW);
+
+			if (!block_exalib_is_kasuistik()) {
+				$mform->addElement('filemanager', 'preview_image_filemanager', get_string('previmg', 'block_exalib'), null,
+					$this->_customdata['fileoptions']);
+			}
+
+			$mform->addElement('filemanager', 'file_filemanager', get_string('files', 'block_exalib'), null, $this->_customdata['fileoptions']);
+
+			if ($this->_customdata['type'] != 'mine') {
+				$mform->addElement('header', 'onlineheader', get_string('onlineset', 'block_exalib'));
+			}
+
+			$mform->addElement('checkbox', 'online', \block_exalib\get_string('online'));
+
+			if ($this->_customdata['type'] != 'mine') {
+				$mform->addElement('date_selector', 'online_from', get_string('onlinefrom', 'block_exalib'), array(
+					'startyear' => 2014,
+					'stopyear' => date('Y'),
+					'optional' => true,
+				));
+				$mform->addElement('date_selector', 'online_to', get_string('onlineto', 'block_exalib'), array(
+					'startyear' => 2014,
+					'stopyear' => date('Y'),
+					'optional' => true,
+				));
+			}
+
+			$mform->addElement('header', 'categoriesheader', get_string('categories', 'block_exalib'));
+
+			$mform->addElement('static', 'categories', get_string('groups', 'block_exalib'), $this->get_categories());
+
+			$this->add_action_buttons();
+		}
+
+		/**
+		 * Get categories
+		 * @return checkbox
+		 */
+		public function get_categories() {
+			return block_exalib_category_manager::walktree(function($cat, $suboutput) {
+				return '<div style="padding-left: '.(20 * $cat->level).'px;">'.
+				'<input type="checkbox" name="categories[]" value="'.$cat->id.'" '.
+				(in_array($cat->id, $this->_customdata['itemCategories']) ? 'checked ' : '').'/>'.
+				($cat->level == 0 ? '<b>'.$cat->name.'</b>' : $cat->name).'</div>'.$suboutput;
+			});
+		}
+	}
+
+	$itemcategories = g::$DB->get_records_sql_menu("SELECT category.id, category.id AS val
+    FROM {block_exalib_category} category
+    LEFT JOIN {block_exalib_item_category} ic ON category.id=ic.category_id
+    WHERE ic.item_id=?", array($id));
+
+	if (!$itemcategories && $categoryid) {
+		$itemcategories[$categoryid] = $categoryid;
+	}
+
+	$itemeditform = new itemeditform($_SERVER['REQUEST_URI'], [
+		'itemCategories' => $itemcategories,
+		'fileoptions' => $fileoptions,
+		'type' => $type,
+	]);
+
+	if ($itemeditform->is_cancelled()) {
+	} else {
+		if ($fromform = $itemeditform->get_data()) {
+			// Edit/add.
+
+			if (!empty($item->id)) {
+				$fromform->id = $item->id;
+				$fromform->modified_by = $USER->id;
+				$fromform->time_modified = time();
+			} else {
+				try {
+					$fromform->created_by = $USER->id;
+					$fromform->time_created = time();
+					$fromform->time_modified = 0;
+					$fromform->id = g::$DB->insert_record('block_exalib_item', $fromform);
+				} catch (Exception $e) {
+					var_dump($e);
+					exit;
+				}
+			}
+
+			$fromform->contentformat = FORMAT_HTML;
+			$fromform = file_postupdate_standard_editor($fromform,
+				'content',
+				$textfieldoptions,
+				context_system::instance(),
+				'block_exalib',
+				'item_content',
+				$fromform->id);
+			g::$DB->update_record('block_exalib_item', $fromform);
+
+			// Save file.
+			$fromform = file_postupdate_standard_filemanager($fromform,
+				'file',
+				$fileoptions,
+				context_system::instance(),
+				'block_exalib',
+				'item_file',
+				$fromform->id);
+			$fromform = file_postupdate_standard_filemanager($fromform,
+				'preview_image',
+				$fileoptions,
+				context_system::instance(),
+				'block_exalib',
+				'preview_image',
+				$fromform->id);
+
+
+			// Save categories.
+			g::$DB->delete_records('block_exalib_item_category', array("item_id" => $fromform->id));
+			$categories_request = optional_param_array('categories', null, PARAM_INT);
+			foreach ($categories_request as $tmp => $categoryidforinsert) {
+				g::$DB->execute('INSERT INTO {block_exalib_item_category} (item_id, category_id) VALUES (?, ?)',
+					array($fromform->id, $categoryidforinsert));
+			}
+
+			if (!$categoryid && is_array($categories_request)) {
+				$categoryid = reset($categories_request);
+				// Read first category.
+			}
+
+			if ($type == 'mine') {
+				redirect('mine.php');
+			} else {
+
+			}
+			exit;
+
+		} else {
+			// Display form.
+
+			$output = block_exalib_get_renderer();
+
+			echo $output->header();
+
+			$itemeditform->set_data($item);
+			$itemeditform->display();
+
+			echo $output->footer();
+		}
+	}
 }

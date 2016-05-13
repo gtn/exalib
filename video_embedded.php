@@ -33,11 +33,9 @@ if ($itemid = optional_param('itemid', 0, PARAM_INT)) {
     print_error("no video url");
 }
 
-$PAGE->set_url('/', array());
 $PAGE->set_course($SITE);
 
 $PAGE->set_url('/blocks/exalib');
-$PAGE->set_context(context_system::instance());
 $PAGE->set_pagelayout('embedded');
 
 $width = optional_param('width', 'auto', PARAM_TEXT);
