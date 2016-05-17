@@ -57,13 +57,17 @@ return [
 		'Meine Fälle',
 		'My Entries',
 	],
-	'tab_managecontent' => [
+	'tab_manage_content' => [
 		'Inhalte bearbeiten',
 		'Manage Library Content',
 	],
-	'tab_managecats' => [
+	'tab_manage_cats' => [
 		'Kategorien barbeiten',
 		'Manage Categories',
+	],
+	'tab_manage_reviewers' => [
+		'Reviewers',
+		'Reviewers',
 	],
 
 
@@ -138,7 +142,11 @@ return [
 	],
 	'online' => [
 		'Online Anzeigen',
-		'Visible',
+		'Online',
+	],
+	'offline' => [
+		'Offline',
+		'Offline',
 	],
 	'categories' => [
 		'Kategorien',
@@ -155,6 +163,16 @@ return [
 	'deletecat' => [
 		'Kategorie {$a} wirklich löschen?',
 		'Delete category {$a}?',
+	],
+
+
+	'availableusers' => [
+		'Verfügbare Benutzer',
+		'Available Users',
+	],
+	'showall' => [
+		'Alle anzeigen',
+		'Show all',
 	],
 
 

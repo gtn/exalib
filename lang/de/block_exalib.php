@@ -29,8 +29,9 @@ $string['exalib:addinstance'] = 'Exalib Instanz zu Kurs hinzufügen';
 
 // tabs
 $string['tab_mine'] = 'Meine Fälle';
-$string['tab_managecontent'] = 'Inhalte bearbeiten';
-$string['tab_managecats'] = 'Kategorien barbeiten';
+$string['tab_manage_content'] = 'Inhalte bearbeiten';
+$string['tab_manage_cats'] = 'Kategorien barbeiten';
+$string['tab_manage_reviewers'] = 'Reviewers';
 
 
 // admin-actions-inc
@@ -52,10 +53,13 @@ $string['onlineset'] = 'Anzeige-Einstellungen';
 $string['onlinefrom'] = 'Verfügbar vom';
 $string['onlineto'] = 'bis zum';
 $string['online'] = 'Online Anzeigen';
+$string['offline'] = 'Offline';
 $string['categories'] = 'Kategorien';
 $string['groups'] = 'Gruppen';
 $string['addmaincat'] = 'Hauptkategorie hinzufügen';
 $string['deletecat'] = 'Kategorie {$a} wirklich löschen?';
+$string['availableusers'] = 'Verfügbare Benutzer';
+$string['showall'] = 'Alle anzeigen';
 
 
 // adv-search

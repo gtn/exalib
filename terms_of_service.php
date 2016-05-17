@@ -20,7 +20,7 @@
 require __DIR__.'/inc.php';
 
 require_login();
-block_exalib_require_use();
+block_exalib_require_global_cap(\block_exalib\CAP_USE);
 
 $forward = required_param('forward', PARAM_LOCALURL);
 $accept = optional_param('accept', false, PARAM_BOOL);

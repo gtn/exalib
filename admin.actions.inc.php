@@ -25,19 +25,24 @@ $show = optional_param('show', '', PARAM_TEXT);
 $output = block_exalib_get_renderer();
 
 if ($show == 'categories') {
-	block_exalib_require_admin();
+	block_exalib_require_global_cap(\block_exalib\CAP_MANAGE_CATS);
 
-	echo $output->header('tab_managecats');
+	echo $output->header('tab_manage_cats');
 
 	echo '<div id="block-exalib-category-mgmt">';
 	echo $output->link_button('admin.php?show=category_add&parent_id=0', \block_exalib\get_string('addmaincat'));
 	echo '<ul>';
 
-	block_exalib_category_manager::walktree(function($cat) use ($output) {
+	$mgr = new block_exalib_category_manager(true);
+	$mgr->walktree(function($cat) use ($output) {
 
 		echo '<li><div>';
 
-		echo $cat->name.' ('.$cat->cnt_inc_subs.') ';
+		echo $cat->name;
+		if (!$cat->online) {
+			echo ' ('.\block_exalib\get_string('offline').')';
+		}
+		echo ' ('.$cat->cnt_inc_subs.') ';
 
 		echo '<span class="buttons">';
 		echo $output->link_button('admin.php?show=category_add&parent_id='.$cat->id, \block_exalib\get_string('addcat'));
@@ -62,7 +67,7 @@ if ($show == 'categories') {
 }
 
 if ($show == 'category_delete') {
-	block_exalib_require_admin();
+	block_exalib_require_global_cap(\block_exalib\CAP_MANAGE_CATS);
 
 	$categoryid = required_param('category_id', PARAM_INT);
 
@@ -75,12 +80,13 @@ if ($show == 'category_delete') {
 }
 
 if (($show == 'category_add') || ($show == 'category_edit')) {
-	block_exalib_require_admin();
+	block_exalib_require_global_cap(\block_exalib\CAP_MANAGE_CATS);
 
 	if ($show == 'category_add') {
 		$category = (object)array(
 			'id' => 0,
 			'parent_id' => required_param('parent_id', PARAM_INT),
+			'online' => 1,
 		);
 	} else {
 		$category = $DB->get_record('block_exalib_category', array('id' => required_param('category_id', PARAM_INT)));
@@ -105,9 +111,10 @@ if (($show == 'category_add') || ($show == 'category_edit')) {
 		public function definition() {
 			global $CFG;
 
-			block_exalib_category_manager::walktree(function($cat) {
+			$mgr = new block_exalib_category_manager(true);
+			$mgr->walktree(function($cat) {
 				$this->_category_select[$cat->id] = str_repeat('&nbsp;&nbsp;&nbsp;', $cat->level).'&bullet; '.$cat->name;
-			}, false);
+			});
 
 			$mform =& $this->_form; // Don't forget the underscore!
 
@@ -117,7 +124,7 @@ if (($show == 'category_add') || ($show == 'category_edit')) {
 
 			$mform->addElement('select', 'parent_id', get_string('parent', 'block_exalib'), $this->_category_select);
 
-			/* ... $mform->addElement('static', 'description', 'Groups', $this->get_categories()); /*...*/
+			$mform->addElement('advcheckbox', 'online', \block_exalib\get_string('online'));
 
 			$this->add_action_buttons();
 		}
@@ -144,12 +151,7 @@ if (($show == 'category_add') || ($show == 'category_edit')) {
 				$fromform->id = $category->id;
 				$DB->update_record('block_exalib_category', $fromform);
 			} else {
-				try {
-					$fromform->id = $DB->insert_record('block_exalib_category', $fromform);
-				} catch (Exception $e) {
-					var_dump($e);
-					exit;
-				}
+				$fromform->id = $DB->insert_record('block_exalib_category', $fromform);
 			}
 
 			redirect('admin.php?show=categories');
@@ -170,21 +172,7 @@ if (($show == 'category_add') || ($show == 'category_edit')) {
 	exit;
 }
 
-if ($show == 'delete') {
-	$id = required_param('id', PARAM_INT);
-	$item = $DB->get_record('block_exalib_item', array('id' => $id));
-
-	block_exalib_require_can_edit_item($item);
-
-	require_sesskey();
-
-	$DB->delete_records('block_exalib_item', array('id' => $id));
-	$DB->delete_records('block_exalib_item_category', array("item_id" => $id));
-	redirect('admin.php');
-	exit;
-}
-
-if ($show == 'edit' || $show == 'add') {
+if (in_array($show, ['edit', 'add', 'delete'])) {
 	block_exalib_handle_item_edit('', $show);
 	exit;
 }

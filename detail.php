@@ -48,7 +48,7 @@ $output = block_exalib_get_renderer();
 if ($type == 'mine') {
     $output->set_tabs('tab_mine');
 } elseif ($type == 'admin') {
-    $output->set_tabs('tab_managecontent');
+    $output->set_tabs('tab_manage_content');
 }
 
 echo $output->header();

@@ -29,8 +29,9 @@ $string['exalib:addinstance'] = 'Add Instance to Course';
 
 // tabs
 $string['tab_mine'] = 'My Entries';
-$string['tab_managecontent'] = 'Manage Library Content';
-$string['tab_managecats'] = 'Manage Categories';
+$string['tab_manage_content'] = 'Manage Library Content';
+$string['tab_manage_cats'] = 'Manage Categories';
+$string['tab_manage_reviewers'] = 'Reviewers';
 
 
 // admin-actions-inc
@@ -51,11 +52,14 @@ $string['authors'] = 'Authors';
 $string['onlineset'] = 'Online Settings';
 $string['onlinefrom'] = 'Online From';
 $string['onlineto'] = 'Online To';
-$string['online'] = 'Visible';
+$string['online'] = 'Online';
+$string['offline'] = 'Offline';
 $string['categories'] = 'Categories';
 $string['groups'] = 'Groups';
 $string['addmaincat'] = 'add main category';
 $string['deletecat'] = 'Delete category {$a}?';
+$string['availableusers'] = 'Available Users';
+$string['showall'] = 'Show all';
 
 
 // adv-search

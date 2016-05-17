@@ -27,8 +27,11 @@ function xmldb_block_exalib_upgrade($oldversion) {
 		$table = new xmldb_table('block_exalib_item');
 
 		$field = new xmldb_field('reviewer_id', XMLDB_TYPE_INTEGER, '20', null, XMLDB_NOTNULL, null, '0', 'created_by');
+		if (!$dbman->field_exists($table, $field)) {
+			$dbman->add_field($table, $field);
+		}
 
-		// Conditionally launch add field reviewer_id.
+		$field = new xmldb_field('abstract', XMLDB_TYPE_TEXT, null, null, null, null, null, 'reviewer_id');
 		if (!$dbman->field_exists($table, $field)) {
 			$dbman->add_field($table, $field);
 		}
@@ -49,6 +52,7 @@ function xmldb_block_exalib_upgrade($oldversion) {
 		$DB->execute("UPDATE {block_exalib_category} SET hidden=1 WHERE hidden <> 9 OR hidden IS NULL");
 		$DB->execute("UPDATE {block_exalib_category} SET hidden=0 WHERE hidden = 9");
 
+		
 		$table = new xmldb_table('block_exalib_category');
 
 		$field = new xmldb_field('hidden', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '1', 'name');

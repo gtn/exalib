@@ -18,51 +18,55 @@
 // This copyright notice MUST APPEAR in all copies of the script!
 
 $capabilities = array(
-   	'block/exalib:use' => array(
-			'captype' => 'write',
-			'contextlevel' => CONTEXT_SYSTEM,
-			'legacy' => array(
-					'user' => CAP_ALLOW
-			)
-	),
-    'block/exalib:open' => array(
-        'captype' => 'read',
-        'contextlevel' => CONTEXT_SYSTEM,
-        'legacy' => array(
-				'user' => CAP_ALLOW
-		)
-    ),
-    'block/exalib:creator' => array(
-        'captype' => 'write',
-		'contextlevel' => CONTEXT_COURSE,
+	// can use exalib: browse files etc
+	'block/exalib:use' => array(
+		'captype' => 'write',
+		'contextlevel' => CONTEXT_SYSTEM,
 		'legacy' => array(
-				'editingteacher' => CAP_ALLOW,
-				'teacher' => CAP_ALLOW,
-				'manager' => CAP_ALLOW
-		)
-    ),
-    'block/exalib:admin' => array(
-        'captype' => 'write',
-        'contextlevel' => CONTEXT_SYSTEM,
-        'legacy' => array(
-				'manager' => CAP_ALLOW
-		)
-    ),
-    'block/exalib:addinstance' => array(
-        'captype' => 'write',
-        'contextlevel' => CONTEXT_BLOCK,
-        'archetypes' => array(
-            'editingteacher' => CAP_ALLOW,
-            'manager' => CAP_ALLOW
-        ),
-        'clonepermissionsfrom' => 'moodle/site:manageblocks'
-    ),
-    'block/exalib:myaddinstance' => array(
-       'captype' => 'write',
+			'user' => CAP_ALLOW,
+		),
+	),
+	// can review entries
+	'block/exalib:reviewer' => array(
+		'captype' => 'write',
+		'contextlevel' => CONTEXT_SYSTEM,
+		'legacy' => [],
+	),
+	// can manage entries and categories
+	'block/exalib:creator' => array(
+		'captype' => 'write',
+		'contextlevel' => CONTEXT_SYSTEM,
+		'legacy' => array(
+			'editingteacher' => CAP_ALLOW,
+			'teacher' => CAP_ALLOW,
+			'manager' => CAP_ALLOW,
+		),
+	),
+	// all rights
+	'block/exalib:admin' => array(
+		'captype' => 'write',
+		'contextlevel' => CONTEXT_SYSTEM,
+		'legacy' => array(
+			'manager' => CAP_ALLOW,
+		),
+	),
+	
+
+	'block/exalib:addinstance' => array(
+		'captype' => 'write',
+		'contextlevel' => CONTEXT_BLOCK,
+		'archetypes' => array(
+			'editingteacher' => CAP_ALLOW,
+			'manager' => CAP_ALLOW,
+		),
+		'clonepermissionsfrom' => 'moodle/site:manageblocks',
+	),
+	'block/exalib:myaddinstance' => array(
+		'captype' => 'write',
 		'contextlevel' => CONTEXT_SYSTEM,
 		'archetypes' => array(
-				'user' => CAP_PREVENT
+			'user' => CAP_PREVENT,
 		),
-		'clonepermissionsfrom' => 'moodle/my:manageblocks'
-    )
+		'clonepermissionsfrom' => 'moodle/my:manageblocks',
+	),
 );

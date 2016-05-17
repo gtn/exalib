@@ -34,6 +34,10 @@ function block_exalib_new_moodle_url() {
 	return new moodle_url(str_replace($moodlepath, '', $_SERVER['REQUEST_URI']));
 }
 
+function block_exalib_is_reviewer() {
+	return (bool)get_user_preferences('block_exalib_is_reviewer');
+}
+
 /**
  * is creator?
  * @return boolean
@@ -50,13 +54,38 @@ function block_exalib_is_admin() {
 	return has_capability('block/exalib:admin', context_system::instance());
 }
 
-/**
- * block exalib require use
- * @return nothing
- */
-function block_exalib_require_use() {
-	if (!has_capability('block/exalib:use', context_system::instance())) {
+function block_exalib_require_global_cap($cap, $user = null) {
+	// all capabilities require use
+	if (!has_capability('block/exalib:use', context_system::instance(), $user)) {
 		throw new require_login_exception(get_string('notallowed', 'block_exalib'));
+	}
+
+	switch ($cap) {
+		case \block_exalib\CAP_USE:
+			// already checked
+			return;
+		case \block_exalib\CAP_MANAGE_REVIEWERS:
+		case \block_exalib\CAP_MANAGE_CONTENT:
+		case \block_exalib\CAP_MANAGE_CATS:
+			if (!block_exalib_is_admin()) {
+				throw new block_exalib_permission_exception('no admin');
+			}
+
+			return;
+	}
+
+	require_capability('block/exalib:'.$cap, context_system::instance(), $user);
+}
+
+function block_exalib_has_global_cap($cap, $user = null) {
+	try {
+		block_exalib_require_global_cap($cap, $user);
+
+		return true;
+	} catch (block_exalib_permission_exception $e) {
+		return false;
+	} catch (\required_capability_exception $e) {
+		return false;
 	}
 }
 
@@ -65,7 +94,7 @@ function block_exalib_require_use() {
  * @return nothing
  */
 function block_exalib_require_view_item($item_or_id) {
-	block_exalib_require_use();
+	block_exalib_require_global_cap(\block_exalib\CAP_USE);
 
 	if (is_object($item_or_id)) {
 		$item = $item_or_id;
@@ -80,43 +109,49 @@ function block_exalib_require_view_item($item_or_id) {
 	if ($item->created_by == g::$USER->id) {
 		return true;
 	}
-
-	// TODO: is reviewer
-	// TODO: is online
 }
 
-/**
- * block exalib require creator
- * @return nothing
- */
-function block_exalib_require_creator() {
-	block_exalib_require_use();
-	if (!block_exalib_is_creator()) {
-		throw new require_login_exception(get_string('nocreator', 'block_exalib'));
-	}
-}
-
-/**
- * block exalib require admin
- * @return nothing
- */
-function block_exalib_require_admin() {
-	block_exalib_require_use();
-	if (!block_exalib_is_admin()) {
-		throw new require_login_exception(get_string('noadmin', 'block_exalib'));
-	}
+class block_exalib_permission_exception extends \block_exalib\moodle_exception {
 }
 
 /**
  * block exalib require can edit item
  * @param stdClass $item
- * @return nothing
  */
 function block_exalib_require_can_edit_item(stdClass $item) {
-	if (!block_exalib_can_edit_item($item)) {
-		throw new require_login_exception(get_string('noedit', 'block_exalib'));
+	// Admin is allowed.
+	if (block_exalib_is_admin()) {
+		return true;
+	}
+
+	if (block_exalib_is_reviewer() && $item->reviewer_id == g::$USER->id) {
+		return true;
+	}
+
+	// Item creator is allowed when not online
+	if ($item->created_by == g::$USER->id && !$item->online) {
+		return true;
+	}
+
+
+	throw new block_exalib_permission_exception(get_string('noedit', 'block_exalib'));
+}
+
+/**
+ * can edit item ?
+ * @param stdClass $item
+ * @return boolean
+ */
+function block_exalib_can_edit_item(stdClass $item) {
+	try {
+		block_exalib_require_can_edit_item($item);
+
+		return true;
+	} catch (block_exalib_permission_exception $e) {
+		return false;
 	}
 }
+
 
 /**
  * wrote own function, so eclipse knows which type the output renderer is
@@ -156,27 +191,6 @@ function block_exalib_is_kasuistik() {
 function block_exalib_get_url_for_file(stored_file $file) {
 	return moodle_url::make_pluginfile_url($file->get_contextid(), $file->get_component(), $file->get_filearea(),
 		$file->get_itemid(), $file->get_filepath(), $file->get_filename());
-}
-
-/**
- * can edit item ?
- * @param stdClass $item
- * @return boolean
- */
-function block_exalib_can_edit_item(stdClass $item) {
-	global $USER;
-
-	// Admin is allowed.
-	if (block_exalib_is_admin()) {
-		return true;
-	}
-
-	// Item creator is allowed.
-	if ($item->created_by == $USER->id) {
-		return true;
-	} else {
-		return false;
-	};
 }
 
 /**
@@ -241,21 +255,27 @@ class block_exalib_category_manager {
 	/**
 	 * @var $categories - categories
 	 */
-	public static $categories = null;
+	private $categories = null;
 	/**
 	 * @var $categoriesbyparent - categories by parent
 	 */
-	public static $categoriesbyparent = null;
+	private $categoriesbyparent = null;
+
+	private $showAll = true;
+
+	function __construct($showAll) {
+		$this->showAll = $showAll;
+	}
 
 	/**
 	 * get category
 	 * @param integer $categoryid
 	 * @return category
 	 */
-	public static function getcategory($categoryid) {
-		self::load();
+	public function getcategory($categoryid) {
+		$this->load();
 
-		return isset(self::$categories[$categoryid]) ? self::$categories[$categoryid] : null;
+		return isset($this->categories[$categoryid]) ? $this->categories[$categoryid] : null;
 	}
 
 	/**
@@ -263,12 +283,12 @@ class block_exalib_category_manager {
 	 * @param integer $categoryid
 	 * @return array of category
 	 */
-	public static function getcategoryparentids($categoryid) {
-		self::load();
+	public function getcategoryparentids($categoryid) {
+		$this->load();
 
 		$parents = array();
 		for ($i = 0; $i < 100; $i++) {
-			$c = self::getcategory($categoryid);
+			$c = $this->getcategory($categoryid);
 			if ($c) {
 				$parents[] = $c->id;
 				$categoryid = $c->parent_id;
@@ -283,18 +303,13 @@ class block_exalib_category_manager {
 	/**
 	 * walk tree
 	 * @param \Closure $functionbefore
-	 * @param boolean $functionafter
-	 * @return tree item
+	 * @param \Closure $functionafter
+	 * @return string item
 	 */
-	public static function walktree($functionbefore, $functionafter = true) {
-		self::load();
+	public function walktree($functionbefore, $functionafter = null) {
+		$this->load();
 
-		if ($functionafter === true) {
-			$functionafter = $functionbefore;
-			$functionbefore = null;
-		}
-
-		return self::walktreeitem($functionbefore, $functionafter);
+		return $this->walktreeitem($functionbefore, $functionafter);
 	}
 
 	/**
@@ -305,18 +320,18 @@ class block_exalib_category_manager {
 	 * @param integer $parent
 	 * @return output
 	 */
-	static private function walktreeitem($functionbefore, $functionafter, $level = 0, $parent = 0) {
-		if (empty(self::$categoriesbyparent[$parent])) {
+	private function walktreeitem($functionbefore, $functionafter, $level = 0, $parent = 0) {
+		if (empty($this->categoriesbyparent[$parent])) {
 			return;
 		}
 
 		$output = '';
-		foreach (self::$categoriesbyparent[$parent] as $cat) {
+		foreach ($this->categoriesbyparent[$parent] as $cat) {
 			if ($functionbefore) {
 				$output .= $functionbefore($cat);
 			};
 
-			$suboutput = self::walktreeitem($functionbefore, $functionafter, $level + 1, $cat->id);
+			$suboutput = $this->walktreeitem($functionbefore, $functionafter, $level + 1, $cat->id);
 
 			if ($functionafter) {
 				$output .= $functionafter($cat, $suboutput);
@@ -330,7 +345,7 @@ class block_exalib_category_manager {
 	 * create default categories
 	 * @return nothing
 	 */
-	public static function createdefaultcategories() {
+	public function createdefaultcategories() {
 		global $DB;
 
 		if ($DB->get_records('block_exalib_category', null, '', 'id', 0, 1)) {
@@ -353,23 +368,30 @@ class block_exalib_category_manager {
 	 * load object
 	 * @return nothing
 	 */
-	public static function load() {
+	public function load() {
 		global $DB;
 
-		if (self::$categories !== null) {
+		if ($this->categories !== null) {
 			// Already loaded.
 			return;
 		}
 
-		self::createdefaultcategories();
+		$this->createdefaultcategories();
 
-		self::$categories = $DB->get_records_sql("
-        	SELECT category.*, count(DISTINCT item.id) AS cnt
+		/*
+		$fields = [];
+		$join = [];
+		$where = [];
+		$params = [];
+		*/
+
+		$this->categories = $DB->get_records_sql("
+        	SELECT category.*, COUNT(DISTINCT item.id) AS cnt
         	FROM {block_exalib_category} category
         	LEFT JOIN {block_exalib_item_category} ic ON (category.id=ic.category_id)
         	LEFT JOIN {block_exalib_item} item ON item.id=ic.item_id 
         	WHERE 1=1
-        	".(defined('BLOCK_EXALIB_IS_ADMIN_MODE') && BLOCK_EXALIB_IS_ADMIN_MODE ? '' : "
+        	".($this->showAll ? '' : "
 	            AND category.online
     	        AND item.online
         	    AND (item.online_from=0 OR item.online_from IS NULL OR
@@ -378,11 +400,11 @@ class block_exalib_category_manager {
 			GROUP BY category.id
 			ORDER BY name
 		");
-		self::$categoriesbyparent = array();
+		$this->categoriesbyparent = array();
 
-		foreach (self::$categories as &$cat) {
+		foreach ($this->categories as &$cat) {
 
-			self::$categoriesbyparent[$cat->parent_id][$cat->id] = &$cat;
+			$this->categoriesbyparent[$cat->parent_id][$cat->id] = &$cat;
 
 			$cnt = $cat->cnt;
 			$catid = $cat->id;
@@ -402,10 +424,10 @@ class block_exalib_category_manager {
 				};
 				$cat->self_inc_all_sub_ids[] = $catid;
 
-				if (($cat->parent_id > 0) && isset(self::$categories[$cat->parent_id])) {
+				if (($cat->parent_id > 0) && isset($this->categories[$cat->parent_id])) {
 					// ParentCat.
 					$level++;
-					$cat =& self::$categories[$cat->parent_id];
+					$cat =& $this->categories[$cat->parent_id];
 				} else {
 					break;
 				}
@@ -416,12 +438,40 @@ class block_exalib_category_manager {
 }
 
 function block_exalib_get_reviewers() {
-	// TODO
-	return g::$DB->get_records('user');
+	return g::$DB->get_records_sql("
+		SELECT u.*
+		FROM {user} u
+		JOIN {user_preferences} p ON u.id=p.userid AND p.name='block_exalib_is_reviewer'
+		WHERE p.value
+		ORDER BY lastname, firstname
+	");
+}
+
+function block_exalib_handle_item_delete($type) {
+	$id = required_param('id', PARAM_INT);
+	require_sesskey();
+
+	$item = g::$DB->get_record('block_exalib_item', array('id' => $id));
+	block_exalib_require_can_edit_item($item);
+
+	g::$DB->delete_records('block_exalib_item', array('id' => $id));
+	g::$DB->delete_records('block_exalib_item_category', array("item_id" => $id));
+
+	if ($type == 'mine') {
+		redirect('mine.php');
+	} else {
+		redirect('admin.php');
+	}
+
+	exit;
 }
 
 function block_exalib_handle_item_edit($type = '', $show) {
 	global $CFG, $USER;
+
+	if ($show == 'delete') {
+		block_exalib_handle_item_delete($type);
+	}
 
 	require_once($CFG->libdir.'/formslib.php');
 
@@ -432,7 +482,6 @@ function block_exalib_handle_item_edit($type = '', $show) {
 	if ($show == 'add') {
 		$id = 0;
 		$item = new StdClass;
-		$item->contentformat = FORMAT_HTML;
 
 		// block_exalib_require_creator();
 	} else {
@@ -444,6 +493,9 @@ function block_exalib_handle_item_edit($type = '', $show) {
 		$item->contentformat = FORMAT_HTML;
 		$item = file_prepare_standard_editor($item, 'content', $textfieldoptions, context_system::instance(),
 			'block_exalib', 'item_content', $item->id);
+		$item->abstractformat = FORMAT_HTML;
+		$item = file_prepare_standard_editor($item, 'abstract', $textfieldoptions, context_system::instance(),
+			'block_exalib', 'item_abstract', $item->id);
 		$item = file_prepare_standard_filemanager($item, 'file', $fileoptions, context_system::instance(),
 			'block_exalib', 'item_file', $item->id);
 		$item = file_prepare_standard_filemanager($item, 'preview_image', $fileoptions, context_system::instance(),
@@ -472,8 +524,9 @@ function block_exalib_handle_item_edit($type = '', $show) {
 				$mform->addElement('text', 'source', get_string('source', 'block_exalib'), 'size="100"');
 				$mform->setType('source', PARAM_TEXT);
 			} else {
-				$values = block_exalib_get_reviewers();
-				$mform->addElement('select', 'reviewerid', \block_exalib\trans('de:Reviewer'), $values);
+				$values = array_map('fullname', block_exalib_get_reviewers());
+				$values = ['' => ''] + $values;
+				$mform->addElement('select', 'reviewer_id', \block_exalib\trans('de:Reviewer'), $values);
 				$mform->addRule('reviewer_id', get_string('requiredelement', 'form'), 'required');
 
 				/*
@@ -523,11 +576,9 @@ function block_exalib_handle_item_edit($type = '', $show) {
 
 			if ($this->_customdata['type'] != 'mine') {
 				$mform->addElement('header', 'onlineheader', get_string('onlineset', 'block_exalib'));
-			}
 
-			$mform->addElement('checkbox', 'online', \block_exalib\get_string('online'));
+				$mform->addElement('advcheckbox', 'online', \block_exalib\get_string('online'));
 
-			if ($this->_customdata['type'] != 'mine') {
 				$mform->addElement('date_selector', 'online_from', get_string('onlinefrom', 'block_exalib'), array(
 					'startyear' => 2014,
 					'stopyear' => date('Y'),
@@ -538,6 +589,8 @@ function block_exalib_handle_item_edit($type = '', $show) {
 					'stopyear' => date('Y'),
 					'optional' => true,
 				));
+			} elseif (block_exalib_is_reviewer()) {
+				$mform->addElement('advcheckbox', 'online', \block_exalib\get_string('online'));
 			}
 
 			$mform->addElement('header', 'categoriesheader', get_string('categories', 'block_exalib'));
@@ -552,7 +605,9 @@ function block_exalib_handle_item_edit($type = '', $show) {
 		 * @return checkbox
 		 */
 		public function get_categories() {
-			return block_exalib_category_manager::walktree(function($cat, $suboutput) {
+			$mgr = new block_exalib_category_manager(true);
+
+			return $mgr->walktree(null, function($cat, $suboutput) {
 				return '<div style="padding-left: '.(20 * $cat->level).'px;">'.
 				'<input type="checkbox" name="categories[]" value="'.$cat->id.'" '.
 				(in_array($cat->id, $this->_customdata['itemCategories']) ? 'checked ' : '').'/>'.
@@ -581,20 +636,20 @@ function block_exalib_handle_item_edit($type = '', $show) {
 		if ($fromform = $itemeditform->get_data()) {
 			// Edit/add.
 
+			if ($type == 'mine' && !($item->id && $item->reviewer_id == $USER->id)) {
+				// normal user items should be offline first
+				$fromform->online = false;
+			}
+
 			if (!empty($item->id)) {
 				$fromform->id = $item->id;
 				$fromform->modified_by = $USER->id;
 				$fromform->time_modified = time();
 			} else {
-				try {
-					$fromform->created_by = $USER->id;
-					$fromform->time_created = time();
-					$fromform->time_modified = 0;
-					$fromform->id = g::$DB->insert_record('block_exalib_item', $fromform);
-				} catch (Exception $e) {
-					var_dump($e);
-					exit;
-				}
+				$fromform->created_by = $USER->id;
+				$fromform->time_created = time();
+				$fromform->time_modified = 0;
+				$fromform->id = g::$DB->insert_record('block_exalib_item', $fromform);
 			}
 
 			$fromform->contentformat = FORMAT_HTML;
@@ -605,6 +660,15 @@ function block_exalib_handle_item_edit($type = '', $show) {
 				'block_exalib',
 				'item_content',
 				$fromform->id);
+			$fromform->abstractformat = FORMAT_HTML;
+			$fromform = file_postupdate_standard_editor($fromform,
+				'abstract',
+				$textfieldoptions,
+				context_system::instance(),
+				'block_exalib',
+				'item_content',
+				$fromform->id);
+
 			g::$DB->update_record('block_exalib_item', $fromform);
 
 			// Save file.
@@ -626,8 +690,8 @@ function block_exalib_handle_item_edit($type = '', $show) {
 
 			// Save categories.
 			g::$DB->delete_records('block_exalib_item_category', array("item_id" => $fromform->id));
-			$categories_request = optional_param_array('categories', null, PARAM_INT);
-			foreach ($categories_request as $tmp => $categoryidforinsert) {
+			$categories_request = \block_exalib\param::optional_array('categories', PARAM_INT);
+			foreach ($categories_request as $categoryidforinsert) {
 				g::$DB->execute('INSERT INTO {block_exalib_item_category} (item_id, category_id) VALUES (?, ?)',
 					array($fromform->id, $categoryidforinsert));
 			}
@@ -640,7 +704,7 @@ function block_exalib_handle_item_edit($type = '', $show) {
 			if ($type == 'mine') {
 				redirect('mine.php');
 			} else {
-
+				redirect('admin.php');
 			}
 			exit;
 
@@ -657,4 +721,12 @@ function block_exalib_handle_item_edit($type = '', $show) {
 			echo $output->footer();
 		}
 	}
+}
+
+function block_exalib_format_url($url) {
+	if (!preg_match('!^.*://!', $url)) {
+		$url = 'http://'.$url;
+	}
+
+	return $url;
 }

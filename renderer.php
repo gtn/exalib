@@ -46,9 +46,15 @@ class block_exalib_renderer extends plugin_renderer_base {
 		$tabs[] = new tabobject('tab_library', new moodle_url('/blocks/exalib/index.php', ['courseid' => g::$COURSE->id]), \block_exalib\get_string("heading"), '', true);
 		$tabs[] = new tabobject('tab_mine', new moodle_url('/blocks/exalib/mine.php', ['courseid' => g::$COURSE->id]), \block_exalib\get_string("tab_mine"), '', true);
 
-		if (block_exalib_is_creator()) {
-			$tabs[] = new tabobject('tab_managecontent', new moodle_url('/blocks/exalib/admin.php', ['courseid' => g::$COURSE->id]), \block_exalib\get_string("tab_managecontent"), '', true);
-			$tabs[] = new tabobject('tab_managecats', new moodle_url('/blocks/exalib/admin.php', ['courseid' => g::$COURSE->id, 'show' => 'categories']), \block_exalib\get_string("tab_managecats"), '', true);
+		if (block_exalib_has_global_cap(\block_exalib\CAP_MANAGE_CONTENT)) {
+			$tabs[] = new tabobject('tab_manage_content', new moodle_url('/blocks/exalib/admin.php', ['courseid' => g::$COURSE->id]), \block_exalib\get_string("tab_manage_content"), '', true);
+		}
+		if (block_exalib_has_global_cap(\block_exalib\CAP_MANAGE_CATS)) {
+			$tabs[] = new tabobject('tab_manage_cats', new moodle_url('/blocks/exalib/admin.php', ['courseid' => g::$COURSE->id, 'show' => 'categories']), \block_exalib\get_string("tab_manage_cats"), '', true);
+		}
+
+		if (block_exalib_has_global_cap(\block_exalib\CAP_MANAGE_REVIEWERS)) {
+			$tabs[] = new tabobject('tab_manage_reviewers', new moodle_url('/blocks/exalib/reviewers.php', ['courseid' => g::$COURSE->id]), \block_exalib\get_string("tab_manage_reviewers"), '', true);
 		}
 
 		$tabtree = new tabtree($tabs);
@@ -177,6 +183,7 @@ class block_exalib_renderer extends plugin_renderer_base {
 				false);
 			$previewimage = reset($areafiles);
 
+			/*
 			$linkurl = '';
 			$linktext = '';
 			$linktextprefix = '';
@@ -189,7 +196,7 @@ class block_exalib_renderer extends plugin_renderer_base {
 					if (strpos($item->link, 'rtmp://') === 0) {
 						$linkurl = 'detail.php?itemid='.$item->id.'&back='.g::$PAGE->url->out_as_local_url();
 					} else {
-						$linkurl = $item->link;
+						$linkurl = block_exalib_format_url($item->link);
 						$linktext = trim($item->link_titel) ? $item->link_titel : $item->link;
 						$targetnewwindow = true;
 					}
@@ -202,10 +209,22 @@ class block_exalib_renderer extends plugin_renderer_base {
 			if (!$linkurl) {
 				$linkurl = 'detail.php?itemid='.$item->id.($type !== 'public' ? '&type='.$type : '').'&back='.g::$PAGE->url->out_as_local_url();
 			}
+			*/
 
 			echo '<div class="library-item">';
 
-			echo '<a class="head" href="'.$linkurl.($targetnewwindow ? '" target="_blank' : '').'">'.$item->name.'</a>';
+			$linkurl = 'detail.php?itemid='.$item->id.($type !== 'public' ? '&type='.$type : '').'&back='.g::$PAGE->url->out_as_local_url();
+			echo '<a class="head" href="'.$linkurl.'">'.$item->name.'</a>';
+
+			if ($type != 'public') {
+				echo '<div><span class="libary_author">'.\block_exalib\trans('de:Status').':</span> ';
+				if ($item->online) {
+					echo \block_exalib\get_string('online');
+				} else {
+					echo \block_exalib\get_string('offline');
+				}
+				echo '</div>';
+			}
 
 			if ($previewimage) {
 				$url = "{$CFG->wwwroot}/pluginfile.php/{$previewimage->get_contextid()}/block_exalib/item_file/".
@@ -213,14 +232,6 @@ class block_exalib_renderer extends plugin_renderer_base {
 				echo '<div><img src="'.$url.'" /></div>';
 			}
 
-			/*
-			if ($item->content) {
-				echo '<div class="libary_content">'.$item->content.'</div>';
-			}
-			*/
-			if ($item->source) {
-				echo '<div><span class="libary_author">'.get_string('source', 'block_exalib').':</span> '.$item->source.'</div>';
-			}
 			if ($item->authors) {
 				echo '<div><span class="libary_author">'.get_string('authors', 'block_exalib').':</span> '.$item->authors.'</div>';
 			}
@@ -242,13 +253,11 @@ class block_exalib_renderer extends plugin_renderer_base {
 				echo '</div>';
 			}
 
-			if ($linktext) {
-				echo '<div>';
-				if ($linktextprefix) {
-					echo '<span class="libary_author">'.$linktextprefix.'</span> ';
-				};
-				echo '<a href="'.$linkurl.($targetnewwindow ? '" target="_blank"' : '').'">'.$linktext.'</a>';
-				echo '</div>';
+			if ($item->abstract) {
+				echo '<div class="libary_content">'.$item->abstract.'</div>';
+			}
+			if ($item->source) {
+				echo '<div><span class="libary_author">'.get_string('source', 'block_exalib').':</span> '.$item->source.'</div>';
 			}
 
 			if ($files) {
@@ -260,9 +269,10 @@ class block_exalib_renderer extends plugin_renderer_base {
 
 			if ($type != 'public' && block_exalib_can_edit_item($item)) {
 				echo '<span class="library-item-buttons">';
-				echo '<input type="button" exa-type="link" href="admin.php?show=edit&type='.$type.'&id='.$item->id.'" value="'.get_string('edit', 'block_exalib').'"/>';
-				echo '<input type="button" exa-type="link" href="admin.php?show=delete&type='.$type.'&id='.$item->id.'&sesskey='.sesskey().'" value="'.get_string('delete', 'block_exalib').'"
-				exa-confirm="'.s(\block_exalib\get_string('delete_confirmation', null, $item->name)).'"/>';
+				echo $this->link_button($type.'.php?show=edit&type='.$type.'&id='.$item->id, get_string('edit', 'block_exalib'));
+				echo $this->link_button($type.'.php?show=delete&type='.$type.'&id='.$item->id.'&sesskey='.sesskey(), get_string('delete', 'block_exalib'), [
+					'exa-confirm' => \block_exalib\get_string('delete_confirmation', null, $item->name),
+				]);
 				echo '</span>';
 			}
 

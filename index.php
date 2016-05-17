@@ -25,9 +25,9 @@ require __DIR__.'/inc.php';
 
 
 if (BLOCK_EXALIB_IS_ADMIN_MODE) {
-    block_exalib_require_creator();
+    block_exalib_require_global_cap(\block_exalib\CAP_MANAGE_CONTENT);
 } else {
-    block_exalib_require_use();
+    block_exalib_require_global_cap(\block_exalib\CAP_USE);
 }
 
 
@@ -54,9 +54,10 @@ if (BLOCK_EXALIB_IS_ADMIN_MODE) {
 */
 
 
-$currentcategory = block_exalib_category_manager::getcategory($categoryid);
+$mgr = new block_exalib_category_manager(BLOCK_EXALIB_IS_ADMIN_MODE);
+$currentcategory = $mgr->getcategory($categoryid);
 $currentcategorysubids = $currentcategory ? $currentcategory->self_inc_all_sub_ids : array(-9999);
-$currentcategoryparents = block_exalib_category_manager::getcategoryparentids($categoryid);
+$currentcategoryparents = $mgr->getcategoryparentids($categoryid);
 
 if (BLOCK_EXALIB_IS_ADMIN_MODE) {
     require('admin.actions.inc.php');
@@ -179,7 +180,7 @@ if(!$items->valid())	$items=Array();
 
 $output = block_exalib_get_renderer();
 
-echo $output->header(BLOCK_EXALIB_IS_ADMIN_MODE ? 'tab_managecontent' : null);
+echo $output->header(BLOCK_EXALIB_IS_ADMIN_MODE ? 'tab_manage_content' : null);
 
 ?>
 <div class="block_exalib_lib">
@@ -260,15 +261,12 @@ if (false && !$filterid) {
         exit;
 }
 */
-?>
 
-<h1 class="libary_head"><?php
-echo get_string('heading', 'block_exalib');
 if ($currentcategory) {
-    echo ': '.$currentcategory->name;
-};
-?></h1>
+    $PAGE->set_heading(get_string('heading', 'block_exalib').': '.$currentcategory->name);
+}
 
+?>
 <div class="library_categories">
 
 <form method="get" action="<?php echo $urlsearch; ?>">
@@ -289,7 +287,7 @@ endif;
 <?php
 
 echo '<div id="exalib-categories"><ul>';
-echo block_exalib_category_manager::walktree(function($cat, $suboutput) {
+echo $mgr->walktree(null, function($cat, $suboutput) {
     global $urlcategory, $categoryid, $currentcategoryparents;
 
     if (!BLOCK_EXALIB_IS_ADMIN_MODE && !$cat->cnt_inc_subs) {

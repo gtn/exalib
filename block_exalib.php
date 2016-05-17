@@ -82,11 +82,11 @@ class block_exalib extends block_list {
 			get_string('heading', 'block_exalib').
 			'</a>';
 
-		if (block_exalib_is_creator()) {
+		if (block_exalib_has_global_cap(\block_exalib\CAP_MANAGE_CONTENT)) {
 			$icon = '<img src="'.$OUTPUT->pix_url('module_config', 'block_exalib').'" class="icon" alt="" />';
-			$this->content->items[] = '<a title="'.get_string('tab_managecontent', 'block_exalib').'"
+			$this->content->items[] = '<a title="'.get_string('tab_manage_content', 'block_exalib').'"
                 href="'.$CFG->wwwroot.'/blocks/exalib/admin.php?courseid='.$COURSE->id.'">'.$icon.
-				get_string('tab_managecontent', 'block_exalib').'</a>';
+				get_string('tab_manage_content', 'block_exalib').'</a>';
 		}
 
 		return $this->content;
