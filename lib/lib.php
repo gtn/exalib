@@ -261,10 +261,10 @@ class block_exalib_category_manager {
 	 */
 	private $categoriesbyparent = null;
 
-	private $showAll = true;
+	private $showOflineToo = true;
 
-	function __construct($showAll) {
-		$this->showAll = $showAll;
+	function __construct($showOflineToo) {
+		$this->showOflineToo = $showOflineToo;
 	}
 
 	/**
@@ -329,13 +329,13 @@ class block_exalib_category_manager {
 		foreach ($this->categoriesbyparent[$parent] as $cat) {
 			if ($functionbefore) {
 				$output .= $functionbefore($cat);
-			};
+			}
 
 			$suboutput = $this->walktreeitem($functionbefore, $functionafter, $level + 1, $cat->id);
 
 			if ($functionafter) {
 				$output .= $functionafter($cat, $suboutput);
-			};
+			}
 		}
 
 		return $output;
@@ -386,54 +386,69 @@ class block_exalib_category_manager {
 		*/
 
 		$this->categories = $DB->get_records_sql("
-        	SELECT category.*, COUNT(DISTINCT item.id) AS cnt
+        	SELECT category.*
         	FROM {block_exalib_category} category
-        	LEFT JOIN {block_exalib_item_category} ic ON (category.id=ic.category_id)
-        	LEFT JOIN {block_exalib_item} item ON item.id=ic.item_id 
         	WHERE 1=1
-        	".($this->showAll ? '' : "
+        	".($this->showOflineToo ? '' : "
 	            AND category.online
-    	        AND item.online
-        	    AND (item.online_from=0 OR item.online_from IS NULL OR
-                    (item.online_from <= ".time()." AND item.online_to >= ".time()."))
 			")."
-			GROUP BY category.id
 			ORDER BY name
 		");
 		$this->categoriesbyparent = array();
 
-		foreach ($this->categories as &$cat) {
+		$item_category_ids = iterator_to_array($DB->get_recordset_sql("
+        	SELECT item.id AS item_id, ic.category_id
+        	FROM {block_exalib_item} item
+        	JOIN {block_exalib_item_category} ic ON item.id=ic.item_id
+        	WHERE 1=1
+        	".($this->showOflineToo ? '' : "
+    	        AND item.online
+        	    AND (item.online_from=0 OR item.online_from IS NULL OR
+                    (item.online_from <= ".time()." AND item.online_to >= ".time()."))
+			")."
+		"), false);
 
-			$this->categoriesbyparent[$cat->parent_id][$cat->id] = &$cat;
-
-			$cnt = $cat->cnt;
-			$catid = $cat->id;
-
+		// init
+		foreach ($this->categories as $cat) {
+			$cat->self_inc_all_sub_ids = [$cat->id => $cat->id];
+			$cat->cnt_inc_subs = [];
+			$cat->item_ids = [];
+			$cat->item_ids_inc_subs = [];
+			$cat->cnt = 0;
 			$cat->level = 0;
-			$level =& $cat->level;
+		}
 
-			// Find parents.
-			while (true) {
-				if (!isset($cat->cnt_inc_subs)) {
-					$cat->cnt_inc_subs = 0;
-				};
-				$cat->cnt_inc_subs += $cnt;
+		// add items for counting
+		foreach ($item_category_ids as $item_category) {
+			if (!isset($this->categories[$item_category->category_id])) {
+				continue;
+			}
 
-				if (!isset($cat->self_inc_all_sub_ids)) {
-					$cat->self_inc_all_sub_ids = array();
-				};
-				$cat->self_inc_all_sub_ids[] = $catid;
+			$this->categories[$item_category->category_id]->item_ids[$item_category->item_id] = $item_category->item_id;
+			$this->categories[$item_category->category_id]->item_ids_inc_subs[$item_category->item_id] = $item_category->item_id;
+		}
 
-				if (($cat->parent_id > 0) && isset($this->categories[$cat->parent_id])) {
-					// ParentCat.
-					$level++;
-					$cat =& $this->categories[$cat->parent_id];
-				} else {
-					break;
-				}
+		foreach ($this->categories as $cat) {
+
+			$this->categoriesbyparent[$cat->parent_id][$cat->id] = $cat;
+			$catLeaf = $cat;
+
+			// find parents
+			while ($cat->parent_id && isset($this->categories[$cat->parent_id])) {
+				// has parent
+				$parentCat = $this->categories[$cat->parent_id];
+				$catLeaf->level++;
+				$parentCat->self_inc_all_sub_ids += $cat->self_inc_all_sub_ids;
+				$parentCat->item_ids_inc_subs += $cat->item_ids_inc_subs;
+
+				$cat = $parentCat;
 			}
 		}
-		unset($cat);
+
+		// count unique ids
+		foreach ($this->categories as $cat) {
+			$cat->cnt_inc_subs = count($cat->item_ids_inc_subs);
+		}
 	}
 }
 

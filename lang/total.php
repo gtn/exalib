@@ -332,4 +332,10 @@ return [
 		'Soll "{$a}" wirklich gelöscht werden?',
 		'Do you really want to delete "{$a}"?',
 	],
+
+	'comment_delete_confirmation' => [
+		'Wollen Sie wirklich diesen Kommentar löschen?',
+		'Do you really want to delete this comment?',
+	],
+
 ];

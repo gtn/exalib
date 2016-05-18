@@ -50,7 +50,7 @@
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
       </KEYS>
     </TABLE>
-	<TABLE NAME="block_exalib_item" COMMENT="comments for the items">
+	<TABLE NAME="block_exalib_item_comments" COMMENT="comments for the items">
 	  <FIELDS>
 		<FIELD NAME="id" TYPE="int" LENGTH="20" NOTNULL="true" SEQUENCE="true"/>
 		<FIELD NAME="itemid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>

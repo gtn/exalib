@@ -108,3 +108,4 @@ $string['by_person'] = 'by {$a}';
 $string['maincat'] = 'Main Category';
 $string['subcat'] = 'Sub Category';
 $string['delete_confirmation'] = 'Do you really want to delete "{$a}"?';
+$string['comment_delete_confirmation'] = 'Do you really want to delete this comment?';

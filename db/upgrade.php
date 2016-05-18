@@ -22,7 +22,7 @@ function xmldb_block_exalib_upgrade($oldversion) {
 	$dbman = $DB->get_manager();
 	$result = true;
 
-	if ($oldversion < 2015051302) {
+	if ($oldversion < 2015051300) {
 		// Define field reviewer_id to be added to block_exalib_item.
 		$table = new xmldb_table('block_exalib_item');
 
@@ -52,7 +52,7 @@ function xmldb_block_exalib_upgrade($oldversion) {
 		$DB->execute("UPDATE {block_exalib_category} SET hidden=1 WHERE hidden <> 9 OR hidden IS NULL");
 		$DB->execute("UPDATE {block_exalib_category} SET hidden=0 WHERE hidden = 9");
 
-		
+
 		$table = new xmldb_table('block_exalib_category');
 
 		$field = new xmldb_field('hidden', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '1', 'name');
@@ -62,8 +62,31 @@ function xmldb_block_exalib_upgrade($oldversion) {
 		$dbman->change_field_default($table, $field);
 		$dbman->change_field_notnull($table, $field);
 
+
+		// Define table block_exalib_item_comments to be created.
+		$table = new xmldb_table('block_exalib_item_comments');
+
+		// Adding fields to table block_exalib_item_comments.
+		$table->add_field('id', XMLDB_TYPE_INTEGER, '20', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+		$table->add_field('itemid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+		$table->add_field('userid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+		$table->add_field('text', XMLDB_TYPE_TEXT, null, null, XMLDB_NOTNULL, null, null);
+		$table->add_field('time_created', XMLDB_TYPE_INTEGER, '11', null, XMLDB_NOTNULL, null, '0');
+		$table->add_field('time_modified', XMLDB_TYPE_INTEGER, '11', null, XMLDB_NOTNULL, null, '0');
+		$table->add_field('rating', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+
+		// Adding keys to table block_exalib_item_comments.
+		$table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+		$table->add_key('userid', XMLDB_KEY_FOREIGN, array('userid'), 'user', array('id'));
+		$table->add_key('itemid', XMLDB_KEY_FOREIGN, array('itemid'), 'block_exalib_item', array('id'));
+
+		// Conditionally launch create table for block_exalib_item_comments.
+		if (!$dbman->table_exists($table)) {
+			$dbman->create_table($table);
+		}
+
 		// Exalib savepoint reached.
-		upgrade_block_savepoint(true, 2015051302, 'exalib');
+		upgrade_block_savepoint(true, 2015051300, 'exalib');
 	}
 
 	return $result;

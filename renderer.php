@@ -244,7 +244,7 @@ class block_exalib_renderer extends plugin_renderer_base {
 				}
 				echo '</div>';
 			}
-			if ($item->time_modified) {
+			if ($item->time_modified > $item->time_created) {
 				echo '<div><span class="libary_author">'.\block_exalib\trans(['en:Last Modified', 'de:Zulätzt geändert']).':</span> '.
 					userdate($item->time_modified);
 				if ($item->modified_by && $tmpuser = $DB->get_record('user', array('id' => $item->modified_by))) {

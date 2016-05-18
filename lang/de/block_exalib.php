@@ -108,3 +108,4 @@ $string['by_person'] = 'von {$a}';
 $string['maincat'] = 'Hauptkategorie';
 $string['subcat'] = 'Subkategorie';
 $string['delete_confirmation'] = 'Soll "{$a}" wirklich gelöscht werden?';
+$string['comment_delete_confirmation'] = 'Wollen Sie wirklich diesen Kommentar löschen?';
