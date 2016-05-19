@@ -69,6 +69,10 @@ return [
 		'Reviewers',
 		'Reviewers',
 	],
+	'tab_fachsprachliches_lexikon' => [
+		'Fachsprachliches Lexikon',
+		'Terminology Index',
+	],
 
 
 	// admin-actions-inc

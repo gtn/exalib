@@ -32,6 +32,7 @@ $string['tab_mine'] = 'Meine Fälle';
 $string['tab_manage_content'] = 'Inhalte bearbeiten';
 $string['tab_manage_cats'] = 'Kategorien barbeiten';
 $string['tab_manage_reviewers'] = 'Reviewers';
+$string['tab_fachsprachliches_lexikon'] = 'Fachsprachliches Lexikon';
 
 
 // admin-actions-inc

@@ -57,20 +57,28 @@ function block_exalib_is_admin() {
 function block_exalib_require_global_cap($cap, $user = null) {
 	// all capabilities require use
 	if (!has_capability('block/exalib:use', context_system::instance(), $user)) {
-		throw new require_login_exception(get_string('notallowed', 'block_exalib'));
+		if (!g::$USER->id) {
+			// not logged in and no guest
+			require_login();
+		} else {
+			throw new require_login_exception(get_string('notallowed', 'block_exalib'));
+		}
 	}
 
 	switch ($cap) {
 		case \block_exalib\CAP_USE:
 			// already checked
 			return;
-		case \block_exalib\CAP_MANAGE_REVIEWERS:
 		case \block_exalib\CAP_MANAGE_CONTENT:
 		case \block_exalib\CAP_MANAGE_CATS:
+			if (!block_exalib_is_creator()) {
+				throw new block_exalib_permission_exception('no creator');
+			}
+			return;
+		case \block_exalib\CAP_MANAGE_REVIEWERS:
 			if (!block_exalib_is_admin()) {
 				throw new block_exalib_permission_exception('no admin');
 			}
-
 			return;
 	}
 
@@ -106,9 +114,22 @@ function block_exalib_require_view_item($item_or_id) {
 		throw new moodle_exception('item not found');
 	}
 
-	if ($item->created_by == g::$USER->id) {
+	if ($item->created_by == g::$USER->id || $item->reviewer_id == g::$USER->id) {
+		// creator and reviewer can view it
 		return true;
 	}
+
+	if ($item->online) {
+		// all online items can be viewed
+		return true;
+	}
+
+	if (block_exalib_has_global_cap(block_exalib\CAP_MANAGE_CONTENT)) {
+		// admin can view
+		return true;
+	}
+
+	throw new block_exalib_permission_exception('not allowed');
 }
 
 class block_exalib_permission_exception extends \block_exalib\moodle_exception {
@@ -119,8 +140,7 @@ class block_exalib_permission_exception extends \block_exalib\moodle_exception {
  * @param stdClass $item
  */
 function block_exalib_require_can_edit_item(stdClass $item) {
-	// Admin is allowed.
-	if (block_exalib_is_admin()) {
+	if (block_exalib_has_global_cap(block_exalib\CAP_MANAGE_CONTENT)) {
 		return true;
 	}
 
@@ -128,11 +148,10 @@ function block_exalib_require_can_edit_item(stdClass $item) {
 		return true;
 	}
 
-	// Item creator is allowed when not online
+	// Item creator can edit when not online
 	if ($item->created_by == g::$USER->id && !$item->online) {
 		return true;
 	}
-
 
 	throw new block_exalib_permission_exception(get_string('noedit', 'block_exalib'));
 }
@@ -651,7 +670,7 @@ function block_exalib_handle_item_edit($type = '', $show) {
 		if ($fromform = $itemeditform->get_data()) {
 			// Edit/add.
 
-			if ($type == 'mine' && !($item->id && $item->reviewer_id == $USER->id)) {
+			if ($type == 'mine' && (empty($item->id) || $item->reviewer_id == $USER->id)) {
 				// normal user items should be offline first
 				$fromform->online = false;
 			}
@@ -744,4 +763,38 @@ function block_exalib_format_url($url) {
 	}
 
 	return $url;
+}
+
+function block_exalib_get_fachsprachliches_lexikon_id() {
+	return g::$DB->get_field('data', 'id', ['name' => 'Fachsprachliches Lexikon']);
+}
+
+function block_exalib_get_fachsprachliches_lexikon_items() {
+	$dataid = block_exalib_get_fachsprachliches_lexikon_id();
+	$fields = g::$DB->get_records_menu('data_fields', ['dataid' => $dataid], '', 'id, name');
+	foreach ($fields as $key => $value) {
+		$fields[$key] = strtolower(substr($value, 0, 4));
+	}
+
+	$values = g::$DB->get_records_sql("
+		SELECT data_content.id, data_content.recordid, data_content.fieldid, data_content.content
+		FROM {data_records} data_records
+		JOIN {data_content} data_content ON data_content.recordid = data_records.id
+		WHERE data_records.dataid = ?
+	", [$dataid]);
+
+	$records = [];
+	foreach ($values as $value) {
+		if (!isset($records[$value->recordid])) {
+			$records[$value->recordid] = new stdClass;
+		}
+
+		$records[$value->recordid]->{$fields[$value->fieldid]} = $value->content;
+	}
+
+	usort($records, function($a, $b) {
+		return strcmp($a->{'fach'}, $b->{'fach'});
+	});
+
+	return $records;
 }

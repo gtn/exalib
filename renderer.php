@@ -57,6 +57,10 @@ class block_exalib_renderer extends plugin_renderer_base {
 			$tabs[] = new tabobject('tab_manage_reviewers', new moodle_url('/blocks/exalib/reviewers.php', ['courseid' => g::$COURSE->id]), \block_exalib\get_string("tab_manage_reviewers"), '', true);
 		}
 
+		if (block_exalib_get_fachsprachliches_lexikon_id()) {
+			$tabs[] = new tabobject('tab_fachsprachliches_lexikon', new moodle_url('/blocks/exalib/fachsprachliches_lexikon.php', ['courseid' => g::$COURSE->id]), \block_exalib\get_string("tab_fachsprachliches_lexikon"), '', true);
+		}
+
 		$tabtree = new tabtree($tabs);
 
 		g::$PAGE->navbar->add(get_string('heading', 'block_exalib'), new moodle_url('/blocks/exalib'));

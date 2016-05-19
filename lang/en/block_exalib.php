@@ -32,6 +32,7 @@ $string['tab_mine'] = 'My Entries';
 $string['tab_manage_content'] = 'Manage Library Content';
 $string['tab_manage_cats'] = 'Manage Categories';
 $string['tab_manage_reviewers'] = 'Reviewers';
+$string['tab_fachsprachliches_lexikon'] = 'Terminology Index';
 
 
 // admin-actions-inc

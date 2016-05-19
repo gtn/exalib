@@ -19,7 +19,6 @@
 
 require __DIR__.'/inc.php';
 
-require_login();
 block_exalib_require_global_cap(\block_exalib\CAP_USE);
 
 $forward = required_param('forward', PARAM_LOCALURL);
@@ -36,7 +35,7 @@ $PAGE->set_course($SITE);
 $PAGE->set_pagelayout('login');
 
 $output = block_exalib_get_renderer();
-$output->init_js_css();
+$output->init_js_css(); // needed for javascript buttons
 
 echo $OUTPUT->header();
 

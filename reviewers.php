@@ -27,8 +27,6 @@ $searchtext	 = optional_param('searchtext', '', PARAM_TEXT); // search string
 $add			= optional_param('add', 0, PARAM_BOOL);
 $remove		 = optional_param('remove', 0, PARAM_BOOL);
 
-require_login($courseid);
-
 block_exalib_require_global_cap(\block_exalib\CAP_MANAGE_REVIEWERS);
 
 $output = block_exalib_get_renderer();
