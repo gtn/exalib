@@ -74,11 +74,13 @@ function block_exalib_require_global_cap($cap, $user = null) {
 			if (!block_exalib_is_creator()) {
 				throw new block_exalib_permission_exception('no creator');
 			}
+
 			return;
 		case \block_exalib\CAP_MANAGE_REVIEWERS:
 			if (!block_exalib_is_admin()) {
 				throw new block_exalib_permission_exception('no admin');
 			}
+
 			return;
 	}
 
@@ -119,7 +121,7 @@ function block_exalib_require_view_item($item_or_id) {
 		return true;
 	}
 
-	if ($item->online) {
+	if ($item->online > 0) {
 		// all online items can be viewed
 		return true;
 	}
@@ -144,12 +146,12 @@ function block_exalib_require_can_edit_item(stdClass $item) {
 		return true;
 	}
 
-	if (block_exalib_is_reviewer() && $item->reviewer_id == g::$USER->id) {
+	if (block_exalib_is_reviewer() && $item->reviewer_id == g::$USER->id && $item->online != \block_exalib\ITEM_STATE_NEW) {
 		return true;
 	}
 
-	// Item creator can edit when not online
-	if ($item->created_by == g::$USER->id && !$item->online) {
+	// Item creator can edit when not freigegeben
+	if ($item->created_by == g::$USER->id && $item->online == \block_exalib\ITEM_STATE_NEW) {
 		return true;
 	}
 
@@ -421,7 +423,7 @@ class block_exalib_category_manager {
         	JOIN {block_exalib_item_category} ic ON item.id=ic.item_id
         	WHERE 1=1
         	".($this->showOflineToo ? '' : "
-    	        AND item.online
+    	        AND item.online > 0
         	    AND (item.online_from=0 OR item.online_from IS NULL OR
                     (item.online_from <= ".time()." AND item.online_to >= ".time()."))
 			")."
@@ -505,6 +507,38 @@ function block_exalib_handle_item_edit($type = '', $show) {
 
 	if ($show == 'delete') {
 		block_exalib_handle_item_delete($type);
+	}
+
+	if ($show == 'change_state') {
+		$id = required_param('id', PARAM_INT);
+		$state = required_param('state', PARAM_INT);
+		require_sesskey();
+
+		$item = g::$DB->get_record('block_exalib_item', array('id' => $id));
+		block_exalib_require_can_edit_item($item);
+
+		/*
+		if ($item->created_by == g::$USER->id && $item->online == \block_exalib\ITEM_STATE_NEW && $state == \block_exalib\ITEM_STATE_IN_REVIEW) {
+			// ok
+		} elseif ($item->online == 0 || $item->online == \block_exalib\ITEM_STATE_IN_REVIEW && $state == \block_exalib\ITEM_STATE_NEW) {
+			// ok
+		} else {
+			throw new moodle_exception('not allowed');
+		}
+		*/
+
+		g::$DB->update_record('block_exalib_item', [
+			'id' => $item->id,
+			'online' => $state,
+		]);
+
+		if ($type == 'mine') {
+			redirect('mine.php');
+		} else {
+			redirect('admin.php');
+		}
+
+		exit;
 	}
 
 	require_once($CFG->libdir.'/formslib.php');
@@ -624,7 +658,13 @@ function block_exalib_handle_item_edit($type = '', $show) {
 					'optional' => true,
 				));
 			} elseif (block_exalib_is_reviewer()) {
-				$mform->addElement('advcheckbox', 'online', \block_exalib\get_string('online'));
+				// $mform->addElement('advcheckbox', 'online', \block_exalib\get_string('online'));
+
+				$radioarray = array();
+				$radioarray[] = $mform->createElement('radio', 'online', '', \block_exalib\trans('de:in review'), \block_exalib\ITEM_STATE_IN_REVIEW);
+				$radioarray[] = $mform->createElement('radio', 'online', '', \block_exalib\get_string('offline'), 0);
+				$radioarray[] = $mform->createElement('radio', 'online', '', \block_exalib\get_string('online'), 1);
+				$mform->addGroup($radioarray, 'online', \block_exalib\get_string("status"), array(' '), false);
 			}
 
 			$mform->addElement('header', 'categoriesheader', get_string('categories', 'block_exalib'));
@@ -670,9 +710,9 @@ function block_exalib_handle_item_edit($type = '', $show) {
 		if ($fromform = $itemeditform->get_data()) {
 			// Edit/add.
 
-			if ($type == 'mine' && (empty($item->id) || $item->reviewer_id == $USER->id)) {
+			if ($type == 'mine' && empty($item->id)) {
 				// normal user items should be offline first
-				$fromform->online = false;
+				$fromform->online = \block_exalib\ITEM_STATE_NEW;
 			}
 
 			if (!empty($item->id)) {

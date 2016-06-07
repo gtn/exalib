@@ -19,6 +19,8 @@
 
 require __DIR__.'/inc.php';
 
+use block_exalib\globals as g;
+
 $itemid = required_param('itemid', PARAM_INT);
 if (!$item = $DB->get_record('block_exalib_item', array('id' => $itemid))) {
 	print_error(get_string('itemnotfound', 'block_exalib'));
@@ -55,14 +57,16 @@ class block_exalib_comment_form extends moodleform {
 		$mform->setType('text', PARAM_TEXT);
 		$mform->addRule('text', \block_exalib\get_string('requiredelement', 'form'), 'required');
 
-		$radioarray = array();
-		$radioarray[] = $mform->createElement('radio', 'rating', '', \block_exalib\trans('de:keine'), 0);
-		$radioarray[] = $mform->createElement('radio', 'rating', '', 1, 1);
-		$radioarray[] = $mform->createElement('radio', 'rating', '', 2, 2);
-		$radioarray[] = $mform->createElement('radio', 'rating', '', 3, 3);
-		$radioarray[] = $mform->createElement('radio', 'rating', '', 4, 4);
-		$radioarray[] = $mform->createElement('radio', 'rating', '', 5, 5);
-		$mform->addGroup($radioarray, 'ratingarr', \block_exalib\trans("de:Bewertung"), array(' '), false);
+		if ($this->_customdata['item']->created_by != g::$USER->id) {
+			$radioarray = array();
+			$radioarray[] = $mform->createElement('radio', 'rating', '', \block_exalib\trans('de:keine'), 0);
+			$radioarray[] = $mform->createElement('radio', 'rating', '', 1, 1);
+			$radioarray[] = $mform->createElement('radio', 'rating', '', 2, 2);
+			$radioarray[] = $mform->createElement('radio', 'rating', '', 3, 3);
+			$radioarray[] = $mform->createElement('radio', 'rating', '', 4, 4);
+			$radioarray[] = $mform->createElement('radio', 'rating', '', 5, 5);
+			$mform->addGroup($radioarray, 'ratingarr', \block_exalib\trans("de:Bewertung"), array(' '), false);
+		}
 
 		$this->add_action_buttons(false, \block_exalib\get_string('add'));
 
@@ -70,7 +74,7 @@ class block_exalib_comment_form extends moodleform {
 
 }
 
-$commentsform = new block_exalib_comment_form();
+$commentsform = new block_exalib_comment_form(null, ['item' => $item]);
 
 if (optional_param('action', '', PARAM_TEXT) == 'comment_add') {
 	require_sesskey();
@@ -81,7 +85,9 @@ if (optional_param('action', '', PARAM_TEXT) == 'comment_add') {
 		$post->userid = $USER->id;
 		$post->time_created = $post->time_modified = time();
 		$post->text = $formdata->text['text'];
-		$post->rating = $formdata->rating;
+		if (isset($formdata->rating)) {
+			$post->rating = $formdata->rating;
+		}
 
 		$DB->insert_record('block_exalib_item_comments', $post);
 

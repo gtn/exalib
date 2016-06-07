@@ -26,7 +26,7 @@ block_exalib_require_global_cap(\block_exalib\CAP_USE);
 $output = block_exalib_get_renderer();
 $output->set_tabs('tab_mine');
 
-if (in_array($show, ['edit', 'add', 'delete'])) {
+if (in_array($show, ['change_state', 'edit', 'add', 'delete'])) {
 	block_exalib_handle_item_edit('mine', $show);
 	exit;
 }
@@ -35,7 +35,7 @@ $items = $DB->get_records_sql("
     SELECT item.*
     FROM {block_exalib_item} AS item
     WHERE 1=1
-    AND (item.created_by = ? OR item.reviewer_id=?)
+    AND (item.created_by = ? OR (item.reviewer_id=? AND item.online<>".\block_exalib\ITEM_STATE_NEW."))
     ORDER BY GREATEST(time_created,time_modified) DESC
 ", [$USER->id, $USER->id]);
 

@@ -222,7 +222,11 @@ class block_exalib_renderer extends plugin_renderer_base {
 
 			if ($type != 'public') {
 				echo '<div><span class="libary_author">'.\block_exalib\trans('de:Status').':</span> ';
-				if ($item->online) {
+				if ($item->online == \block_exalib\ITEM_STATE_NEW) {
+					echo \block_exalib\trans('de:neuer Einrag');
+				} elseif ($item->online == \block_exalib\ITEM_STATE_IN_REVIEW) {
+					echo \block_exalib\trans('de:in review');
+				} elseif ($item->online > 0) {
 					echo \block_exalib\get_string('online');
 				} else {
 					echo \block_exalib\get_string('offline');
@@ -273,6 +277,23 @@ class block_exalib_renderer extends plugin_renderer_base {
 
 			if ($type != 'public' && block_exalib_can_edit_item($item)) {
 				echo '<span class="library-item-buttons">';
+
+				$newline = false;
+				if ($item->online == \block_exalib\ITEM_STATE_NEW) {
+					echo $this->link_button($type.'.php?show=change_state&state='.\block_exalib\ITEM_STATE_IN_REVIEW.'&id='.$item->id.'&sesskey='.sesskey(), block_exalib\trans('de:Beim Reviewer einreichen'), [
+						'exa-confirm' => block_exalib\trans('de:Soll dieser Fall beim Reviewer eingereicht werden? Eine weitere Bearbeitung ist nicht mehr möglich.'),
+					]);
+					$newline = true;
+				}
+				if ($item->online == 0 || $item->online == \block_exalib\ITEM_STATE_IN_REVIEW) {
+					echo $this->link_button($type.'.php?show=change_state&state='.\block_exalib\ITEM_STATE_NEW.'&id='.$item->id.'&sesskey='.sesskey(), block_exalib\trans('de:Dem Autor zur Überarbeitung freigeben'), [
+						'exa-confirm' => block_exalib\trans('de:Soll dieser Fall dem Autor zur Überarbeitung freigegeben werden?'),
+					]);
+					$newline = true;
+				}
+				if ($newline) {
+					echo '<br />';
+				}
 				echo $this->link_button($type.'.php?show=edit&type='.$type.'&id='.$item->id, get_string('edit', 'block_exalib'));
 				echo $this->link_button($type.'.php?show=delete&type='.$type.'&id='.$item->id.'&sesskey='.sesskey(), get_string('delete', 'block_exalib'), [
 					'exa-confirm' => \block_exalib\get_string('delete_confirmation', null, $item->name),

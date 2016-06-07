@@ -27,3 +27,6 @@ const CAP_USE = 'use';
 const CAP_MANAGE_REVIEWERS = 'manage_reviewers';
 const CAP_MANAGE_CONTENT = 'manage_content';
 const CAP_MANAGE_CATS = 'manage_cats';
+
+const ITEM_STATE_NEW = -2;
+const ITEM_STATE_IN_REVIEW = -1;
