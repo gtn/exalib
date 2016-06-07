@@ -275,3 +275,10 @@ input.libaryfront_searchsub[type="submit"] {
 	position: absolute;
 	margin: -4px 0 0 10px;
 }
+
+#block_exalib form .fitem_fgroup input[type=radio] {
+	margin-right: 2px;
+}
+#block_exalib form .fitem_fgroup label {
+	margin-right: 14px;
+}

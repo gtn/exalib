@@ -55,7 +55,7 @@ class block_exalib_comment_form extends moodleform {
 
 		$mform->addElement('editor', 'text', \block_exalib\trans("de:Kommentar"), null, array('rows' => 10));
 		$mform->setType('text', PARAM_TEXT);
-		$mform->addRule('text', \block_exalib\get_string('requiredelement', 'form'), 'required');
+		//$mform->addRule('text', \block_exalib\get_string('requiredelement', 'form'), 'required');
 
 		if ($this->_customdata['item']->created_by != g::$USER->id) {
 			$radioarray = array();
@@ -65,7 +65,7 @@ class block_exalib_comment_form extends moodleform {
 			$radioarray[] = $mform->createElement('radio', 'rating', '', 3, 3);
 			$radioarray[] = $mform->createElement('radio', 'rating', '', 4, 4);
 			$radioarray[] = $mform->createElement('radio', 'rating', '', 5, 5);
-			$mform->addGroup($radioarray, 'ratingarr', \block_exalib\trans("de:Bewertung"), array(' '), false);
+			$mform->addGroup($radioarray, 'ratingarr', \block_exalib\trans("de:Bewertung (Sterne)"), array(' '), false);
 		}
 
 		$this->add_action_buttons(false, \block_exalib\get_string('add'));
@@ -87,9 +87,16 @@ if (optional_param('action', '', PARAM_TEXT) == 'comment_add') {
 		$post->text = $formdata->text['text'];
 		if (isset($formdata->rating)) {
 			$post->rating = $formdata->rating;
+
+			// delete older ratings for same items
+			$DB->execute("
+				UPDATE {block_exalib_item_comments}
+				SET rating=0
+				WHERE itemid=? AND userid=?
+			", [$item->id, $USER->id]);
 		}
 
-		$DB->insert_record('block_exalib_item_comments', $post);
+		$id = $DB->insert_record('block_exalib_item_comments', $post);
 
 		redirect($_SERVER['REQUEST_URI']);
 	}
@@ -265,6 +272,14 @@ foreach ($comments as $comment) {
 		$user->id.'&amp;course='.$COURSE->id.'">'.$fullname.'</a>';
 	$by->date = userdate($comment->time_modified);
 	print_string('bynameondate', 'forum', $by);
+	if ($comment->rating) {
+		echo ' - '.block_exalib\trans('de:Bewertung').': ';
+		echo '<span title="'.block_exalib\trans('de:{$a->rating} von {$a->max} Sternen', ['rating' => $comment->rating, 'max' => 5]).'">';
+		for ($i = 1; $i <= 5; $i++) {
+			echo ($comment->rating >= $i) ? '&#9733;' : '&#9734;';
+		}
+		echo '</span>';
+	}
 
 	if ($comment->userid == $USER->id) {
 		echo ' '.$output->link_button(new moodle_url($PAGE->url, [
