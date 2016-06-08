@@ -89,5 +89,17 @@ function xmldb_block_exalib_upgrade($oldversion) {
 		upgrade_block_savepoint(true, 2015051300, 'exalib');
 	}
 
+	if ($oldversion < 2015051308) {
+		// Define field reviewer_id to be added to block_exalib_item.
+		$table = new xmldb_table('block_exalib_item');
+
+        $field = new xmldb_field('allow_comments', XMLDB_TYPE_CHAR, '34', null, XMLDB_NOTNULL, null, null, 'abstract');
+		if (!$dbman->field_exists($table, $field)) {
+			$dbman->add_field($table, $field);
+		}
+
+		upgrade_block_savepoint(true, 2015051308, 'exalib');
+	}
+
 	return $result;
 }

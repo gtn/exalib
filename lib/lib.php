@@ -527,6 +527,49 @@ function block_exalib_handle_item_edit($type = '', $show) {
 		}
 		*/
 
+		// send email to reviewer
+		if ($state == block_exalib\ITEM_STATE_IN_REVIEW) {
+			$reviewer = g::$DB->get_record('user', ['id' => $item->reviewer_id]);
+			$creator = g::$USER;
+
+			if ($reviewer) {
+				$message = block_exalib\trans('de:Lieber '.fullname($reviewer).', dir wurde von '.fullname($creator).' ein Fall zum Review freigegeben <a href="'.g::$CFG->wwwroot.'/blocks/exalib/mine.php">hier</a>');
+
+				$eventdata = new stdClass();
+				$eventdata->name = 'item_status_changed';
+				$eventdata->component = 'block_exalib';
+				$eventdata->userfrom = $creator;
+				$eventdata->userto = $reviewer;
+				$eventdata->subject = block_exalib\trans('de:Neuer Fall zum review zugeteilt');
+				$eventdata->fullmessage = $message;
+				$eventdata->fullmessageformat = FORMAT_HTML;
+				$eventdata->fullmessagehtml = $message;
+				$eventdata->smallmessage = '';
+				message_send($eventdata);
+			}
+		}
+
+		// send email to creator
+		if ($state == block_exalib\ITEM_STATE_NEW) {
+			$reviewer = g::$USER;
+			$creator = g::$DB->get_record('user', ['id' => $item->created_by]);
+
+			if ($creator) {
+				$message = block_exalib\trans('de:Lieber '.fullname($creator).', dir wurde ein Fall von '.fullname($reviewer).' zur Überarbeitung freigegeben <a href="'.g::$CFG->wwwroot.'/blocks/exalib/mine.php">hier</a>');
+
+				$eventdata = new stdClass();
+				$eventdata->name = 'item_status_changed';
+				$eventdata->component = 'block_exalib';
+				$eventdata->userfrom = $reviewer;
+				$eventdata->userto = $creator;
+				$eventdata->subject = block_exalib\trans('de:Fall zur Überarbeitung zugeteilt');
+				$eventdata->fullmessageformat = FORMAT_HTML;
+				$eventdata->fullmessagehtml = $message;
+				$eventdata->smallmessage = '';
+				message_send($eventdata);
+			}
+		}
+
 		g::$DB->update_record('block_exalib_item', [
 			'id' => $item->id,
 			'online' => $state,
@@ -575,7 +618,7 @@ function block_exalib_handle_item_edit($type = '', $show) {
 	 * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 	 * @copyright  gtn gmbh <office@gtn-solutions.com>
 	 */
-	class itemeditform extends moodleform {
+	class item_edit_form extends moodleform {
 
 		/**
 		 * Definition
@@ -667,6 +710,13 @@ function block_exalib_handle_item_edit($type = '', $show) {
 				$mform->addGroup($radioarray, 'online', \block_exalib\get_string("status"), array(' '), false);
 			}
 
+			$radioarray = array();
+			$radioarray[] = $mform->createElement('radio', 'allow_comments', '', \block_exalib\trans('de:Alle Benutzer'), '');
+			$radioarray[] = $mform->createElement('radio', 'allow_comments', '', \block_exalib\trans('de:Lehrenede und Redaktionsteam'), 'teachers_and_reviewers');
+			$radioarray[] = $mform->createElement('radio', 'allow_comments', '', \block_exalib\trans('de:Redaktionsteam'), 'reviewers');
+			$radioarray[] = $mform->createElement('radio', 'allow_comments', '', \block_exalib\trans('de:Keine Kommentare'), 'none');
+			$mform->addGroup($radioarray, 'allow_comments', \block_exalib\trans("de:Kommenare erlauben von"), array(' '), false);
+
 			$mform->addElement('header', 'categoriesheader', get_string('categories', 'block_exalib'));
 
 			$mform->addElement('static', 'categories', get_string('groups', 'block_exalib'), $this->get_categories());
@@ -683,9 +733,13 @@ function block_exalib_handle_item_edit($type = '', $show) {
 
 			return $mgr->walktree(null, function($cat, $suboutput) {
 				return '<div style="padding-left: '.(20 * $cat->level).'px;">'.
-				'<input type="checkbox" name="categories[]" value="'.$cat->id.'" '.
-				(in_array($cat->id, $this->_customdata['itemCategories']) ? 'checked ' : '').'/>'.
-				($cat->level == 0 ? '<b>'.$cat->name.'</b>' : $cat->name).'</div>'.$suboutput;
+				($cat->level == 0
+					? '<b>'.$cat->name.'</b>'
+					: '<input type="checkbox" name="categories[]" value="'.$cat->id.'" '.
+					(in_array($cat->id, $this->_customdata['itemCategories']) ? 'checked ' : '').'/>'.
+					$cat->name
+				).
+				'</div>'.$suboutput;
 			});
 		}
 	}
@@ -699,7 +753,7 @@ function block_exalib_handle_item_edit($type = '', $show) {
 		$itemcategories[$categoryid] = $categoryid;
 	}
 
-	$itemeditform = new itemeditform($_SERVER['REQUEST_URI'], [
+	$itemeditform = new item_edit_form($_SERVER['REQUEST_URI'], [
 		'itemCategories' => $itemcategories,
 		'fileoptions' => $fileoptions,
 		'type' => $type,

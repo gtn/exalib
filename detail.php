@@ -301,7 +301,11 @@ foreach ($comments as $comment) {
 	echo '</td></tr></table>'."\n\n";
 }
 
-$commentsform->display();
+if (($item->allow_comments == '') // all
+	|| (($item->allow_comments == 'teachers_and_reviewers') && block_exalib_is_reviewer())
+	|| (($item->allow_comments == 'reviewers') && block_exalib_is_reviewer())) {
+	$commentsform->display();
+}
 
 ?>
 	<br/><br/>
