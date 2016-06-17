@@ -28,6 +28,7 @@ $string['exalib:addinstance'] = 'Add Instance to Course';
 
 
 // tabs
+$string['tab_items'] = 'Entries';
 $string['tab_mine'] = 'My Entries';
 $string['tab_manage_content'] = 'Manage Library Content';
 $string['tab_manage_cats'] = 'Manage Categories';

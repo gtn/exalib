@@ -43,7 +43,7 @@ class block_exalib_renderer extends plugin_renderer_base {
 		$last_item_name = '';
 		$tabs = array();
 
-		$tabs[] = new tabobject('tab_library', new moodle_url('/blocks/exalib/index.php', ['courseid' => g::$COURSE->id]), \block_exalib\get_string("heading"), '', true);
+		$tabs[] = new tabobject('tab_library', new moodle_url('/blocks/exalib/index.php', ['courseid' => g::$COURSE->id]), \block_exalib\get_string("tab_items"), '', true);
 		$tabs[] = new tabobject('tab_mine', new moodle_url('/blocks/exalib/mine.php', ['courseid' => g::$COURSE->id]), \block_exalib\get_string("tab_mine"), '', true);
 
 		if (block_exalib_has_global_cap(\block_exalib\CAP_MANAGE_CONTENT)) {
@@ -187,6 +187,12 @@ class block_exalib_renderer extends plugin_renderer_base {
 				false);
 			$previewimage = reset($areafiles);
 
+			$rating = round(g::$DB->get_field_sql('
+				SELECT SUM(rating)/COUNT(*)
+				FROM {block_exalib_item_comments}
+				WHERE itemid=? AND rating>0
+			', [$item->id]));
+
 			/*
 			$linkurl = '';
 			$linktext = '';
@@ -219,6 +225,13 @@ class block_exalib_renderer extends plugin_renderer_base {
 
 			$linkurl = 'detail.php?itemid='.$item->id.($type !== 'public' ? '&type='.$type : '').'&back='.g::$PAGE->url->out_as_local_url();
 			echo '<a class="head" href="'.$linkurl.'">'.$item->name.'</a>';
+
+			if ($rating > 0) {
+				echo '&nbsp;&nbsp;';
+				for ($i = 1; $i <= 5; $i++) {
+					echo ($rating >= $i) ? '&#9733;' : '&#9734;';
+				}
+			}
 
 			if ($type != 'public') {
 				echo '<div><span class="libary_author">'.\block_exalib\trans('de:Status').':</span> ';

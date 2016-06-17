@@ -18,7 +18,7 @@
 // This copyright notice MUST APPEAR in all copies of the script!
 
 $string['pluginname'] = 'Exabis Bibliothek';
-$string['heading'] = 'Exabis Bibliothek';
+$string['heading'] = 'Fallarchiv';
 $string['exalib:use'] = 'Exalib verwenden: Betrachten & Suchen';
 $string['exalib:open'] = 'Dateien öffnen innerhalb von Exalib';
 $string['exalib:creator'] = 'Inhalt erstellen und eigenen Inhalt verwalten';
@@ -28,6 +28,7 @@ $string['exalib:addinstance'] = 'Exalib Instanz zu Kurs hinzufügen';
 
 
 // tabs
+$string['tab_items'] = 'Fälle';
 $string['tab_mine'] = 'Meine Fälle';
 $string['tab_manage_content'] = 'Inhalte bearbeiten';
 $string['tab_manage_cats'] = 'Kategorien barbeiten';

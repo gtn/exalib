@@ -33,13 +33,13 @@ if (BLOCK_EXALIB_IS_ADMIN_MODE) {
 
 $urloverview = new moodle_url('/blocks/exalib');
 $urlpage = block_exalib_new_moodle_url();
-$urlsearch = new moodle_url($urlpage, array('page' => null, 'q' => null, 'category_id' => null));
+$urlsearch = new block_exalib\url($urlpage, array('page' => null, 'q' => null));
 $urladd = new moodle_url($urlpage, array('show' => 'add'));
 $urlcategory = new moodle_url($urlpage, array('page' => null, 'q' => null, 'category_id' => null));
 
 $PAGE->set_url($urlpage);
 
-$categoryid = optional_param('category_id', '', PARAM_INT);
+$categoryid = optional_param('category_id', -1, PARAM_INT);
 $filterid = 0;
 
 /* $FILTER_CATEGORY = $DB->get_record("block_exalib_category", array('id' => $filterid));
@@ -137,8 +137,27 @@ if ($q = optional_param('q', '', PARAM_TEXT)) {
     ";
 
 	$items = $DB->get_records_sql($sql, array(), $page * $perpage, $perpage);
+} elseif ($categoryid == 0) {
+	// All items
+	$show = 'all_items';
+
+	$sql = "SELECT COUNT(*)
+		FROM {block_exalib_item} AS item
+		WHERE 1=1 $sqlwhere
+	";
+	$count = $DB->get_field_sql($sql);
+
+	$pagingbar = new paging_bar($count, $page, $perpage, $urlpage);
+
+	$sql = "SELECT item.*
+    FROM {block_exalib_item} item
+    WHERE 1=1 $sqlwhere
+    GROUP BY item.id
+    ORDER BY GREATEST(time_created,time_modified)";
+
+	$items = $DB->get_records_sql($sql, array(), $page * $perpage, $perpage);
 } else {
-	// Latest changes.
+	// Latest changes
 	$show = 'latest_changes';
 
 	$sql = "
@@ -245,21 +264,23 @@ echo $output->header(BLOCK_EXALIB_IS_ADMIN_MODE ? 'tab_manage_content' : null);
 			<form method="get" action="<?php echo $urlsearch; ?>">
 				<?php echo html_writer::input_hidden_params($urlsearch); ?>
 				<input name="q" type="text" value="<?php p($q) ?>"/>
-				<?php if ($currentcategory): ?>
-					<select name="category_id">
-						<option value="<?php echo $currentcategory->id; ?>">
-							<?php echo get_string('inthiscat', 'block_exalib'); ?></option>
-						<option value="0"><?php echo get_string('wholelib', 'block_exalib'); ?></option>
-					</select>
-					<?php
-				endif;
-				?>
-				<input value="<?php echo get_string('search', 'block_exalib') ?>" type="submit">
+				<input value="<?php p($currentcategory
+					? \block_exalib\trans('de:In "{$a}" suchen', $currentcategory->name)
+					: \block_exalib\trans('de:In allen Fällen suchen')) ?>" type="submit">
 			</form>
 
 			<?php
 
+			echo '<h3>'.\block_exalib\trans('de:Kategorien').'</h3>';
+
 			echo '<div id="exalib-categories"><ul>';
+			echo '<li id="exalib-menu-item-0" class="'.(-1 == $categoryid ? ' isActive' : '').'">';
+			echo '<a class="library_categories_item_title"
+        			href="'.$urlcategory->out(true, array('category_id' => -1)).'">'.\block_exalib\get_string('latest').'</a>';
+			echo '<li id="exalib-menu-item-0" class="'.(0 == $categoryid ? ' isActive' : '').'">';
+			echo '<a class="library_categories_item_title"
+        			href="'.$urlcategory->out(true, array('category_id' => 0)).'">'.\block_exalib\trans('de:Alle Fälle').'</a>';
+
 			echo $mgr->walktree(null, function($cat, $suboutput) {
 				global $urlcategory, $categoryid, $currentcategoryparents;
 
@@ -297,11 +318,15 @@ echo $output->header(BLOCK_EXALIB_IS_ADMIN_MODE ? 'tab_manage_content' : null);
 						 value="<?php echo get_string('newentry', 'block_exalib') ?>" /><?php
 			}
 
+			echo '<h1 class="library_result_heading">';
 			if ($show == 'latest_changes') {
-				echo '<h1 class="library_result_heading">'.get_string('latest', 'block_exalib').'</h1>';
+				echo \block_exalib\get_string('latest');
+			} elseif ($show == 'all_items') {
+				echo \block_exalib\trans('de:Alle Fälle');
 			} else {
-				echo '<h1 class="library_result_heading">'.get_string('results', 'block_exalib').'</h1>';
+				echo \block_exalib\get_string('results');
 			}
+			echo '</h1>';
 
 			if (!$items) {
 				echo get_string('noitemsfound', 'block_exalib');

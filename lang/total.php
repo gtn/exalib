@@ -23,7 +23,7 @@ return [
 		'Exabis Library',
 	],
 	'heading' => [
-		'Exabis Bibliothek',
+		'Fallarchiv', // 'Exabis Bibliothek',
 		'Exabis Library',
 	],
 	'exalib:use' => [
@@ -53,6 +53,10 @@ return [
 
 
 	// tabs
+	'tab_items' => [
+		'Fälle',
+		'Entries',
+	],
 	'tab_mine' => [
 		'Meine Fälle',
 		'My Entries',

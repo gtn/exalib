@@ -533,14 +533,28 @@ function block_exalib_handle_item_edit($type = '', $show) {
 			$creator = g::$USER;
 
 			if ($reviewer) {
-				$message = block_exalib\trans('de:Lieber '.fullname($reviewer).', dir wurde von '.fullname($creator).' ein Fall zum Review freigegeben <a href="'.g::$CFG->wwwroot.'/blocks/exalib/mine.php">hier</a>');
+				$message = block_exalib\trans('de:'.join('<br />', [
+						'de:Liebe/r '.fullname($reviewer).',',
+						'',
+						'Im Fallarchiv der PH-OÖ wurde von '.fullname($creator).' ('.$creator->email.') ein Fall eingetragen.',
+						''.fullname($creator).' bittet Sie den Fall zu Reviewen. Bitte sehen sie den Fall durch und',
+						'- geben Sie den Fall gegebenfalls frei',
+						'- oder verbessern Sie den Fall',
+						'- oder geben Sie den Fall zurück an den Autor zur erneuten Bearbeitung',
+						'',
+						'<a href="'.g::$CFG->wwwroot.'/blocks/exalib/detail.php?itemid='.$item->id.'&type=mine">Klicken Sie hier um den Fall zu reviewen.</a>',
+						'',
+						'Vielen Dank',
+						'',
+						'Das ist eine automatisch generierte E-Mail, bitte nicht Antworten.',
+					]));
 
 				$eventdata = new stdClass();
 				$eventdata->name = 'item_status_changed';
 				$eventdata->component = 'block_exalib';
 				$eventdata->userfrom = $creator;
 				$eventdata->userto = $reviewer;
-				$eventdata->subject = block_exalib\trans('de:Neuer Fall zum review zugeteilt');
+				$eventdata->subject = block_exalib\trans('de:PH - Kasuistik Reviewanfrage');
 				$eventdata->fullmessage = $message;
 				$eventdata->fullmessageformat = FORMAT_HTML;
 				$eventdata->fullmessagehtml = $message;
@@ -555,14 +569,24 @@ function block_exalib_handle_item_edit($type = '', $show) {
 			$creator = g::$DB->get_record('user', ['id' => $item->created_by]);
 
 			if ($creator) {
-				$message = block_exalib\trans('de:Lieber '.fullname($creator).', dir wurde ein Fall von '.fullname($reviewer).' zur Überarbeitung freigegeben <a href="'.g::$CFG->wwwroot.'/blocks/exalib/mine.php">hier</a>');
+				$message = block_exalib\trans('de:'.join('<br />', [
+						'de:Liebe/r '.fullname($creator).',',
+						'',
+						'Im Fallarchiv der PH-OÖ wurde Ihnen ein Fall zur Überarbeitung übergeben. Bitte überarbeiten Sie den Fall und geben in erneut zum Review frei.',
+						'',
+						'<a href="'.g::$CFG->wwwroot.'/blocks/exalib/detail.php?itemid='.$item->id.'&type=mine">Klicken Sie hier um den Fall zu überarbeiten.</a>',
+						'',
+						'Vielen Dank',
+						'',
+						'Das ist eine automatisch generierte E-Mail, bitte nicht Antworten.',
+					]));
 
 				$eventdata = new stdClass();
 				$eventdata->name = 'item_status_changed';
 				$eventdata->component = 'block_exalib';
 				$eventdata->userfrom = $reviewer;
 				$eventdata->userto = $creator;
-				$eventdata->subject = block_exalib\trans('de:Fall zur Überarbeitung zugeteilt');
+				$eventdata->subject = block_exalib\trans('de:PH - Kasuistik Reviewfeedback');
 				$eventdata->fullmessageformat = FORMAT_HTML;
 				$eventdata->fullmessagehtml = $message;
 				$eventdata->smallmessage = '';
