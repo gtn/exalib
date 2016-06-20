@@ -735,11 +735,11 @@ function block_exalib_handle_item_edit($type = '', $show) {
 			}
 
 			$radioarray = array();
-			$radioarray[] = $mform->createElement('radio', 'allow_comments', '', \block_exalib\trans('de:Alle Benutzer'), '');
-			$radioarray[] = $mform->createElement('radio', 'allow_comments', '', \block_exalib\trans('de:Lehrenede und Redaktionsteam'), 'teachers_and_reviewers');
+			$radioarray[] = $mform->createElement('radio', 'allow_comments', '', \block_exalib\trans('de:Allen Benutzern'), '');
+			$radioarray[] = $mform->createElement('radio', 'allow_comments', '', \block_exalib\trans('de:Lehreneden und Redaktionsteam'), 'teachers_and_reviewers');
 			$radioarray[] = $mform->createElement('radio', 'allow_comments', '', \block_exalib\trans('de:Redaktionsteam'), 'reviewers');
 			$radioarray[] = $mform->createElement('radio', 'allow_comments', '', \block_exalib\trans('de:Keine Kommentare'), 'none');
-			$mform->addGroup($radioarray, 'allow_comments', \block_exalib\trans("de:Kommenare erlauben von"), array(' '), false);
+			$mform->addGroup($radioarray, 'allow_comments', \block_exalib\trans("de:Kommentare erlauben von"), array(' '), false);
 
 			$mform->addElement('header', 'categoriesheader', get_string('categories', 'block_exalib'));
 
@@ -784,6 +784,11 @@ function block_exalib_handle_item_edit($type = '', $show) {
 	]);
 
 	if ($itemeditform->is_cancelled()) {
+		if ($back = optional_param('back', '', PARAM_LOCALURL)) {
+			redirect(new moodle_url($back));
+		} else {
+			redirect('admin.php?courseid='.g::$COURSE->id);
+		}
 	} else {
 		if ($fromform = $itemeditform->get_data()) {
 			// Edit/add.

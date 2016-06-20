@@ -239,7 +239,7 @@ echo '</table>';
 
 if ($item->content) {
 	echo '<h2 class="head">'.\block_exalib\trans('de:Inhalt').'</h2>';
-	echo $item->content;
+	echo format_text($item->content);
 	/*
 	} else if ($item->link) {
 

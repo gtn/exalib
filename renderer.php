@@ -275,7 +275,7 @@ class block_exalib_renderer extends plugin_renderer_base {
 			}
 
 			if ($item->abstract) {
-				echo '<div class="libary_content">'.$item->abstract.'</div>';
+				echo '<div class="libary_content">'.format_text($item->abstract).'</div>';
 			}
 			if ($item->source) {
 				echo '<div><span class="libary_author">'.get_string('source', 'block_exalib').':</span> '.$item->source.'</div>';
@@ -307,8 +307,8 @@ class block_exalib_renderer extends plugin_renderer_base {
 				if ($newline) {
 					echo '<br />';
 				}
-				echo $this->link_button($type.'.php?show=edit&type='.$type.'&id='.$item->id, get_string('edit', 'block_exalib'));
-				echo $this->link_button($type.'.php?show=delete&type='.$type.'&id='.$item->id.'&sesskey='.sesskey(), get_string('delete', 'block_exalib'), [
+				echo $this->link_button(new moodle_url($type.'.php', ['show' => 'edit', 'type' => $type, 'id' => $item->id, 'back' => g::$PAGE->url->out_as_local_url(false)]), get_string('edit', 'block_exalib'));
+				echo $this->link_button(new moodle_url($type.'.php', ['show' => 'delete', 'type' => $type, 'id' => $item->id, 'sesskey' => sesskey()]), get_string('delete', 'block_exalib'), [
 					'exa-confirm' => \block_exalib\get_string('delete_confirmation', null, $item->name),
 				]);
 				echo '</span>';
