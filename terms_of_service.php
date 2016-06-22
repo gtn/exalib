@@ -19,7 +19,8 @@
 
 require __DIR__.'/inc.php';
 
-block_exalib_require_global_cap(\block_exalib\CAP_USE);
+block_exalib_init_page();
+block_exalib_require_cap(\block_exalib\CAP_USE);
 
 $forward = required_param('forward', PARAM_LOCALURL);
 $accept = optional_param('accept', false, PARAM_BOOL);

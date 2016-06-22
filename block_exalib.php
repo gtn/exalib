@@ -17,6 +17,8 @@
 //
 // This copyright notice MUST APPEAR in all copies of the script!
 
+defined('MOODLE_INTERNAL') || die();
+
 require __DIR__.'/inc.php';
 
 class block_exalib extends block_list {
@@ -82,7 +84,7 @@ class block_exalib extends block_list {
 			get_string('heading', 'block_exalib').
 			'</a>';
 
-		if (block_exalib_has_global_cap(\block_exalib\CAP_MANAGE_CONTENT)) {
+		if (block_exalib_has_cap(\block_exalib\CAP_MANAGE_CONTENT)) {
 			$icon = '<img src="'.$OUTPUT->pix_url('module_config', 'block_exalib').'" class="icon" alt="" />';
 			$this->content->items[] = '<a title="'.get_string('tab_manage_content', 'block_exalib').'"
                 href="'.$CFG->wwwroot.'/blocks/exalib/admin.php?courseid='.$COURSE->id.'">'.$icon.

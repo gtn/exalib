@@ -17,6 +17,10 @@
 //
 // This copyright notice MUST APPEAR in all copies of the script!
 
+defined('MOODLE_INTERNAL') || die();
+
+use \block_exalib\globals as g;
+
 require_once($CFG->libdir.'/formslib.php');
 require_once($CFG->libdir.'/filelib.php');
 
@@ -25,12 +29,12 @@ $show = optional_param('show', '', PARAM_TEXT);
 $output = block_exalib_get_renderer();
 
 if ($show == 'categories') {
-	block_exalib_require_global_cap(\block_exalib\CAP_MANAGE_CATS);
+	block_exalib_require_cap(\block_exalib\CAP_MANAGE_CATS);
 
 	echo $output->header('tab_manage_cats');
 
 	echo '<div id="block-exalib-category-mgmt">';
-	echo $output->link_button('admin.php?show=category_add&parent_id=0', \block_exalib\get_string('addmaincat'));
+	echo $output->link_button('admin.php?courseid='.g::$COURSE->id.'&show=category_add&parent_id=0', \block_exalib\get_string('addmaincat'));
 	echo '<ul>';
 
 	$mgr = new block_exalib_category_manager(true);
@@ -45,9 +49,9 @@ if ($show == 'categories') {
 		echo ' ('.$cat->cnt_inc_subs.') ';
 
 		echo '<span class="buttons">';
-		echo $output->link_button('admin.php?show=category_add&parent_id='.$cat->id, \block_exalib\get_string('addcat'));
-		echo $output->link_button('admin.php?show=category_edit&category_id='.$cat->id, \block_exalib\get_string('edit'));
-		echo $output->link_button('admin.php?show=category_delete&category_id='.$cat->id.'&sesskey='.sesskey(), \block_exalib\get_string('delete'), [
+		echo $output->link_button('admin.php?courseid='.g::$COURSE->id.'&show=category_add&parent_id='.$cat->id, \block_exalib\get_string('addcat'));
+		echo $output->link_button('admin.php?courseid='.g::$COURSE->id.'&show=category_edit&category_id='.$cat->id, \block_exalib\get_string('edit'));
+		echo $output->link_button('admin.php?courseid='.g::$COURSE->id.'&show=category_delete&category_id='.$cat->id.'&sesskey='.sesskey(), \block_exalib\get_string('delete'), [
 			'exa-confirm' => \block_exalib\get_string('deletecat', null, $cat->name),
 		]);
 		echo '</span>';
@@ -67,7 +71,7 @@ if ($show == 'categories') {
 }
 
 if ($show == 'category_delete') {
-	block_exalib_require_global_cap(\block_exalib\CAP_MANAGE_CATS);
+	block_exalib_require_cap(\block_exalib\CAP_MANAGE_CATS);
 
 	$categoryid = required_param('category_id', PARAM_INT);
 
@@ -75,12 +79,12 @@ if ($show == 'category_delete') {
 	$DB->delete_records('block_exalib_category', array(
 		'id' => required_param('category_id', PARAM_INT),
 	));
-	redirect('admin.php?show=categories');
+	redirect('admin.php?courseid='.g::$COURSE->id.'&show=categories');
 	exit;
 }
 
 if (($show == 'category_add') || ($show == 'category_edit')) {
-	block_exalib_require_global_cap(\block_exalib\CAP_MANAGE_CATS);
+	block_exalib_require_cap(\block_exalib\CAP_MANAGE_CATS);
 
 	if ($show == 'category_add') {
 		$category = (object)array(
@@ -154,7 +158,7 @@ if (($show == 'category_add') || ($show == 'category_edit')) {
 				$fromform->id = $DB->insert_record('block_exalib_category', $fromform);
 			}
 
-			redirect('admin.php?show=categories');
+			redirect('admin.php?courseid='.g::$COURSE->id.'&show=categories');
 			exit;
 
 		} else {

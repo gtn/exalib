@@ -54,11 +54,11 @@ return [
 
 	// tabs
 	'tab_items' => [
-		'Fälle',
+		'Einträge',
 		'Entries',
 	],
 	'tab_mine' => [
-		'Meine Fälle',
+		'Meine Einträge',
 		'My Entries',
 	],
 	'tab_manage_content' => [
@@ -77,7 +77,10 @@ return [
 		'Fachsprachliches Lexikon',
 		'Terminology Index',
 	],
-
+	'tab_course_settings' => [
+		'Kurseinstellungen',
+		'Course Settings',
+	],
 
 	// admin-actions-inc
 	'edit_content' => [
@@ -346,4 +349,28 @@ return [
 		'Do you really want to delete this comment?',
 	],
 
+	'alt_tab_items' => [
+		'Fälle',
+		'Entries',
+	],
+	'alt_tab_mine' => [
+		'Meine Fälle',
+		'My Entries',
+	],
+	'search_all' => [
+		'In allen Einträgen suchen',
+		'Search in all Entries',
+	],
+	'alt_search_all' => [
+		'In allen Fällen suchen',
+		'Search in all Entries',
+	],
+	'all_entries' => [
+		'Alle Einträge',
+		'All Entries',
+	],
+	'alt_all_entries' => [
+		'Alle Fälle',
+		'All Entries',
+	],
 ];

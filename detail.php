@@ -21,6 +21,8 @@ require __DIR__.'/inc.php';
 
 use block_exalib\globals as g;
 
+block_exalib_init_page();
+
 $itemid = required_param('itemid', PARAM_INT);
 if (!$item = $DB->get_record('block_exalib_item', array('id' => $itemid))) {
 	print_error(get_string('itemnotfound', 'block_exalib'));
@@ -57,7 +59,7 @@ class block_exalib_comment_form extends moodleform {
 		$mform->setType('text', PARAM_TEXT);
 		//$mform->addRule('text', \block_exalib\get_string('requiredelement', 'form'), 'required');
 
-		if ($this->_customdata['item']->created_by != g::$USER->id) {
+		if (block_exalib_course_settings::allow_rating() && $this->_customdata['item']->created_by != g::$USER->id) {
 			$radioarray = array();
 			$radioarray[] = $mform->createElement('radio', 'rating', '', \block_exalib\trans('de:keine'), 0);
 			$radioarray[] = $mform->createElement('radio', 'rating', '', 1, 1);
@@ -251,60 +253,62 @@ if ($item->content) {
 	*/
 }
 
-echo '<h2 class="head">'.\block_exalib\trans('de:Kommentare').'</h2>';
+if (@block_exalib_course_settings::allow_comments()) {
+	echo '<h2 class="head">'.\block_exalib\trans('de:Kommentare').'</h2>';
 
 
-$comments = $DB->get_records("block_exalib_item_comments", ["itemid" => $item->id], 'time_created ASC');
-foreach ($comments as $comment) {
-	$conditions = array("id" => $comment->userid);
-	$user = $DB->get_record('user', $conditions);
+	$comments = $DB->get_records("block_exalib_item_comments", ["itemid" => $item->id], 'time_created ASC');
+	foreach ($comments as $comment) {
+		$conditions = array("id" => $comment->userid);
+		$user = $DB->get_record('user', $conditions);
 
-	echo '<table cellspacing="0" class="forumpost blogpost blog" width="100%">';
+		echo '<table cellspacing="0" class="forumpost blogpost blog" width="100%">';
 
-	echo '<tr class="header"><td class="picture left">';
-	echo $OUTPUT->user_picture($user);
-	echo '</td>';
+		echo '<tr class="header"><td class="picture left">';
+		echo $OUTPUT->user_picture($user);
+		echo '</td>';
 
-	echo '<td class="topic starter"><div class="author">';
-	$fullname = fullname($user, $comment->userid);
-	$by = new stdClass();
-	$by->name = '<a href="'.$CFG->wwwroot.'/user/view.php?id='.
-		$user->id.'&amp;course='.$COURSE->id.'">'.$fullname.'</a>';
-	$by->date = userdate($comment->time_modified);
-	print_string('bynameondate', 'forum', $by);
-	if ($comment->rating) {
-		echo ' - '.block_exalib\trans('de:Bewertung').': ';
-		echo '<span title="'.block_exalib\trans('de:{$a->rating} von {$a->max} Sternen', ['rating' => $comment->rating, 'max' => 5]).'">';
-		for ($i = 1; $i <= 5; $i++) {
-			echo ($comment->rating >= $i) ? '&#9733;' : '&#9734;';
+		echo '<td class="topic starter"><div class="author">';
+		$fullname = fullname($user, $comment->userid);
+		$by = new stdClass();
+		$by->name = '<a href="'.$CFG->wwwroot.'/user/view.php?id='.
+			$user->id.'&amp;course='.$COURSE->id.'">'.$fullname.'</a>';
+		$by->date = userdate($comment->time_modified);
+		print_string('bynameondate', 'forum', $by);
+		if (block_exalib_course_settings::allow_rating() && $comment->rating) {
+			echo ' - '.block_exalib\trans('de:Bewertung').': ';
+			echo '<span title="'.block_exalib\trans('de:{$a->rating} von {$a->max} Sternen', ['rating' => $comment->rating, 'max' => 5]).'">';
+			for ($i = 1; $i <= 5; $i++) {
+				echo ($comment->rating >= $i) ? '&#9733;' : '&#9734;';
+			}
+			echo '</span>';
 		}
-		echo '</span>';
+
+		if ($comment->userid == $USER->id) {
+			echo ' '.$output->link_button(new moodle_url($PAGE->url, [
+					'commentid' => $comment->id,
+					'action' => 'comment_delete',
+					'sesskey' => sesskey(),
+					'back' => $PAGE->url->out_as_local_url(false),
+				]), get_string('delete'), ['exa-confirm' => \block_exalib\get_string('comment_delete_confirmation')]);
+		}
+
+		echo '</div></td></tr>';
+
+		echo '<tr><td class="left side">';
+
+		echo '</td><td class="content">'."\n";
+
+		echo format_text($comment->text);
+
+		echo '</td></tr></table>'."\n\n";
 	}
 
-	if ($comment->userid == $USER->id) {
-		echo ' '.$output->link_button(new moodle_url($PAGE->url, [
-				'commentid' => $comment->id,
-				'action' => 'comment_delete',
-				'sesskey' => sesskey(),
-				'back' => $PAGE->url->out_as_local_url(false),
-			]), get_string('delete'), ['exa-confirm' => \block_exalib\get_string('comment_delete_confirmation')]);
+	if (($item->allow_comments == '') // all
+		|| (($item->allow_comments == 'teachers_and_reviewers') && block_exalib_is_reviewer())
+		|| (($item->allow_comments == 'reviewers') && block_exalib_is_reviewer())) {
+		$commentsform->display();
 	}
-
-	echo '</div></td></tr>';
-
-	echo '<tr><td class="left side">';
-
-	echo '</td><td class="content">'."\n";
-
-	echo format_text($comment->text);
-
-	echo '</td></tr></table>'."\n\n";
-}
-
-if (($item->allow_comments == '') // all
-	|| (($item->allow_comments == 'teachers_and_reviewers') && block_exalib_is_reviewer())
-	|| (($item->allow_comments == 'reviewers') && block_exalib_is_reviewer())) {
-	$commentsform->display();
 }
 
 ?>

@@ -23,13 +23,12 @@ if (!defined('BLOCK_EXALIB_IS_ADMIN_MODE')) {
 
 require __DIR__.'/inc.php';
 
-
+block_exalib_init_page();
 if (BLOCK_EXALIB_IS_ADMIN_MODE) {
-	block_exalib_require_global_cap(\block_exalib\CAP_MANAGE_CONTENT);
+	block_exalib_require_cap(\block_exalib\CAP_MANAGE_CONTENT);
 } else {
-	block_exalib_require_global_cap(\block_exalib\CAP_USE);
+	block_exalib_require_cap(\block_exalib\CAP_USE);
 }
-
 
 $urloverview = new moodle_url('/blocks/exalib');
 $urlpage = block_exalib_new_moodle_url();
@@ -50,8 +49,7 @@ if (BLOCK_EXALIB_IS_ADMIN_MODE) {
 }
 */
 
-
-$mgr = new block_exalib_category_manager(BLOCK_EXALIB_IS_ADMIN_MODE);
+$mgr = new block_exalib_category_manager(BLOCK_EXALIB_IS_ADMIN_MODE, block_exalib_course_settings::root_category_id());
 $currentcategory = $mgr->getcategory($categoryid);
 $currentcategorysubids = $currentcategory ? $currentcategory->self_inc_all_sub_ids : array(-9999);
 $currentcategoryparents = $mgr->getcategoryparentids($categoryid);
@@ -74,6 +72,12 @@ if (BLOCK_EXALIB_IS_ADMIN_MODE) {
         AND (item.online_from=0 OR item.online_from IS NULL
         OR (item.online_from <= ".time()."
         AND item.online_to >= ".time()."))";
+}
+
+if ($root_category_id = block_exalib_course_settings::root_category_id()) {
+	// $root_category = $mgr->getcategory($root_category_id);
+	// $sqlwhere .= " AND item.id IN (".join(',', [0] + ($root_category ? $root_category->item_ids_inc_subs : [])).")";
+	$sqlwhere .= block_exalib_limit_item_to_category_where($root_category_id);
 }
 
 if ($q = optional_param('q', '', PARAM_TEXT)) {
@@ -266,7 +270,7 @@ echo $output->header(BLOCK_EXALIB_IS_ADMIN_MODE ? 'tab_manage_content' : null);
 				<input name="q" type="text" value="<?php p($q) ?>"/>
 				<input value="<?php p($currentcategory
 					? \block_exalib\trans('de:In "{$a}" suchen', $currentcategory->name)
-					: \block_exalib\trans('de:In allen Fällen suchen')) ?>" type="submit">
+					: \block_exalib\get_string('search_all')) ?>" type="submit">
 			</form>
 
 			<?php
@@ -279,7 +283,7 @@ echo $output->header(BLOCK_EXALIB_IS_ADMIN_MODE ? 'tab_manage_content' : null);
         			href="'.$urlcategory->out(true, array('category_id' => -1)).'">'.\block_exalib\get_string('latest').'</a>';
 			echo '<li id="exalib-menu-item-0" class="'.(0 == $categoryid ? ' isActive' : '').'">';
 			echo '<a class="library_categories_item_title"
-        			href="'.$urlcategory->out(true, array('category_id' => 0)).'">'.\block_exalib\trans('de:Alle Fälle').'</a>';
+        			href="'.$urlcategory->out(true, array('category_id' => 0)).'">'.\block_exalib\get_string('all_entries').'</a>';
 
 			echo $mgr->walktree(null, function($cat, $suboutput) {
 				global $urlcategory, $categoryid, $currentcategoryparents;
@@ -322,7 +326,7 @@ echo $output->header(BLOCK_EXALIB_IS_ADMIN_MODE ? 'tab_manage_content' : null);
 			if ($show == 'latest_changes') {
 				echo \block_exalib\get_string('latest');
 			} elseif ($show == 'all_items') {
-				echo \block_exalib\trans('de:Alle Fälle');
+				echo \block_exalib\get_string('all_entries');
 			} else {
 				echo \block_exalib\get_string('results');
 			}

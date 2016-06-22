@@ -32,7 +32,7 @@ class block_exalib_renderer extends plugin_renderer_base {
 		}
 
 		// check for tos
-		if (!get_user_preferences('block_exalib_terms_of_service')) {
+		if (!get_user_preferences('block_exalib_terms_of_service') && block_exalib_course_settings::use_terms_of_service()) {
 			redirect(new moodle_url('terms_of_service.php', ['forward' => g::$PAGE->url->out_as_local_url(false)]));
 			exit;
 		}
@@ -44,21 +44,27 @@ class block_exalib_renderer extends plugin_renderer_base {
 		$tabs = array();
 
 		$tabs[] = new tabobject('tab_library', new moodle_url('/blocks/exalib/index.php', ['courseid' => g::$COURSE->id]), \block_exalib\get_string("tab_items"), '', true);
-		$tabs[] = new tabobject('tab_mine', new moodle_url('/blocks/exalib/mine.php', ['courseid' => g::$COURSE->id]), \block_exalib\get_string("tab_mine"), '', true);
+		if (block_exalib_course_settings::use_review()) {
+			$tabs[] = new tabobject('tab_mine', new moodle_url('/blocks/exalib/mine.php', ['courseid' => g::$COURSE->id]), \block_exalib\get_string("tab_mine"), '', true);
+		}
 
-		if (block_exalib_has_global_cap(\block_exalib\CAP_MANAGE_CONTENT)) {
+		if (block_exalib_has_cap(\block_exalib\CAP_MANAGE_CONTENT)) {
 			$tabs[] = new tabobject('tab_manage_content', new moodle_url('/blocks/exalib/admin.php', ['courseid' => g::$COURSE->id]), \block_exalib\get_string("tab_manage_content"), '', true);
 		}
-		if (block_exalib_has_global_cap(\block_exalib\CAP_MANAGE_CATS)) {
+		if (block_exalib_has_cap(\block_exalib\CAP_MANAGE_CATS)) {
 			$tabs[] = new tabobject('tab_manage_cats', new moodle_url('/blocks/exalib/admin.php', ['courseid' => g::$COURSE->id, 'show' => 'categories']), \block_exalib\get_string("tab_manage_cats"), '', true);
 		}
 
-		if (block_exalib_has_global_cap(\block_exalib\CAP_MANAGE_REVIEWERS)) {
+		if (block_exalib_has_cap(\block_exalib\CAP_MANAGE_REVIEWERS) && block_exalib_course_settings::use_review()) {
 			$tabs[] = new tabobject('tab_manage_reviewers', new moodle_url('/blocks/exalib/reviewers.php', ['courseid' => g::$COURSE->id]), \block_exalib\get_string("tab_manage_reviewers"), '', true);
 		}
 
-		if (block_exalib_get_fachsprachliches_lexikon_id()) {
+		if (block_exalib_get_fachsprachliches_lexikon_id() && block_exalib_course_settings::alternative_wording()) {
 			$tabs[] = new tabobject('tab_fachsprachliches_lexikon', new moodle_url('/blocks/exalib/fachsprachliches_lexikon.php', ['courseid' => g::$COURSE->id]), \block_exalib\get_string("tab_fachsprachliches_lexikon"), '', true);
+		}
+
+		if (block_exalib_has_cap(\block_exalib\CAP_COURSE_SETTINGS)) {
+			$tabs[] = new tabobject('tab_course_settings', new moodle_url('/blocks/exalib/course_settings.php', ['courseid' => g::$COURSE->id]), \block_exalib\get_string('tab_course_settings'), '', true);
 		}
 
 		$tabtree = new tabtree($tabs);
@@ -187,12 +193,15 @@ class block_exalib_renderer extends plugin_renderer_base {
 				false);
 			$previewimage = reset($areafiles);
 
-			$rating = round(g::$DB->get_field_sql('
-				SELECT SUM(rating)/COUNT(*)
-				FROM {block_exalib_item_comments}
-				WHERE itemid=? AND rating>0
-			', [$item->id]));
-
+			if (!block_exalib_course_settings::allow_rating()) {
+				$rating = 0;
+			} else {
+				$rating = round(g::$DB->get_field_sql('
+					SELECT SUM(rating)/COUNT(*)
+					FROM {block_exalib_item_comments}
+					WHERE itemid=? AND rating>0
+				', [$item->id]));
+			}
 			/*
 			$linkurl = '';
 			$linktext = '';
@@ -223,7 +232,7 @@ class block_exalib_renderer extends plugin_renderer_base {
 
 			echo '<div class="library-item">';
 
-			$linkurl = 'detail.php?itemid='.$item->id.($type !== 'public' ? '&type='.$type : '').'&back='.g::$PAGE->url->out_as_local_url();
+			$linkurl = new moodle_url('detail.php', ['courseid' => g::$COURSE->id, 'itemid' => $item->id, 'back' => g::$PAGE->url->out_as_local_url()] + ($type != 'public' ? ['type' => $type] : []));
 			echo '<a class="head" href="'.$linkurl.'">'.$item->name.'</a>';
 
 			if ($rating > 0) {
@@ -291,24 +300,23 @@ class block_exalib_renderer extends plugin_renderer_base {
 			if ($type != 'public' && block_exalib_can_edit_item($item)) {
 				echo '<span class="library-item-buttons">';
 
-				$newline = false;
-				if ($item->online == \block_exalib\ITEM_STATE_NEW) {
-					echo $this->link_button($type.'.php?show=change_state&state='.\block_exalib\ITEM_STATE_IN_REVIEW.'&id='.$item->id.'&sesskey='.sesskey(), block_exalib\trans('de:Beim Reviewer einreichen'), [
-						'exa-confirm' => block_exalib\trans('de:Soll dieser Fall beim Reviewer eingereicht werden? Eine weitere Bearbeitung ist nicht mehr möglich.'),
-					]);
-					$newline = true;
+				if (block_exalib_course_settings::use_review()) {
+					if ($item->online == \block_exalib\ITEM_STATE_NEW) {
+						echo $this->link_button(new moodle_url($type.'.php', ['courseid' => g::$COURSE->id, 'show' => 'change_state', 'state' => \block_exalib\ITEM_STATE_IN_REVIEW, 'id' => $item->id, 'sesskey' => sesskey()]), block_exalib\trans('de:Beim Reviewer einreichen'), [
+							'exa-confirm' => block_exalib\trans('de:Soll dieser Fall beim Reviewer eingereicht werden? Eine weitere Bearbeitung ist nicht mehr möglich.'),
+						]);
+						echo '<br />';
+					}
+					if ($item->online == 0 || $item->online == \block_exalib\ITEM_STATE_IN_REVIEW) {
+						echo $this->link_button(new moodle_url($type.'.php', ['courseid' => g::$COURSE->id, 'show' => 'change_state', 'state' => \block_exalib\ITEM_STATE_NEW, 'id' => $item->id, 'sesskey' => sesskey()]), block_exalib\trans('de:Dem Autor zur Überarbeitung freigeben'), [
+							'exa-confirm' => block_exalib\trans('de:Soll dieser Fall dem Autor zur Überarbeitung freigegeben werden?'),
+						]);
+						echo '<br />';
+					}
 				}
-				if ($item->online == 0 || $item->online == \block_exalib\ITEM_STATE_IN_REVIEW) {
-					echo $this->link_button($type.'.php?show=change_state&state='.\block_exalib\ITEM_STATE_NEW.'&id='.$item->id.'&sesskey='.sesskey(), block_exalib\trans('de:Dem Autor zur Überarbeitung freigeben'), [
-						'exa-confirm' => block_exalib\trans('de:Soll dieser Fall dem Autor zur Überarbeitung freigegeben werden?'),
-					]);
-					$newline = true;
-				}
-				if ($newline) {
-					echo '<br />';
-				}
-				echo $this->link_button(new moodle_url($type.'.php', ['show' => 'edit', 'type' => $type, 'id' => $item->id, 'back' => g::$PAGE->url->out_as_local_url(false)]), get_string('edit', 'block_exalib'));
-				echo $this->link_button(new moodle_url($type.'.php', ['show' => 'delete', 'type' => $type, 'id' => $item->id, 'sesskey' => sesskey()]), get_string('delete', 'block_exalib'), [
+
+				echo $this->link_button(new moodle_url($type.'.php', ['courseid' => g::$COURSE->id, 'show' => 'edit', 'type' => $type, 'id' => $item->id, 'back' => g::$PAGE->url->out_as_local_url(false)]), get_string('edit', 'block_exalib'));
+				echo $this->link_button(new moodle_url($type.'.php', ['courseid' => g::$COURSE->id, 'show' => 'delete', 'type' => $type, 'id' => $item->id, 'sesskey' => sesskey()]), get_string('delete', 'block_exalib'), [
 					'exa-confirm' => \block_exalib\get_string('delete_confirmation', null, $item->name),
 				]);
 				echo '</span>';

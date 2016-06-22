@@ -28,13 +28,13 @@ $string['exalib:addinstance'] = 'Exalib Instanz zu Kurs hinzufügen';
 
 
 // tabs
-$string['tab_items'] = 'Fälle';
-$string['tab_mine'] = 'Meine Fälle';
+$string['tab_items'] = 'Einträge';
+$string['tab_mine'] = 'Meine Einträge';
 $string['tab_manage_content'] = 'Inhalte bearbeiten';
 $string['tab_manage_cats'] = 'Kategorien barbeiten';
 $string['tab_manage_reviewers'] = 'Reviewers';
 $string['tab_fachsprachliches_lexikon'] = 'Fachsprachliches Lexikon';
-
+$string['tab_course_settings'] = 'Kurseinstellungen';
 
 // admin-actions-inc
 $string['edit_content'] = 'Bibliothekinhalt verwalten';
@@ -111,3 +111,9 @@ $string['maincat'] = 'Hauptkategorie';
 $string['subcat'] = 'Subkategorie';
 $string['delete_confirmation'] = 'Soll "{$a}" wirklich gelöscht werden?';
 $string['comment_delete_confirmation'] = 'Wollen Sie wirklich diesen Kommentar löschen?';
+$string['alt_tab_items'] = 'Fälle';
+$string['alt_tab_mine'] = 'Meine Fälle';
+$string['search_all'] = 'In allen Einträgen suchen';
+$string['alt_search_all'] = 'In allen Fällen suchen';
+$string['all_entries'] = 'Alle Einträge';
+$string['alt_all_entries'] = 'Alle Fälle';

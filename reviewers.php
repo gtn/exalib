@@ -19,15 +19,15 @@
 
 require __DIR__.'/inc.php';
 
+block_exalib_require_cap(\block_exalib\CAP_USE);
+block_exalib_require_cap(\block_exalib\CAP_MANAGE_REVIEWERS);
+
 define("MAX_USERS_PER_PAGE", 5000);
 
-$courseid = optional_param('courseid', 1, PARAM_INT); // Course ID
 $showall		= optional_param('showall', 0, PARAM_BOOL);
 $searchtext	 = optional_param('searchtext', '', PARAM_TEXT); // search string
 $add			= optional_param('add', 0, PARAM_BOOL);
 $remove		 = optional_param('remove', 0, PARAM_BOOL);
-
-block_exalib_require_global_cap(\block_exalib\CAP_MANAGE_REVIEWERS);
 
 $output = block_exalib_get_renderer();
 

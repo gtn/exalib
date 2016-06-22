@@ -19,9 +19,10 @@
 
 require __DIR__.'/inc.php';
 
-$show = optional_param('show', '', PARAM_TEXT);
+block_exalib_init_page();
+block_exalib_require_cap(\block_exalib\CAP_USE);
 
-block_exalib_require_global_cap(\block_exalib\CAP_USE);
+$show = optional_param('show', '', PARAM_TEXT);
 
 $output = block_exalib_get_renderer();
 $output->set_tabs('tab_mine');
@@ -36,13 +37,15 @@ $items = $DB->get_records_sql("
     FROM {block_exalib_item} AS item
     WHERE 1=1
     AND (item.created_by = ? OR (item.reviewer_id=? AND item.online<>".\block_exalib\ITEM_STATE_NEW."))
+	".block_exalib_limit_item_to_category_where(block_exalib_course_settings::root_category_id())."
+
     ORDER BY GREATEST(time_created,time_modified) DESC
 ", [$USER->id, $USER->id]);
 
 echo $output->header();
 
 echo '<div>';
-echo $output->link_button(new moodle_url($PAGE->url, ['show' => 'add']), \block_exalib\get_string('add'));
+echo $output->link_button(new moodle_url($PAGE->url, ['show' => 'add', 'back'=>$PAGE->url->out_as_local_url(false)]), \block_exalib\get_string('add'));
 echo '</div>';
 
 if (!$items) {

@@ -34,7 +34,7 @@ $string['tab_manage_content'] = 'Manage Library Content';
 $string['tab_manage_cats'] = 'Manage Categories';
 $string['tab_manage_reviewers'] = 'Reviewers';
 $string['tab_fachsprachliches_lexikon'] = 'Terminology Index';
-
+$string['tab_course_settings'] = 'Course Settings';
 
 // admin-actions-inc
 $string['edit_content'] = 'Manage Library Content';
@@ -111,3 +111,9 @@ $string['maincat'] = 'Main Category';
 $string['subcat'] = 'Sub Category';
 $string['delete_confirmation'] = 'Do you really want to delete "{$a}"?';
 $string['comment_delete_confirmation'] = 'Do you really want to delete this comment?';
+$string['alt_tab_items'] = 'Entries';
+$string['alt_tab_mine'] = 'My Entries';
+$string['search_all'] = 'Search in all Entries';
+$string['alt_search_all'] = 'Search in all Entries';
+$string['all_entries'] = 'All Entries';
+$string['alt_all_entries'] = 'All Entries';

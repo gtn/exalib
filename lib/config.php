@@ -27,6 +27,22 @@ const CAP_USE = 'use';
 const CAP_MANAGE_REVIEWERS = 'manage_reviewers';
 const CAP_MANAGE_CONTENT = 'manage_content';
 const CAP_MANAGE_CATS = 'manage_cats';
+const CAP_COURSE_SETTINGS = 'course_settings';
 
 const ITEM_STATE_NEW = -2;
 const ITEM_STATE_IN_REVIEW = -1;
+
+function get_string($identifier, $component = null, $a = null) {
+	$manager = get_string_manager();
+
+	if ($component === null)
+		$component = 'block_exalib';
+
+	if (\block_exalib_course_settings::alternative_wording() && $manager->string_exists('alt_'.$identifier, $component))
+		return $manager->get_string('alt_'.$identifier, $component, $a);
+
+	if ($manager->string_exists($identifier, $component))
+		return $manager->get_string($identifier, $component, $a);
+
+	return $manager->get_string($identifier, '', $a);
+}

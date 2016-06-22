@@ -19,6 +19,7 @@
 
 require __DIR__.'/inc.php';
 
+block_exalib_init_page();
 block_exalib_require_view();
 
 if ($itemid = optional_param('itemid', 0, PARAM_INT)) {
