@@ -18,7 +18,7 @@
 // This copyright notice MUST APPEAR in all copies of the script!
 
 $string['pluginname'] = 'Exabis Bibliothek';
-$string['heading'] = 'Fallarchiv';
+$string['heading'] = 'Exabis Bibliothek';
 $string['exalib:use'] = 'Exalib verwenden: Betrachten & Suchen';
 $string['exalib:open'] = 'Dateien öffnen innerhalb von Exalib';
 $string['exalib:creator'] = 'Inhalt erstellen und eigenen Inhalt verwalten';
@@ -117,3 +117,4 @@ $string['search_all'] = 'In allen Einträgen suchen';
 $string['alt_search_all'] = 'In allen Fällen suchen';
 $string['all_entries'] = 'Alle Einträge';
 $string['alt_all_entries'] = 'Alle Fälle';
+$string['alt_heading'] = 'Fallarchiv';

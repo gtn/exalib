@@ -59,7 +59,7 @@ class block_exalib_renderer extends plugin_renderer_base {
 			$tabs[] = new tabobject('tab_manage_reviewers', new moodle_url('/blocks/exalib/reviewers.php', ['courseid' => g::$COURSE->id]), \block_exalib\get_string("tab_manage_reviewers"), '', true);
 		}
 
-		if (block_exalib_get_fachsprachliches_lexikon_id() && block_exalib_course_settings::alternative_wording()) {
+		if (block_exalib_get_fachsprachliches_lexikon_id()) {
 			$tabs[] = new tabobject('tab_fachsprachliches_lexikon', new moodle_url('/blocks/exalib/fachsprachliches_lexikon.php', ['courseid' => g::$COURSE->id]), \block_exalib\get_string("tab_fachsprachliches_lexikon"), '', true);
 		}
 
@@ -69,7 +69,7 @@ class block_exalib_renderer extends plugin_renderer_base {
 
 		$tabtree = new tabtree($tabs);
 
-		g::$PAGE->navbar->add(get_string('heading', 'block_exalib'), new moodle_url('/blocks/exalib'));
+		g::$PAGE->navbar->add(\block_exalib\get_string('heading'), new moodle_url('/blocks/exalib'));
 
 		foreach ($items as $level => $item) {
 			if (!is_array($item)) {
@@ -107,7 +107,7 @@ class block_exalib_renderer extends plugin_renderer_base {
 		}
 
 		g::$PAGE->set_title($strheader.': '.$last_item_name);
-		g::$PAGE->set_heading(get_string('heading', 'block_exalib'));
+		g::$PAGE->set_heading(\block_exalib\get_string('heading'));
 
 		$this->init_js_css();
 

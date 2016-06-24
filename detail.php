@@ -61,13 +61,13 @@ class block_exalib_comment_form extends moodleform {
 
 		if (block_exalib_course_settings::allow_rating() && $this->_customdata['item']->created_by != g::$USER->id) {
 			$radioarray = array();
-			$radioarray[] = $mform->createElement('radio', 'rating', '', \block_exalib\trans('de:keine'), 0);
+			$radioarray[] = $mform->createElement('radio', 'rating', '', \block_exalib\trans(['de:keine', 'en:none']), 0);
 			$radioarray[] = $mform->createElement('radio', 'rating', '', 1, 1);
 			$radioarray[] = $mform->createElement('radio', 'rating', '', 2, 2);
 			$radioarray[] = $mform->createElement('radio', 'rating', '', 3, 3);
 			$radioarray[] = $mform->createElement('radio', 'rating', '', 4, 4);
 			$radioarray[] = $mform->createElement('radio', 'rating', '', 5, 5);
-			$mform->addGroup($radioarray, 'ratingarr', \block_exalib\trans("de:Bewertung (Sterne)"), array(' '), false);
+			$mform->addGroup($radioarray, 'ratingarr', \block_exalib\trans(["de:Bewertung", 'en:Rating']), array(' '), false);
 		}
 
 		$this->add_action_buttons(false, \block_exalib\get_string('add'));

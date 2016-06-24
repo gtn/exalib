@@ -117,3 +117,4 @@ $string['search_all'] = 'Search in all Entries';
 $string['alt_search_all'] = 'Search in all Entries';
 $string['all_entries'] = 'All Entries';
 $string['alt_all_entries'] = 'All Entries';
+$string['alt_heading'] = 'Exabis Library';

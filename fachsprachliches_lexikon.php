@@ -48,7 +48,7 @@ if (!$items) {
 	<?php
 	echo '<table class="fachsprachliches_lexikon">';
 	foreach ($items as $item) {
-		$letter = substr($item->{'fach'}, 0, 1);
+		$letter = substr($item->concept, 0, 1);
 		if ($letter != $lastLetter) {
 			if ($lastLetter) {
 				echo '<tr class="spacer"><td>&nbsp;</td></tr>';
@@ -61,14 +61,12 @@ if (!$items) {
 			echo '<tr style="font-weight: bold; background: #ddd">';
 			echo '<td>'.'Fachsprache'.'</td>';
 			echo '<td>'.'Bedeutung'.'</td>';
-			echo '<td>'.'Theorien/Experten/Quellen'.'</td>';
 			echo '</tr>';
 		}
 
 		echo '<tr>';
-		echo '<td>'.$item->{'fach'}.'</td>';
-		echo '<td>'.$item->{'bede'}.'</td>';
-		echo '<td>'.$item->{'theo'}.'</td>';
+		echo '<td>'.$item->concept.'</td>';
+		echo '<td>'.$item->definition.'</td>';
 		echo '</tr>';
 	}
 	echo '</table>';

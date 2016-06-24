@@ -79,14 +79,14 @@ class block_exalib extends block_list {
 		$this->content->footer = '';
 
 		$icon = '<img src="'.$OUTPUT->pix_url('module_search', 'block_exalib').'" class="icon" alt="" />';
-		$this->content->items[] = '<a title="'.get_string('heading', 'block_exalib').'"
+		$this->content->items[] = '<a title="'.\block_exalib\get_string('heading').'"
             href="'.$CFG->wwwroot.'/blocks/exalib/index.php?courseid='.$COURSE->id.'">'.$icon.
-			get_string('heading', 'block_exalib').
+			\block_exalib\get_string('heading').
 			'</a>';
 
 		if (block_exalib_has_cap(\block_exalib\CAP_MANAGE_CONTENT)) {
 			$icon = '<img src="'.$OUTPUT->pix_url('module_config', 'block_exalib').'" class="icon" alt="" />';
-			$this->content->items[] = '<a title="'.get_string('tab_manage_content', 'block_exalib').'"
+			$this->content->items[] = '<a title="'.\block_exalib\get_string('tab_manage_content').'"
                 href="'.$CFG->wwwroot.'/blocks/exalib/admin.php?courseid='.$COURSE->id.'">'.$icon.
 				get_string('tab_manage_content', 'block_exalib').'</a>';
 		}

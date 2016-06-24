@@ -612,6 +612,7 @@ function block_exalib_handle_item_edit($type = '', $show) {
 	if ($show == 'add') {
 		$id = 0;
 		$item = new StdClass;
+		$item->online = 1;
 
 		// block_exalib_require_creator();
 	} else {
@@ -657,29 +658,28 @@ function block_exalib_handle_item_edit($type = '', $show) {
 				$mform->addRule('reviewer_id', get_string('requiredelement', 'form'), 'required');
 			}
 
-			if (!block_exalib_is_kasuistik()) {
+			if (!block_exalib_course_settings::alternative_wording()) {
 				$mform->addElement('text', 'source', get_string('source', 'block_exalib'), 'size="100"');
 				$mform->setType('source', PARAM_TEXT);
-			} else {
-
-				/*
-				$values = g::$DB->get_records_sql_menu("
-			        SELECT c.id, c.name
-			        FROM {block_exalib_category} c
-			        WHERE parent_id=".\block_exalib\CATEGORY_SCHULSTUFE."
-			   	");
-				$mform->addElement('select', 'schulstufeid', \block_exalib\trans('de:Schulstufe'), $values);
-				$mform->addRule('schulstufeid', get_string('requiredelement', 'form'), 'required');
-
-				$values = g::$DB->get_records_sql_menu("
-			        SELECT c.id, c.name
-			        FROM {block_exalib_category} c
-			        WHERE parent_id=".\block_exalib\CATEGORY_SCHULFORM."
-			   	");
-				$mform->addElement('select', 'schulformid', \block_exalib\trans('de:Schulform'), $values);
-				$mform->addRule('schulformid', get_string('requiredelement', 'form'), 'required');
-				*/
 			}
+
+			/*
+			$values = g::$DB->get_records_sql_menu("
+				SELECT c.id, c.name
+				FROM {block_exalib_category} c
+				WHERE parent_id=".\block_exalib\CATEGORY_SCHULSTUFE."
+			   ");
+			$mform->addElement('select', 'schulstufeid', \block_exalib\trans('de:Schulstufe'), $values);
+			$mform->addRule('schulstufeid', get_string('requiredelement', 'form'), 'required');
+
+			$values = g::$DB->get_records_sql_menu("
+				SELECT c.id, c.name
+				FROM {block_exalib_category} c
+				WHERE parent_id=".\block_exalib\CATEGORY_SCHULFORM."
+			   ");
+			$mform->addElement('select', 'schulformid', \block_exalib\trans('de:Schulform'), $values);
+			$mform->addRule('schulformid', get_string('requiredelement', 'form'), 'required');
+			*/
 
 			$mform->addElement('text', 'authors', get_string('authors', 'block_exalib'), 'size="100"');
 			$mform->setType('authors', PARAM_TEXT);
@@ -871,7 +871,7 @@ function block_exalib_handle_item_edit($type = '', $show) {
 
 			$output = block_exalib_get_renderer();
 
-			echo $output->header();
+			echo $output->header(defined('BLOCK_EXALIB_IS_ADMIN_MODE') && BLOCK_EXALIB_IS_ADMIN_MODE ? 'tab_manage_content' : null);
 
 			$itemeditform->set_data($item);
 			$itemeditform->display();
@@ -890,35 +890,18 @@ function block_exalib_format_url($url) {
 }
 
 function block_exalib_get_fachsprachliches_lexikon_id() {
-	return g::$DB->get_field('data', 'id', ['name' => 'Fachsprachliches Lexikon']);
+	return g::$DB->get_field('glossary', 'id', ['course' => g::$COURSE->id, 'name' => 'Fachsprachliches Lexikon']);
 }
 
 function block_exalib_get_fachsprachliches_lexikon_items() {
-	$dataid = block_exalib_get_fachsprachliches_lexikon_id();
-	$fields = g::$DB->get_records_menu('data_fields', ['dataid' => $dataid], '', 'id, name');
-	foreach ($fields as $key => $value) {
-		$fields[$key] = strtolower(substr($value, 0, 4));
-	}
+	$glossaryid = block_exalib_get_fachsprachliches_lexikon_id();
 
-	$values = g::$DB->get_records_sql("
-		SELECT data_content.id, data_content.recordid, data_content.fieldid, data_content.content
-		FROM {data_records} data_records
-		JOIN {data_content} data_content ON data_content.recordid = data_records.id
-		WHERE data_records.dataid = ?
-	", [$dataid]);
-
-	$records = [];
-	foreach ($values as $value) {
-		if (!isset($records[$value->recordid])) {
-			$records[$value->recordid] = new stdClass;
-		}
-
-		$records[$value->recordid]->{$fields[$value->fieldid]} = $value->content;
-	}
-
-	usort($records, function($a, $b) {
-		return strcmp($a->{'fach'}, $b->{'fach'});
-	});
+	return g::$DB->get_records_sql("
+		SELECT concept, definition
+		FROM {glossary_entries}
+		WHERE glossaryid = ?
+		ORDER BY concept
+	", [$glossaryid]);
 
 	return $records;
 }

@@ -23,7 +23,7 @@ return [
 		'Exabis Library',
 	],
 	'heading' => [
-		'Fallarchiv', // 'Exabis Bibliothek',
+		'Exabis Bibliothek', // 'Exabis Bibliothek',
 		'Exabis Library',
 	],
 	'exalib:use' => [
@@ -372,5 +372,9 @@ return [
 	'alt_all_entries' => [
 		'Alle Fälle',
 		'All Entries',
+	],
+	'alt_heading' => [
+		'Fallarchiv',
+		'Exabis Library',
 	],
 ];

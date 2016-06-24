@@ -259,7 +259,7 @@ echo $output->header(BLOCK_EXALIB_IS_ADMIN_MODE ? 'tab_manage_content' : null);
 		*/
 
 		if ($currentcategory) {
-			$PAGE->set_heading(get_string('heading', 'block_exalib').': '.$currentcategory->name);
+			$PAGE->set_heading(\block_exalib\get_string('heading').': '.$currentcategory->name);
 		}
 
 		?>
