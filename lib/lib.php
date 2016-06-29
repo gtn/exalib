@@ -207,10 +207,6 @@ function block_exalib_init_page() {
 	}
 }
 
-function block_exalib_is_kasuistik() {
-	return true;
-}
-
 function block_exalib_get_url_for_file(stored_file $file) {
 	return moodle_url::make_pluginfile_url($file->get_contextid(), $file->get_component(), $file->get_filearea(),
 		$file->get_itemid(), $file->get_filepath(), $file->get_filename());
@@ -317,8 +313,8 @@ class block_exalib_category_manager {
         	WHERE 1=1
         	".($showOfflineToo ? '' : "
     	        AND item.online > 0
-        	    AND (item.online_from=0 OR item.online_from IS NULL OR
-                    (item.online_from <= ".time()." AND item.online_to >= ".time()."))
+				AND (item.online_from=0 OR item.online_from IS NULL OR item.online_from <= ".time().")
+				AND (item.online_to=0 OR item.online_to IS NULL OR item.online_to >= ".time().")
 			")."
 			".block_exalib_limit_item_to_category_where($limitToCategoryId)."
 		"), false);
@@ -455,12 +451,12 @@ class block_exalib_category_manager {
 
 		$DB->execute("INSERT INTO {block_exalib_category} (id, parent_id, name, online) VALUES
  			(".\block_exalib\CATEGORY_TAGS.", 0, 'Tags', 1)");
-		if (block_exalib_is_kasuistik()) {
-			$DB->execute("INSERT INTO {block_exalib_category} (id, parent_id, name, online) VALUES 
-				(".\block_exalib\CATEGORY_SCHULSTUFE.", 0, 'Schulstufe', 1)");
-			$DB->execute("INSERT INTO {block_exalib_category} (id, parent_id, name, online) VALUES
-				(".\block_exalib\CATEGORY_SCHULFORM.", 0, 'Schulform', 1)");
-		}
+		/*
+		$DB->execute("INSERT INTO {block_exalib_category} (id, parent_id, name, online) VALUES
+			(".\block_exalib\CATEGORY_SCHULSTUFE.", 0, 'Schulstufe', 1)");
+		$DB->execute("INSERT INTO {block_exalib_category} (id, parent_id, name, online) VALUES
+			(".\block_exalib\CATEGORY_SCHULFORM.", 0, 'Schulform', 1)");
+		*/
 
 		$DB->execute("ALTER TABLE {block_exalib_category} AUTO_INCREMENT=1001");
 	}
@@ -621,6 +617,11 @@ function block_exalib_handle_item_edit($type = '', $show) {
 
 		block_exalib_require_can_edit_item($item);
 
+		if ($item->online_to > 10000000000) {
+			// bei den lateinern ist ein fiktiv hohes online_to drinnen
+			$item->online_to = 0;
+		}
+
 		$item->contentformat = FORMAT_HTML;
 		$item = file_prepare_standard_editor($item, 'content', $textfieldoptions, context_system::instance(),
 			'block_exalib', 'item_content', $item->id);
@@ -686,10 +687,10 @@ function block_exalib_handle_item_edit($type = '', $show) {
 
 			$mform->addElement('header', 'contentheader', get_string('content', 'block_exalib'));
 
-			if (!block_exalib_is_kasuistik()) {
-				$mform->addElement('text', 'link_titel', get_string('linktitle', 'block_exalib'), 'size="100"');
-				$mform->setType('link_titel', PARAM_TEXT);
-			}
+			/*
+			$mform->addElement('text', 'link_titel', get_string('linktitle', 'block_exalib'), 'size="100"');
+			$mform->setType('link_titel', PARAM_TEXT);
+			*/
 
 			$mform->addElement('text', 'link', get_string('link', 'block_exalib'), 'size="100"');
 			$mform->setType('link', PARAM_TEXT);
@@ -700,10 +701,8 @@ function block_exalib_handle_item_edit($type = '', $show) {
 			$mform->addElement('editor', 'content_editor', get_string('content', 'block_exalib'), 'rows="20" cols="50" style="width: 95%"');
 			$mform->setType('content', PARAM_RAW);
 
-			if (!block_exalib_is_kasuistik()) {
-				$mform->addElement('filemanager', 'preview_image_filemanager', get_string('previmg', 'block_exalib'), null,
-					$this->_customdata['fileoptions']);
-			}
+			$mform->addElement('filemanager', 'preview_image_filemanager', get_string('previmg', 'block_exalib'), null,
+				$this->_customdata['fileoptions']);
 
 			$mform->addElement('filemanager', 'file_filemanager', get_string('files', 'block_exalib'), null, $this->_customdata['fileoptions']);
 
@@ -714,12 +713,12 @@ function block_exalib_handle_item_edit($type = '', $show) {
 
 				$mform->addElement('date_selector', 'online_from', get_string('onlinefrom', 'block_exalib'), array(
 					'startyear' => 2014,
-					'stopyear' => date('Y'),
+					'stopyear' => date('Y')+10,
 					'optional' => true,
 				));
 				$mform->addElement('date_selector', 'online_to', get_string('onlineto', 'block_exalib'), array(
 					'startyear' => 2014,
-					'stopyear' => date('Y'),
+					'stopyear' => date('Y')+10,
 					'optional' => true,
 				));
 			} elseif (block_exalib_is_reviewer()) {

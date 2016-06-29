@@ -69,9 +69,8 @@ if (BLOCK_EXALIB_IS_ADMIN_MODE) {
 	$sqlwhere = "";
 } else {
 	$sqlwhere = "AND item.online > 0
-        AND (item.online_from=0 OR item.online_from IS NULL
-        OR (item.online_from <= ".time()."
-        AND item.online_to >= ".time()."))";
+        AND (item.online_from=0 OR item.online_from IS NULL OR item.online_from <= ".time().")
+        AND (item.online_to=0 OR item.online_to IS NULL OR item.online_to >= ".time().")";
 }
 
 if ($root_category_id = block_exalib_course_settings::root_category_id()) {

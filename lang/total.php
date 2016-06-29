@@ -66,7 +66,7 @@ return [
 		'Manage Library Content',
 	],
 	'tab_manage_cats' => [
-		'Kategorien barbeiten',
+		'Kategorien bearbeiten',
 		'Manage Categories',
 	],
 	'tab_manage_reviewers' => [

@@ -181,7 +181,6 @@ class block_exalib_renderer extends plugin_renderer_base {
 				'item_file',
 				$item->id,
 				'itemid',
-				'',
 				false);
 
 			$areafiles = $fs->get_area_files(context_system::instance()->id,
@@ -189,7 +188,6 @@ class block_exalib_renderer extends plugin_renderer_base {
 				'preview_image',
 				$item->id,
 				'itemid',
-				'',
 				false);
 			$previewimage = reset($areafiles);
 
@@ -257,8 +255,7 @@ class block_exalib_renderer extends plugin_renderer_base {
 			}
 
 			if ($previewimage) {
-				$url = "{$CFG->wwwroot}/pluginfile.php/{$previewimage->get_contextid()}/block_exalib/item_file/".
-					$previewimage->get_itemid()."?preview=thumb";
+				$url = block_exalib_get_url_for_file($previewimage)."?preview=thumb";
 				echo '<div><img src="'.$url.'" /></div>';
 			}
 

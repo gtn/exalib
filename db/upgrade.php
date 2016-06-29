@@ -22,6 +22,16 @@ function xmldb_block_exalib_upgrade($oldversion) {
 	$dbman = $DB->get_manager();
 	$result = true;
 
+	if ($oldversion < 2015033103) {
+		$tables = ['exalib_category','exalib_item_category', 'exalib_item'];
+
+		foreach ($tables as $tableName) {
+			if ($dbman->table_exists($tableName)) {
+				$dbman->rename_table(new xmldb_table($tableName), 'block_'.$tableName);
+			}
+		}
+	}
+
 	if ($oldversion < 2015051300) {
 		// Define field reviewer_id to be added to block_exalib_item.
 		$table = new xmldb_table('block_exalib_item');

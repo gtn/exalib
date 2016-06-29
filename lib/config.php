@@ -20,8 +20,6 @@
 namespace block_exalib;
 
 const CATEGORY_TAGS = 1;
-const CATEGORY_SCHULSTUFE = 2;
-const CATEGORY_SCHULFORM = 3;
 
 const CAP_USE = 'use';
 const CAP_MANAGE_REVIEWERS = 'manage_reviewers';
