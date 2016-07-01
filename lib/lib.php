@@ -525,7 +525,7 @@ function block_exalib_handle_item_edit($type = '', $show) {
 
 			if ($reviewer) {
 				$message = block_exalib\trans('de:'.join('<br />', [
-						'de:Liebe/r '.fullname($reviewer).',',
+						'Liebe/r '.fullname($reviewer).',',
 						'',
 						'Im Fallarchiv der PH-OÖ wurde von '.fullname($creator).' ('.$creator->email.') ein Fall eingetragen.',
 						''.fullname($creator).' bittet Sie den Fall zu Reviewen. Bitte sehen sie den Fall durch und',
@@ -561,7 +561,7 @@ function block_exalib_handle_item_edit($type = '', $show) {
 
 			if ($creator) {
 				$message = block_exalib\trans('de:'.join('<br />', [
-						'de:Liebe/r '.fullname($creator).',',
+						'Liebe/r '.fullname($creator).',',
 						'',
 						'Im Fallarchiv der PH-OÖ wurde Ihnen ein Fall zur Überarbeitung übergeben. Bitte überarbeiten Sie den Fall und geben in erneut zum Review frei.',
 						'',
