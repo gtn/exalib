@@ -54,8 +54,8 @@ echo html_writer::tag('form',
 
 	html_writer::checkbox('allow_comments', 1, block_exalib_course_settings::allow_comments(), \block_exalib\trans('de:Kommentarfunktion verwenden')).'<br />'.
 	html_writer::checkbox('use_review', 1, block_exalib_course_settings::use_review(), \block_exalib\trans('de:Reviewing verwenden')).'<br />'.
-	html_writer::checkbox('use_terms_of_service', 1, block_exalib_course_settings::use_terms_of_service(), \block_exalib\trans('de:Nutzungsbedingungen bestätigen bevor Exalib verwendet werden kann')).'<br />'.
-	html_writer::checkbox('alternative_wording', 1, block_exalib_course_settings::alternative_wording(), \block_exalib\trans('de:Alternatives Wording verwenden')).'<br />'.
+	html_writer::checkbox('use_terms_of_service', 1, block_exalib_course_settings::use_terms_of_service(), \block_exalib\trans('de:Nutzungsbedingungen vor dem Erstellen von Inhalten/Fällen bestätigen')).'<br />'.
+	html_writer::checkbox('alternative_wording', 1, block_exalib_course_settings::alternative_wording(), \block_exalib\trans('de:Wording für Fallarchiv verwenden')).'<br />'.
 
 	html_writer::select($categories, 'root_category_id', block_exalib_course_settings::root_category_id(), \block_exalib\trans('de:-- keine --')).' '.\block_exalib\trans('de:Root Kategorie festlegen').'<br />'.
 

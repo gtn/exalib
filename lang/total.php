@@ -65,6 +65,10 @@ return [
 		'Inhalte bearbeiten',
 		'Manage Library Content',
 	],
+	'tab_review' => [
+		'Inhalte begutachten',
+		'Review Items',
+	],
 	'tab_manage_cats' => [
 		'Kategorien bearbeiten',
 		'Manage Categories',
@@ -354,7 +358,7 @@ return [
 		'Entries',
 	],
 	'alt_tab_mine' => [
-		'Fall einbringen',
+		'Meine Fälle',
 		'My Entries',
 	],
 	'search_all' => [
@@ -376,5 +380,13 @@ return [
 	'alt_heading' => [
 		'Fallarchiv',
 		'Exabis Library',
+	],
+	'alt_tab_manage_content' => [
+		'Alle Fälle verwalten (admin)',
+		'Manage Library Content',
+	],
+	'alt_tab_review' => [
+		'Fälle begutachten',
+		'Review Items',
 	],
 ];
