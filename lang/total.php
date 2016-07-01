@@ -350,11 +350,11 @@ return [
 	],
 
 	'alt_tab_items' => [
-		'Fälle',
+		'Fall suchen',
 		'Entries',
 	],
 	'alt_tab_mine' => [
-		'Meine Fälle',
+		'Fall einbringen',
 		'My Entries',
 	],
 	'search_all' => [

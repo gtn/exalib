@@ -13,6 +13,9 @@
     border-radius: 5px;
     box-shadow: 0 1px 0 #FFFFFF inset;
 }
+#block_exalib .library-item:hover a.head {
+	text-decoration: underline;
+}
 #block_exalib .library-item-buttons {
 	position: absolute;
 	top: 25px;
