@@ -74,7 +74,7 @@ return [
 		'Manage Categories',
 	],
 	'tab_manage_reviewers' => [
-		'Reviewers',
+		'Reviewer',
 		'Reviewers',
 	],
 	'tab_fachsprachliches_lexikon' => [
@@ -278,7 +278,7 @@ return [
 
 
 	'terms_of_use' => [
-		'Sie müssen die Nutzungsbestimmungen aktzeptieren: Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.',
+		'Sie müssen die Nutzungsbestimmungen akzeptieren: Die Fälle müssen einen Bezug zur Ausbildung, zum schulischen Feld und Umfeld oder zur Professionalisierung ausweisen. Eingebrachte Fälle dürfen keine politischen Botschaften, rassistischen Inhalte, professionsfeindliche Haltungen oder fragwürdige erzieherische Ansätze beinhalten. Jeder Fall muss anonymisiert sein, es darf keine Wiedererkennung der dokumentierten Akteur/-innen geben. Sie erklären sich einverstanden, dass Ihre Texte und Kommentare in Lehre und Forschung unter der üblichen Zitation weiter verwendet werden dürfen.',
 		'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.',
 	],
 
@@ -320,7 +320,7 @@ return [
 		'You are no Exalib Admin',
 	],
 	'noedit' => [
-		'Du bist nicht berechtigt diesen Eintrag zu editieren',
+		'Du bist nicht berechtigt, diesen Eintrag zu editieren',
 		'You are no allowed to edit this Item',
 	],
 	'download' => [
@@ -382,7 +382,7 @@ return [
 		'Exabis Library',
 	],
 	'alt_tab_manage_content' => [
-		'Alle Fälle verwalten (admin)',
+		'Alle Fälle verwalten',
 		'Manage Library Content',
 	],
 	'alt_tab_review' => [

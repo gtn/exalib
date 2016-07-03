@@ -33,7 +33,7 @@ $string['tab_mine'] = 'Meine Einträge';
 $string['tab_manage_content'] = 'Inhalte bearbeiten';
 $string['tab_review'] = 'Inhalte begutachten';
 $string['tab_manage_cats'] = 'Kategorien bearbeiten';
-$string['tab_manage_reviewers'] = 'Reviewers';
+$string['tab_manage_reviewers'] = 'Reviewer';
 $string['tab_fachsprachliches_lexikon'] = 'Fachsprachliches Lexikon';
 $string['tab_course_settings'] = 'Kurseinstellungen';
 
@@ -89,7 +89,7 @@ $string['methods'] = 'Methoden';
 $string['results'] = 'Ergebnisse';
 $string['conclusion'] = 'Schlussfolgerung';
 $string['back'] = 'zurück';
-$string['terms_of_use'] = 'Sie müssen die Nutzungsbestimmungen aktzeptieren: Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.';
+$string['terms_of_use'] = 'Sie müssen die Nutzungsbestimmungen akzeptieren: Die Fälle müssen einen Bezug zur Ausbildung, zum schulischen Feld und Umfeld oder zur Professionalisierung ausweisen. Eingebrachte Fälle dürfen keine politischen Botschaften, rassistischen Inhalte, professionsfeindliche Haltungen oder fragwürdige erzieherische Ansätze beinhalten. Jeder Fall muss anonymisiert sein, es darf keine Wiedererkennung der dokumentierten Akteur/-innen geben. Sie erklären sich einverstanden, dass Ihre Texte und Kommentare in Lehre und Forschung unter der üblichen Zitation weiter verwendet werden dürfen.';
 
 
 // index
@@ -104,7 +104,7 @@ $string['newentry'] = 'Neuen Eintrag hinzufügen';
 $string['notallowed'] = 'Du bist nicht berechtigt den Bibliotheksinhalt anzusehen.';
 $string['nocreator'] = 'Du kannst keinen Bibliotheksinhalt erstellen';
 $string['noadmin'] = 'Du bist kein Exalib Admin';
-$string['noedit'] = 'Du bist nicht berechtigt diesen Eintrag zu editieren';
+$string['noedit'] = 'Du bist nicht berechtigt, diesen Eintrag zu editieren';
 $string['download'] = 'Download';
 $string['created'] = 'Erstellt';
 $string['by_person'] = 'von {$a}';
@@ -119,5 +119,5 @@ $string['alt_search_all'] = 'In allen Fällen suchen';
 $string['all_entries'] = 'Alle Einträge';
 $string['alt_all_entries'] = 'Alle Fälle';
 $string['alt_heading'] = 'Fallarchiv';
-$string['alt_tab_manage_content'] = 'Alle Fälle verwalten (admin)';
+$string['alt_tab_manage_content'] = 'Alle Fälle verwalten';
 $string['alt_tab_review'] = 'Fälle begutachten';

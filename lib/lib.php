@@ -732,8 +732,8 @@ function block_exalib_handle_item_edit($type = '', $show) {
 			}
 
 			$radioarray = array();
-			$radioarray[] = $mform->createElement('radio', 'allow_comments', '', \block_exalib\trans('de:Allen Benutzern'), '');
-			$radioarray[] = $mform->createElement('radio', 'allow_comments', '', \block_exalib\trans('de:Lehreneden und Redaktionsteam'), 'teachers_and_reviewers');
+			$radioarray[] = $mform->createElement('radio', 'allow_comments', '', \block_exalib\trans('de:Allen Benutzer/innen'), '');
+			$radioarray[] = $mform->createElement('radio', 'allow_comments', '', \block_exalib\trans('de:Lehrenden und Redaktionsteam'), 'teachers_and_reviewers');
 			$radioarray[] = $mform->createElement('radio', 'allow_comments', '', \block_exalib\trans('de:Redaktionsteam'), 'reviewers');
 			$radioarray[] = $mform->createElement('radio', 'allow_comments', '', \block_exalib\trans('de:Keine Kommentare'), 'none');
 			$mform->addGroup($radioarray, 'allow_comments', \block_exalib\trans("de:Kommentare erlauben von"), array(' '), false);

@@ -23,35 +23,55 @@ block_exalib_init_page();
 block_exalib_require_cap(\block_exalib\CAP_USE);
 
 $show = optional_param('show', '', PARAM_TEXT);
+$type = optional_param('type', '', PARAM_TEXT);
+
+if ($type == 'review') {
+	// ok
+} else {
+	$type = 'mine';
+}
 
 $output = block_exalib_get_renderer();
-$output->set_tabs('tab_mine');
+$output->set_tabs('tab_'.$type);
 
 if (in_array($show, ['change_state', 'edit', 'add', 'delete'])) {
-	block_exalib_handle_item_edit('mine', $show);
+	block_exalib_handle_item_edit($type, $show);
 	exit;
+}
+
+$where = '';
+$params = [];
+
+if ($type == 'review') {
+	$where .= "AND (item.reviewer_id=? AND item.online<>".\block_exalib\ITEM_STATE_NEW.")";
+	$params[] = $USER->id;
+} else {
+	$where .= "AND (item.created_by = ?)";
+	$params[] = $USER->id;
 }
 
 $items = $DB->get_records_sql("
     SELECT item.*
     FROM {block_exalib_item} AS item
     WHERE 1=1
-    AND (item.created_by = ? OR (item.reviewer_id=? AND item.online<>".\block_exalib\ITEM_STATE_NEW."))
+    $where
 	".block_exalib_limit_item_to_category_where(block_exalib_course_settings::root_category_id())."
 
     ORDER BY GREATEST(time_created,time_modified) DESC
-", [$USER->id, $USER->id]);
+", $params);
 
 echo $output->header();
 
-echo '<div>';
-echo $output->link_button(new moodle_url($PAGE->url, ['show' => 'add', 'back'=>$PAGE->url->out_as_local_url(false)]), \block_exalib\get_string('add'));
-echo '</div>';
+if ($type == 'mine') {
+	echo '<div>';
+	echo $output->link_button(new moodle_url($PAGE->url, ['show' => 'add', 'back' => $PAGE->url->out_as_local_url(false)]), \block_exalib\get_string('add'));
+	echo '</div>';
+}
 
 if (!$items) {
 	echo get_string('noitemsfound', 'block_exalib');
 } else {
-	$output->item_list('mine', $items);
+	$output->item_list($type, $items);
 }
 
 echo $output->footer();

@@ -44,11 +44,14 @@ class block_exalib_renderer extends plugin_renderer_base {
 		$tabs = array();
 
 		$tabs[] = new tabobject('tab_library', new moodle_url('/blocks/exalib/index.php', ['courseid' => g::$COURSE->id]), \block_exalib\get_string("tab_items"), '', true);
-		if (block_exalib_course_settings::use_review()) {
-			$tabs[] = new tabobject('tab_mine', new moodle_url('/blocks/exalib/mine.php', ['courseid' => g::$COURSE->id]), \block_exalib\trans("tab_review"), '', true);
-		}
 
-		$tabs[] = new tabobject('tab_manage_content', new moodle_url('/blocks/exalib/admin.php', ['courseid' => g::$COURSE->id]), \block_exalib\get_string("tab_manage_content"), '', true);
+		if (block_exalib_course_settings::use_review()) {
+			$tabs[] = new tabobject('tab_mine', new moodle_url('/blocks/exalib/mine.php', ['courseid' => g::$COURSE->id]), \block_exalib\get_string("tab_mine"), '', true);
+
+			if (block_exalib_is_reviewer()) {
+				$tabs[] = new tabobject('tab_review', new moodle_url('/blocks/exalib/mine.php?type=review', ['courseid' => g::$COURSE->id]), \block_exalib\get_string("tab_review"), '', true);
+			}
+		}
 
 		if (block_exalib_has_cap(\block_exalib\CAP_MANAGE_CONTENT)) {
 			$tabs[] = new tabobject('tab_manage_content', new moodle_url('/blocks/exalib/admin.php', ['courseid' => g::$COURSE->id]), \block_exalib\get_string("tab_manage_content"), '', true);
@@ -301,21 +304,21 @@ class block_exalib_renderer extends plugin_renderer_base {
 
 				if (block_exalib_course_settings::use_review()) {
 					if ($item->online == \block_exalib\ITEM_STATE_NEW) {
-						echo $this->link_button(new moodle_url($type.'.php', ['courseid' => g::$COURSE->id, 'show' => 'change_state', 'state' => \block_exalib\ITEM_STATE_IN_REVIEW, 'id' => $item->id, 'sesskey' => sesskey()]), block_exalib\trans('de:Beim Reviewer einreichen'), [
+						echo $this->link_button(new moodle_url(basename($_SERVER['PHP_SELF']), ['courseid' => g::$COURSE->id, 'show' => 'change_state', 'state' => \block_exalib\ITEM_STATE_IN_REVIEW, 'id' => $item->id, 'sesskey' => sesskey()]), block_exalib\trans('de:Beim Reviewer einreichen'), [
 							'exa-confirm' => block_exalib\trans('de:Soll dieser Fall beim Reviewer eingereicht werden? Eine weitere Bearbeitung ist nicht mehr möglich.'),
 						]);
 						echo '<br />';
 					}
 					if ($item->online == 0 || $item->online == \block_exalib\ITEM_STATE_IN_REVIEW) {
-						echo $this->link_button(new moodle_url($type.'.php', ['courseid' => g::$COURSE->id, 'show' => 'change_state', 'state' => \block_exalib\ITEM_STATE_NEW, 'id' => $item->id, 'sesskey' => sesskey()]), block_exalib\trans('de:Dem Autor zur Überarbeitung freigeben'), [
+						echo $this->link_button(new moodle_url(basename($_SERVER['PHP_SELF']), ['courseid' => g::$COURSE->id, 'show' => 'change_state', 'state' => \block_exalib\ITEM_STATE_NEW, 'id' => $item->id, 'sesskey' => sesskey()]), block_exalib\trans('de:Dem Autor zur Überarbeitung freigeben'), [
 							'exa-confirm' => block_exalib\trans('de:Soll dieser Fall dem Autor zur Überarbeitung freigegeben werden?'),
 						]);
 						echo '<br />';
 					}
 				}
 
-				echo $this->link_button(new moodle_url($type.'.php', ['courseid' => g::$COURSE->id, 'show' => 'edit', 'type' => $type, 'id' => $item->id, 'back' => g::$PAGE->url->out_as_local_url(false)]), get_string('edit', 'block_exalib'));
-				echo $this->link_button(new moodle_url($type.'.php', ['courseid' => g::$COURSE->id, 'show' => 'delete', 'type' => $type, 'id' => $item->id, 'sesskey' => sesskey()]), get_string('delete', 'block_exalib'), [
+				echo $this->link_button(new moodle_url(basename($_SERVER['PHP_SELF']), ['courseid' => g::$COURSE->id, 'show' => 'edit', 'type' => $type, 'id' => $item->id, 'back' => g::$PAGE->url->out_as_local_url(false)]), get_string('edit', 'block_exalib'));
+				echo $this->link_button(new moodle_url(basename($_SERVER['PHP_SELF']), ['courseid' => g::$COURSE->id, 'show' => 'delete', 'type' => $type, 'id' => $item->id, 'sesskey' => sesskey()]), get_string('delete', 'block_exalib'), [
 					'exa-confirm' => \block_exalib\get_string('delete_confirmation', null, $item->name),
 				]);
 				echo '</span>';
