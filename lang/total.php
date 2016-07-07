@@ -53,7 +53,7 @@ return [
 
 
 	// tabs
-	'tab_items' => [
+	'tab_library' => [
 		'Einträge',
 		'Entries',
 	],
@@ -353,7 +353,7 @@ return [
 		'Do you really want to delete this comment?',
 	],
 
-	'alt_tab_items' => [
+	'alt_tab_library' => [
 		'Fall suchen',
 		'Entries',
 	],

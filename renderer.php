@@ -43,7 +43,7 @@ class block_exalib_renderer extends plugin_renderer_base {
 		$last_item_name = '';
 		$tabs = array();
 
-		$tabs[] = new tabobject('tab_library', new moodle_url('/blocks/exalib/index.php', ['courseid' => g::$COURSE->id]), \block_exalib\get_string("tab_items"), '', true);
+		$tabs[] = new tabobject('tab_library', new moodle_url('/blocks/exalib/index.php', ['courseid' => g::$COURSE->id]), \block_exalib\get_string("tab_library"), '', true);
 
 		if (block_exalib_course_settings::use_review()) {
 			$tabs[] = new tabobject('tab_mine', new moodle_url('/blocks/exalib/mine.php', ['courseid' => g::$COURSE->id]), \block_exalib\get_string("tab_mine"), '', true);
@@ -51,6 +51,10 @@ class block_exalib_renderer extends plugin_renderer_base {
 			if (block_exalib_is_reviewer()) {
 				$tabs[] = new tabobject('tab_review', new moodle_url('/blocks/exalib/mine.php?type=review', ['courseid' => g::$COURSE->id]), \block_exalib\get_string("tab_review"), '', true);
 			}
+		}
+
+		if (block_exalib_get_fachsprachliches_lexikon_id()) {
+			$tabs[] = new tabobject('tab_fachsprachliches_lexikon', new moodle_url('/blocks/exalib/fachsprachliches_lexikon.php', ['courseid' => g::$COURSE->id]), \block_exalib\get_string("tab_fachsprachliches_lexikon"), '', true);
 		}
 
 		if (block_exalib_has_cap(\block_exalib\CAP_MANAGE_CONTENT)) {
@@ -62,10 +66,6 @@ class block_exalib_renderer extends plugin_renderer_base {
 
 		if (block_exalib_has_cap(\block_exalib\CAP_MANAGE_REVIEWERS) && block_exalib_course_settings::use_review()) {
 			$tabs[] = new tabobject('tab_manage_reviewers', new moodle_url('/blocks/exalib/reviewers.php', ['courseid' => g::$COURSE->id]), \block_exalib\get_string("tab_manage_reviewers"), '', true);
-		}
-
-		if (block_exalib_get_fachsprachliches_lexikon_id()) {
-			$tabs[] = new tabobject('tab_fachsprachliches_lexikon', new moodle_url('/blocks/exalib/fachsprachliches_lexikon.php', ['courseid' => g::$COURSE->id]), \block_exalib\get_string("tab_fachsprachliches_lexikon"), '', true);
 		}
 
 		if (block_exalib_has_cap(\block_exalib\CAP_COURSE_SETTINGS)) {

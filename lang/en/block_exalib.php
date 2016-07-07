@@ -28,7 +28,7 @@ $string['exalib:addinstance'] = 'Add Instance to Course';
 
 
 // tabs
-$string['tab_items'] = 'Entries';
+$string['tab_library'] = 'Entries';
 $string['tab_mine'] = 'My Entries';
 $string['tab_manage_content'] = 'Manage Library Content';
 $string['tab_review'] = 'Review Items';
@@ -112,7 +112,7 @@ $string['maincat'] = 'Main Category';
 $string['subcat'] = 'Sub Category';
 $string['delete_confirmation'] = 'Do you really want to delete "{$a}"?';
 $string['comment_delete_confirmation'] = 'Do you really want to delete this comment?';
-$string['alt_tab_items'] = 'Entries';
+$string['alt_tab_library'] = 'Entries';
 $string['alt_tab_mine'] = 'My Entries';
 $string['search_all'] = 'Search in all Entries';
 $string['alt_search_all'] = 'Search in all Entries';
