@@ -23,7 +23,7 @@ function xmldb_block_exalib_upgrade($oldversion) {
 	$result = true;
 
 	if ($oldversion < 2015033103) {
-		$tables = ['exalib_category','exalib_item_category', 'exalib_item'];
+		$tables = ['exalib_category', 'exalib_item_category', 'exalib_item'];
 
 		foreach ($tables as $tableName) {
 			if ($dbman->table_exists($tableName)) {
@@ -103,12 +103,35 @@ function xmldb_block_exalib_upgrade($oldversion) {
 		// Define field reviewer_id to be added to block_exalib_item.
 		$table = new xmldb_table('block_exalib_item');
 
-        $field = new xmldb_field('allow_comments', XMLDB_TYPE_CHAR, '34', null, XMLDB_NOTNULL, null, null, 'abstract');
+		$field = new xmldb_field('allow_comments', XMLDB_TYPE_CHAR, '34', null, XMLDB_NOTNULL, null, null, 'abstract');
 		if (!$dbman->field_exists($table, $field)) {
 			$dbman->add_field($table, $field);
 		}
 
 		upgrade_block_savepoint(true, 2015051308, 'exalib');
+	}
+
+	if ($oldversion < 2016070900) {
+		// Define field isprivate to be added to block_exalib_item_comments.
+		$table = new xmldb_table('block_exalib_item_comments');
+		$field = new xmldb_field('isprivate', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '0', 'rating');
+
+		// Conditionally launch add field isprivate.
+		if (!$dbman->field_exists($table, $field)) {
+			$dbman->add_field($table, $field);
+		}
+
+		// Define field real_fiktiv to be added to block_exalib_item.
+		$table = new xmldb_table('block_exalib_item');
+        $field = new xmldb_field('real_fiktiv', XMLDB_TYPE_CHAR, '20', null, XMLDB_NOTNULL, null, null, 'allow_comments');
+
+		// Conditionally launch add field real_fiktiv.
+		if (!$dbman->field_exists($table, $field)) {
+			$dbman->add_field($table, $field);
+		}
+
+		// Exalib savepoint reached.
+		upgrade_block_savepoint(true, 2016070900, 'exalib');
 	}
 
 	return $result;

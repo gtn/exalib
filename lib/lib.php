@@ -657,6 +657,13 @@ function block_exalib_handle_item_edit($type = '', $show) {
 				$values = ['' => ''] + $values;
 				$mform->addElement('select', 'reviewer_id', \block_exalib\trans('de:Reviewer'), $values);
 				$mform->addRule('reviewer_id', get_string('requiredelement', 'form'), 'required');
+
+				$values = [
+					'' => '',
+					'real' => 'real',
+					'fiktiv' => 'fiktiv',
+				];
+				$mform->addElement('select', 'real_fiktiv', \block_exalib\trans('de:Typ'), $values);
 			}
 
 			if (!block_exalib_course_settings::alternative_wording()) {
@@ -692,14 +699,14 @@ function block_exalib_handle_item_edit($type = '', $show) {
 			$mform->setType('link_titel', PARAM_TEXT);
 			*/
 
-			$mform->addElement('text', 'link', get_string('link', 'block_exalib'), 'size="100"');
-			$mform->setType('link', PARAM_TEXT);
-
 			$mform->addElement('editor', 'abstract_editor', get_string('abstract', 'block_exalib'), 'rows="10" cols="50" style="width: 95%"');
 			$mform->setType('abstract', PARAM_RAW);
 
 			$mform->addElement('editor', 'content_editor', get_string('content', 'block_exalib'), 'rows="20" cols="50" style="width: 95%"');
 			$mform->setType('content', PARAM_RAW);
+
+			$mform->addElement('text', 'link', get_string('link', 'block_exalib'), 'size="100"');
+			$mform->setType('link', PARAM_TEXT);
 
 			$mform->addElement('filemanager', 'preview_image_filemanager', get_string('previmg', 'block_exalib'), null,
 				$this->_customdata['fileoptions']);
@@ -713,12 +720,12 @@ function block_exalib_handle_item_edit($type = '', $show) {
 
 				$mform->addElement('date_selector', 'online_from', get_string('onlinefrom', 'block_exalib'), array(
 					'startyear' => 2014,
-					'stopyear' => date('Y')+10,
+					'stopyear' => date('Y') + 10,
 					'optional' => true,
 				));
 				$mform->addElement('date_selector', 'online_to', get_string('onlineto', 'block_exalib'), array(
 					'startyear' => 2014,
-					'stopyear' => date('Y')+10,
+					'stopyear' => date('Y') + 10,
 					'optional' => true,
 				));
 			} elseif (block_exalib_is_reviewer()) {

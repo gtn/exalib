@@ -70,6 +70,10 @@ class block_exalib_comment_form extends moodleform {
 			$mform->addGroup($radioarray, 'ratingarr', \block_exalib\trans(["de:Bewertung", 'en:Rating']), array(' '), false);
 		}
 
+		if (block_exalib_course_settings::use_review() && in_array(g::$USER->id, [$this->_customdata['item']->created_by, $this->_customdata['item']->reviewer_id])) {
+			$mform->addElement('advcheckbox', 'isprivate', \block_exalib\trans('de:Privater Kommentar (nur für Ersteller und Reviewer'));
+		}
+
 		$this->add_action_buttons(false, \block_exalib\get_string('add'));
 
 	}
@@ -96,6 +100,10 @@ if (optional_param('action', '', PARAM_TEXT) == 'comment_add') {
 				SET rating=0
 				WHERE itemid=? AND userid=?
 			", [$item->id, $USER->id]);
+		}
+
+		if (isset($formdata->isprivate)) {
+			$post->isprivate = $formdata->isprivate;
 		}
 
 		$id = $DB->insert_record('block_exalib_item_comments', $post);
@@ -218,6 +226,11 @@ if ($item->time_modified > $item->time_created) {
 	echo '</td></tr>';
 }
 
+if ($item->real_fiktiv) {
+	echo '<tr><td>'.\block_exalib\trans('de:Typ').':</td><td>';
+	echo $item->real_fiktiv;
+}
+
 if ($files) {
 	echo '<tr><td>'.\block_exalib\get_string('files').':</td><td>';
 
@@ -259,6 +272,13 @@ if (@block_exalib_course_settings::allow_comments()) {
 
 	$comments = $DB->get_records("block_exalib_item_comments", ["itemid" => $item->id], 'time_created ASC');
 	foreach ($comments as $comment) {
+		if ($comment->isprivate) {
+			if (!in_array(g::$USER->id, [$item->created_by, $item->reviewer_id])) {
+				continue;
+			}
+		}
+
+
 		$conditions = array("id" => $comment->userid);
 		$user = $DB->get_record('user', $conditions);
 
@@ -269,6 +289,11 @@ if (@block_exalib_course_settings::allow_comments()) {
 		echo '</td>';
 
 		echo '<td class="topic starter"><div class="author">';
+
+		if ($comment->isprivate) {
+			echo '['.\block_exalib\trans('de:Privat').'] ';
+		}
+
 		$fullname = fullname($user, $comment->userid);
 		$by = new stdClass();
 		$by->name = '<a href="'.$CFG->wwwroot.'/user/view.php?id='.
@@ -306,7 +331,8 @@ if (@block_exalib_course_settings::allow_comments()) {
 
 	if (($item->allow_comments == '') // all
 		|| (($item->allow_comments == 'teachers_and_reviewers') && block_exalib_is_reviewer())
-		|| (($item->allow_comments == 'reviewers') && block_exalib_is_reviewer())) {
+		|| (($item->allow_comments == 'reviewers') && block_exalib_is_reviewer())
+	) {
 		$commentsform->display();
 	}
 }

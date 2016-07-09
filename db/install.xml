@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="blocks/exalib/db" VERSION="20160607" COMMENT="XMLDB file for Moodle blocks/exalib"
+<XMLDB PATH="blocks/exalib/db" VERSION="20160709" COMMENT="XMLDB file for Moodle blocks/exalib"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
@@ -46,6 +46,7 @@
         <FIELD NAME="reviewer_id" TYPE="int" LENGTH="20" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="abstract" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="allow_comments" TYPE="char" LENGTH="34" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="real_fiktiv" TYPE="char" LENGTH="20" NOTNULL="true" SEQUENCE="false"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
@@ -60,6 +61,7 @@
         <FIELD NAME="time_created" TYPE="int" LENGTH="11" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="time_modified" TYPE="int" LENGTH="11" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="rating" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="isprivate" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
