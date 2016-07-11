@@ -732,7 +732,7 @@ function block_exalib_handle_item_edit($type = '', $show) {
 				// $mform->addElement('advcheckbox', 'online', \block_exalib\get_string('online'));
 
 				$radioarray = array();
-				$radioarray[] = $mform->createElement('radio', 'online', '', \block_exalib\trans('de:in review'), \block_exalib\ITEM_STATE_IN_REVIEW);
+				$radioarray[] = $mform->createElement('radio', 'online', '', \block_exalib\trans('de:in Review'), \block_exalib\ITEM_STATE_IN_REVIEW);
 				$radioarray[] = $mform->createElement('radio', 'online', '', \block_exalib\get_string('offline'), 0);
 				$radioarray[] = $mform->createElement('radio', 'online', '', \block_exalib\get_string('online'), 1);
 				$mform->addGroup($radioarray, 'online', \block_exalib\get_string("status"), array(' '), false);

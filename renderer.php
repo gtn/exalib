@@ -248,9 +248,9 @@ class block_exalib_renderer extends plugin_renderer_base {
 			if ($type != 'public') {
 				echo '<div><span class="libary_author">'.\block_exalib\trans('de:Status').':</span> ';
 				if ($item->online == \block_exalib\ITEM_STATE_NEW) {
-					echo \block_exalib\trans('de:neuer Einrag');
+					echo \block_exalib\trans('de:Neuer Eintrag');
 				} elseif ($item->online == \block_exalib\ITEM_STATE_IN_REVIEW) {
-					echo \block_exalib\trans('de:in review');
+					echo \block_exalib\trans('de:in Review');
 				} elseif ($item->online > 0) {
 					echo \block_exalib\get_string('online');
 				} else {
@@ -277,7 +277,7 @@ class block_exalib_renderer extends plugin_renderer_base {
 				echo '</div>';
 			}
 			if ($item->time_modified > $item->time_created) {
-				echo '<div><span class="libary_author">'.\block_exalib\trans(['en:Last Modified', 'de:Zulätzt geändert']).':</span> '.
+				echo '<div><span class="libary_author">'.\block_exalib\trans(['en:Last Modified', 'de:Zuletzt geändert']).':</span> '.
 					userdate($item->time_modified);
 				if ($item->modified_by && $tmpuser = $DB->get_record('user', array('id' => $item->modified_by))) {
 					echo ' '.get_string('by_person', 'block_exalib', fullname($tmpuser));

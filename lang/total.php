@@ -156,7 +156,7 @@ return [
 		'Online To',
 	],
 	'online' => [
-		'Online Anzeigen',
+		'Veröffentlicht',
 		'Online',
 	],
 	'offline' => [
@@ -320,7 +320,7 @@ return [
 		'You are no Exalib Admin',
 	],
 	'noedit' => [
-		'Du bist nicht berechtigt, diesen Eintrag zu editieren',
+		'Du bist nicht berechtigt diesen Eintrag zu editieren',
 		'You are no allowed to edit this Item',
 	],
 	'download' => [
@@ -358,7 +358,7 @@ return [
 		'Entries',
 	],
 	'alt_tab_mine' => [
-		'Meine Fälle',
+		'Fall einbringen',
 		'My Entries',
 	],
 	'search_all' => [
