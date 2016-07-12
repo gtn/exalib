@@ -199,7 +199,7 @@ function block_exalib_init_page() {
 	}
 	$init = false;
 
-	require_login(optional_param('courseid', 0, PARAM_INT));
+	require_login(optional_param('courseid', g::$SITE->id, PARAM_INT));
 	// g::$PAGE->set_course(g::$SITE);
 
 	if (!g::$PAGE->has_set_url()) {

@@ -74,7 +74,7 @@ class block_exalib_renderer extends plugin_renderer_base {
 
 		$tabtree = new tabtree($tabs);
 
-		g::$PAGE->navbar->add(\block_exalib\get_string('heading'), new moodle_url('/blocks/exalib'));
+		g::$PAGE->navbar->add(\block_exalib\get_string('heading'), new moodle_url('/blocks/exalib/index.php', ['courseid' => g::$COURSE->id]));
 
 		foreach ($items as $level => $item) {
 			if (!is_array($item)) {
