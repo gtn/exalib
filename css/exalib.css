@@ -280,6 +280,7 @@ float: left;
 #block_exalib #block-exalib-category-mgmt li {
 	margin: 0;
 	padding: 5px 0 5px 26px;
+	break-inside: avoid-column;
 }
 #block_exalib #block-exalib-category-mgmt li div {
 	position: relative;
@@ -315,6 +316,7 @@ float: left;
 	display: inline;
 	position: absolute;
 	margin: -4px 0 0 10px;
+	top: 0;
 	right: 10px;
 }
 

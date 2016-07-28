@@ -300,7 +300,7 @@ class block_exalib_category_manager {
         	FROM {block_exalib_category} category
         	WHERE 1=1
         	".($showOfflineToo ? '' : "
-	            AND category.online
+	            AND category.online > 0
 			")."
 			ORDER BY name
 		");
