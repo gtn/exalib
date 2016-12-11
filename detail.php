@@ -204,7 +204,7 @@ if ($item->authors) {
 	$authors = fullname($tmpuser);
 }
 if ($authors) {
-	echo '<tr><td>Author:</td><td>'.$authors.'</td></tr>';
+	echo '<tr><td>'.\block_exalib\get_string('author').':</td><td>'.$authors.'</td></tr>';
 }
 
 if ($item->time_created) {
@@ -218,7 +218,7 @@ if ($item->time_created) {
 	echo '</td></tr>';
 }
 if ($item->time_modified > $item->time_created) {
-	echo '<tr><td>'.\block_exalib\trans(['en:Last Modified', 'de:Zulätzt geändert']).':</td><td>'.
+	echo '<tr><td>'.\block_exalib\trans(['en:Last Modified', 'de:Zuletzt geändert']).':</td><td>'.
 		userdate($item->time_modified);
 	if ($item->modified_by && $tmpuser = $DB->get_record('user', array('id' => $item->modified_by))) {
 		echo ' '.get_string('by_person', 'block_exalib', fullname($tmpuser));
