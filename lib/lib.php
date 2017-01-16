@@ -61,23 +61,23 @@ function block_exalib_require_cap($cap, $user = null) {
 			// not logged in and no guest
 			require_login();
 		} else {
-			throw new require_login_exception(get_string('notallowed', 'block_exalib'));
+			throw new require_login_exception(block_exalib_get_string('notallowed'));
 		}
 	}
 
 	switch ($cap) {
-		case \block_exalib\CAP_USE:
+		case BLOCK_EXALIB_CAP_USE:
 			// already checked
 			return;
-		case \block_exalib\CAP_MANAGE_CONTENT:
-		case \block_exalib\CAP_MANAGE_CATS:
+		case BLOCK_EXALIB_CAP_MANAGE_CONTENT:
+		case BLOCK_EXALIB_CAP_MANAGE_CATS:
 			if (!block_exalib_is_creator()) {
 				throw new block_exalib_permission_exception('no creator');
 			}
 
 			return;
-		case \block_exalib\CAP_MANAGE_REVIEWERS:
-		case \block_exalib\CAP_COURSE_SETTINGS:
+		case BLOCK_EXALIB_CAP_MANAGE_REVIEWERS:
+		case BLOCK_EXALIB_CAP_COURSE_SETTINGS:
 			if (!block_exalib_is_admin()) {
 				throw new block_exalib_permission_exception('no admin');
 			}
@@ -95,6 +95,8 @@ function block_exalib_has_cap($cap, $user = null) {
 		return true;
 	} catch (block_exalib_permission_exception $e) {
 		return false;
+	} catch (\require_login_exception $e) {
+		return false;
 	} catch (\required_capability_exception $e) {
 		return false;
 	}
@@ -105,7 +107,7 @@ function block_exalib_has_cap($cap, $user = null) {
  * @return nothing
  */
 function block_exalib_require_view_item($item_or_id) {
-	block_exalib_require_cap(\block_exalib\CAP_USE);
+	block_exalib_require_cap(BLOCK_EXALIB_CAP_USE);
 
 	if (is_object($item_or_id)) {
 		$item = $item_or_id;
@@ -127,7 +129,7 @@ function block_exalib_require_view_item($item_or_id) {
 		return true;
 	}
 
-	if (block_exalib_has_cap(block_exalib\CAP_MANAGE_CONTENT)) {
+	if (block_exalib_has_cap(BLOCK_EXALIB_CAP_MANAGE_CONTENT)) {
 		// admin can view
 		return true;
 	}
@@ -135,7 +137,7 @@ function block_exalib_require_view_item($item_or_id) {
 	throw new block_exalib_permission_exception('not allowed');
 }
 
-class block_exalib_permission_exception extends \block_exalib\moodle_exception {
+class block_exalib_permission_exception extends block_exalib\moodle_exception {
 }
 
 /**
@@ -143,20 +145,20 @@ class block_exalib_permission_exception extends \block_exalib\moodle_exception {
  * @param stdClass $item
  */
 function block_exalib_require_can_edit_item(stdClass $item) {
-	if (block_exalib_has_cap(block_exalib\CAP_MANAGE_CONTENT)) {
+	if (block_exalib_has_cap(BLOCK_EXALIB_CAP_MANAGE_CONTENT)) {
 		return true;
 	}
 
-	if (block_exalib_is_reviewer() && $item->reviewer_id == g::$USER->id && $item->online != \block_exalib\ITEM_STATE_NEW) {
+	if (block_exalib_is_reviewer() && $item->reviewer_id == g::$USER->id && $item->online != BLOCK_EXALIB_ITEM_STATE_NEW) {
 		return true;
 	}
 
 	// Item creator can edit when not freigegeben
-	if ($item->created_by == g::$USER->id && $item->online == \block_exalib\ITEM_STATE_NEW) {
+	if ($item->created_by == g::$USER->id && $item->online == BLOCK_EXALIB_ITEM_STATE_NEW) {
 		return true;
 	}
 
-	throw new block_exalib_permission_exception(get_string('noedit', 'block_exalib'));
+	throw new block_exalib_permission_exception(block_exalib_get_string('noedit'));
 }
 
 /**
@@ -450,12 +452,12 @@ class block_exalib_category_manager {
 		}
 
 		$DB->execute("INSERT INTO {block_exalib_category} (id, parent_id, name, online) VALUES
- 			(".\block_exalib\CATEGORY_TAGS.", 0, 'Tags', 1)");
+ 			(".BLOCK_EXALIB_CATEGORY_TAGS.", 0, 'Tags', 1)");
 		/*
 		$DB->execute("INSERT INTO {block_exalib_category} (id, parent_id, name, online) VALUES
-			(".\block_exalib\CATEGORY_SCHULSTUFE.", 0, 'Schulstufe', 1)");
+			(".BLOCK_EXALIB_CATEGORY_SCHULSTUFE.", 0, 'Schulstufe', 1)");
 		$DB->execute("INSERT INTO {block_exalib_category} (id, parent_id, name, online) VALUES
-			(".\block_exalib\CATEGORY_SCHULFORM.", 0, 'Schulform', 1)");
+			(".BLOCK_EXALIB_CATEGORY_SCHULFORM.", 0, 'Schulform', 1)");
 		*/
 
 		$DB->execute("ALTER TABLE {block_exalib_category} AUTO_INCREMENT=1001");
@@ -509,9 +511,9 @@ function block_exalib_handle_item_edit($type = '', $show) {
 		block_exalib_require_can_edit_item($item);
 
 		/*
-		if ($item->created_by == g::$USER->id && $item->online == \block_exalib\ITEM_STATE_NEW && $state == \block_exalib\ITEM_STATE_IN_REVIEW) {
+		if ($item->created_by == g::$USER->id && $item->online == BLOCK_EXALIB_ITEM_STATE_NEW && $state == BLOCK_EXALIB_ITEM_STATE_IN_REVIEW) {
 			// ok
-		} elseif ($item->online == 0 || $item->online == \block_exalib\ITEM_STATE_IN_REVIEW && $state == \block_exalib\ITEM_STATE_NEW) {
+		} elseif ($item->online == 0 || $item->online == BLOCK_EXALIB_ITEM_STATE_IN_REVIEW && $state == BLOCK_EXALIB_ITEM_STATE_NEW) {
 			// ok
 		} else {
 			throw new moodle_exception('not allowed');
@@ -519,12 +521,12 @@ function block_exalib_handle_item_edit($type = '', $show) {
 		*/
 
 		// send email to reviewer
-		if ($state == block_exalib\ITEM_STATE_IN_REVIEW) {
+		if ($state == BLOCK_EXALIB_ITEM_STATE_IN_REVIEW) {
 			$reviewer = g::$DB->get_record('user', ['id' => $item->reviewer_id]);
 			$creator = g::$USER;
 
 			if ($reviewer) {
-				$message = block_exalib\trans('de:'.join('<br />', [
+				$message = block_exalib_trans('de:'.join('<br />', [
 						'Liebe/r '.fullname($reviewer).',',
 						'',
 						'Im Fallarchiv der PH-OÖ wurde von '.fullname($creator).' ('.$creator->email.') ein Fall eingetragen.',
@@ -545,7 +547,7 @@ function block_exalib_handle_item_edit($type = '', $show) {
 				$eventdata->component = 'block_exalib';
 				$eventdata->userfrom = $creator;
 				$eventdata->userto = $reviewer;
-				$eventdata->subject = block_exalib\trans('de:PH - Kasuistik Reviewanfrage');
+				$eventdata->subject = block_exalib_trans('de:PH - Kasuistik Reviewanfrage');
 				$eventdata->fullmessage = $message;
 				$eventdata->fullmessageformat = FORMAT_HTML;
 				$eventdata->fullmessagehtml = $message;
@@ -555,12 +557,12 @@ function block_exalib_handle_item_edit($type = '', $show) {
 		}
 
 		// send email to creator
-		if ($state == block_exalib\ITEM_STATE_NEW) {
+		if ($state == BLOCK_EXALIB_ITEM_STATE_NEW) {
 			$reviewer = g::$USER;
 			$creator = g::$DB->get_record('user', ['id' => $item->created_by]);
 
 			if ($creator) {
-				$message = block_exalib\trans('de:'.join('<br />', [
+				$message = block_exalib_trans('de:'.join('<br />', [
 						'Liebe/r '.fullname($creator).',',
 						'',
 						'Im Fallarchiv der PH-OÖ wurde Ihnen ein Fall zur Überarbeitung übergeben. Bitte überarbeiten Sie den Fall und geben in erneut zum Review frei.',
@@ -577,7 +579,7 @@ function block_exalib_handle_item_edit($type = '', $show) {
 				$eventdata->component = 'block_exalib';
 				$eventdata->userfrom = $reviewer;
 				$eventdata->userto = $creator;
-				$eventdata->subject = block_exalib\trans('de:PH - Kasuistik Reviewfeedback');
+				$eventdata->subject = block_exalib_trans('de:PH - Kasuistik Reviewfeedback');
 				$eventdata->fullmessageformat = FORMAT_HTML;
 				$eventdata->fullmessagehtml = $message;
 				$eventdata->smallmessage = '';
@@ -648,14 +650,14 @@ function block_exalib_handle_item_edit($type = '', $show) {
 		public function definition() {
 			$mform =& $this->_form;
 
-			$mform->addElement('text', 'name', get_string('name', 'block_exalib'), 'size="100"');
+			$mform->addElement('text', 'name', block_exalib_get_string('name'), 'size="100"');
 			$mform->setType('name', PARAM_TEXT);
 			$mform->addRule('name', 'Name required', 'required', null, 'server');
 
 			if (block_exalib_course_settings::use_review()) {
 				$values = array_map('fullname', block_exalib_get_reviewers());
 				$values = ['' => ''] + $values;
-				$mform->addElement('select', 'reviewer_id', \block_exalib\trans('de:Reviewer'), $values);
+				$mform->addElement('select', 'reviewer_id', block_exalib_trans('de:Reviewer'), $values);
 				$mform->addRule('reviewer_id', get_string('requiredelement', 'form'), 'required');
 
 				$values = [
@@ -663,11 +665,11 @@ function block_exalib_handle_item_edit($type = '', $show) {
 					'real' => 'real',
 					'fiktiv' => 'fiktiv',
 				];
-				$mform->addElement('select', 'real_fiktiv', \block_exalib\trans('de:Typ'), $values);
+				$mform->addElement('select', 'real_fiktiv', block_exalib_trans('de:Typ'), $values);
 			}
 
 			if (!block_exalib_course_settings::alternative_wording()) {
-				$mform->addElement('text', 'source', get_string('source', 'block_exalib'), 'size="100"');
+				$mform->addElement('text', 'source', block_exalib_get_string('source'), 'size="100"');
 				$mform->setType('source', PARAM_TEXT);
 			}
 
@@ -675,79 +677,81 @@ function block_exalib_handle_item_edit($type = '', $show) {
 			$values = g::$DB->get_records_sql_menu("
 				SELECT c.id, c.name
 				FROM {block_exalib_category} c
-				WHERE parent_id=".\block_exalib\CATEGORY_SCHULSTUFE."
+				WHERE parent_id=".BLOCK_EXALIB_CATEGORY_SCHULSTUFE."
 			   ");
-			$mform->addElement('select', 'schulstufeid', \block_exalib\trans('de:Schulstufe'), $values);
+			$mform->addElement('select', 'schulstufeid', block_exalib_trans('de:Schulstufe'), $values);
 			$mform->addRule('schulstufeid', get_string('requiredelement', 'form'), 'required');
 
 			$values = g::$DB->get_records_sql_menu("
 				SELECT c.id, c.name
 				FROM {block_exalib_category} c
-				WHERE parent_id=".\block_exalib\CATEGORY_SCHULFORM."
+				WHERE parent_id=".BLOCK_EXALIB_CATEGORY_SCHULFORM."
 			   ");
-			$mform->addElement('select', 'schulformid', \block_exalib\trans('de:Schulform'), $values);
+			$mform->addElement('select', 'schulformid', block_exalib_trans('de:Schulform'), $values);
 			$mform->addRule('schulformid', get_string('requiredelement', 'form'), 'required');
 			*/
 
-			$mform->addElement('text', 'authors', get_string('authors', 'block_exalib'), 'size="100"');
+			$mform->addElement('text', 'authors', block_exalib_get_string('authors'), 'size="100"');
 			$mform->setType('authors', PARAM_TEXT);
 
-			$mform->addElement('header', 'contentheader', get_string('content', 'block_exalib'));
+			$values = range(2010,2020);
+			$values = ['' => ''] + array_combine($values, $values);
+			$mform->addElement('select', 'year', block_exalib_get_string('year', 'form'), $values);
+			$mform->setType('year', PARAM_INT);
 
-			/*
-			$mform->addElement('text', 'link_titel', get_string('linktitle', 'block_exalib'), 'size="100"');
-			$mform->setType('link_titel', PARAM_TEXT);
-			*/
-
-			$mform->addElement('editor', 'abstract_editor', get_string('abstract', 'block_exalib'), 'rows="10" cols="50" style="width: 95%"');
+			$mform->addElement('editor', 'abstract_editor', block_exalib_get_string('abstract'), 'rows="10" cols="50" style="width: 95%"');
 			$mform->setType('abstract', PARAM_RAW);
 
-			$mform->addElement('editor', 'content_editor', get_string('content', 'block_exalib'), 'rows="20" cols="50" style="width: 95%"');
-			$mform->setType('content', PARAM_RAW);
+			$mform->addElement('header', 'contentheader', block_exalib_get_string('content'));
+			$mform->setExpanded('contentheader');
 
-			$mform->addElement('text', 'link', get_string('link', 'block_exalib'), 'size="100"');
+			$mform->addElement('text', 'link', block_exalib_get_string('link'), 'size="100"');
 			$mform->setType('link', PARAM_TEXT);
 
-			$mform->addElement('filemanager', 'preview_image_filemanager', get_string('previmg', 'block_exalib'), null,
+			$mform->addElement('editor', 'content_editor', block_exalib_get_string('content'), 'rows="20" cols="50" style="width: 95%"');
+			$mform->setType('content', PARAM_RAW);
+
+			$mform->addElement('filemanager', 'file_filemanager', block_exalib_get_string('files'), null, $this->_customdata['fileoptions']);
+
+			$mform->addElement('filemanager', 'preview_image_filemanager', block_exalib_get_string('previmg'), null,
 				$this->_customdata['fileoptions']);
 
-			$mform->addElement('filemanager', 'file_filemanager', get_string('files', 'block_exalib'), null, $this->_customdata['fileoptions']);
+			$mform->addElement('header', 'categoriesheader', block_exalib_get_string('categories'));
+			$mform->setExpanded('categoriesheader');
+
+			$mform->addElement('static', 'categories', block_exalib_get_string('groups'), $this->get_categories());
 
 			if ($this->_customdata['type'] != 'mine') {
-				$mform->addElement('header', 'onlineheader', get_string('onlineset', 'block_exalib'));
+				$mform->addElement('header', 'onlineheader', block_exalib_get_string('onlineset'));
 
-				$mform->addElement('advcheckbox', 'online', \block_exalib\get_string('online'));
+				$mform->addElement('advcheckbox', 'online', block_exalib_get_string('online'));
 
-				$mform->addElement('date_selector', 'online_from', get_string('onlinefrom', 'block_exalib'), array(
+				$mform->addElement('date_selector', 'online_from', block_exalib_get_string('onlinefrom'), array(
 					'startyear' => 2014,
 					'stopyear' => date('Y') + 10,
 					'optional' => true,
 				));
-				$mform->addElement('date_selector', 'online_to', get_string('onlineto', 'block_exalib'), array(
+				$mform->addElement('date_selector', 'online_to', block_exalib_get_string('onlineto'), array(
 					'startyear' => 2014,
 					'stopyear' => date('Y') + 10,
 					'optional' => true,
 				));
 			} elseif (block_exalib_is_reviewer()) {
-				// $mform->addElement('advcheckbox', 'online', \block_exalib\get_string('online'));
+				// $mform->addElement('advcheckbox', 'online', block_exalib_get_string('online'));
 
 				$radioarray = array();
-				$radioarray[] = $mform->createElement('radio', 'online', '', \block_exalib\trans('de:in Review'), \block_exalib\ITEM_STATE_IN_REVIEW);
-				$radioarray[] = $mform->createElement('radio', 'online', '', \block_exalib\get_string('offline'), 0);
-				$radioarray[] = $mform->createElement('radio', 'online', '', \block_exalib\get_string('online'), 1);
-				$mform->addGroup($radioarray, 'online', \block_exalib\get_string("status"), array(' '), false);
+				$radioarray[] = $mform->createElement('radio', 'online', '', block_exalib_trans('de:in Review'), BLOCK_EXALIB_ITEM_STATE_IN_REVIEW);
+				$radioarray[] = $mform->createElement('radio', 'online', '', block_exalib_get_string('offline'), 0);
+				$radioarray[] = $mform->createElement('radio', 'online', '', block_exalib_get_string('online'), 1);
+				$mform->addGroup($radioarray, 'online', block_exalib_get_string("status"), array(' '), false);
 			}
 
 			$radioarray = array();
-			$radioarray[] = $mform->createElement('radio', 'allow_comments', '', \block_exalib\trans('de:Allen Benutzer/innen'), '');
-			$radioarray[] = $mform->createElement('radio', 'allow_comments', '', \block_exalib\trans('de:Lehrenden und Redaktionsteam'), 'teachers_and_reviewers');
-			$radioarray[] = $mform->createElement('radio', 'allow_comments', '', \block_exalib\trans('de:Redaktionsteam'), 'reviewers');
-			$radioarray[] = $mform->createElement('radio', 'allow_comments', '', \block_exalib\trans('de:Keine Kommentare'), 'none');
-			$mform->addGroup($radioarray, 'allow_comments', \block_exalib\trans("de:Kommentare erlauben von"), array(' '), false);
-
-			$mform->addElement('header', 'categoriesheader', get_string('categories', 'block_exalib'));
-
-			$mform->addElement('static', 'categories', get_string('groups', 'block_exalib'), $this->get_categories());
+			$radioarray[] = $mform->createElement('radio', 'allow_comments', '', block_exalib_trans('de:Alle Benutzer/innen'), '');
+			$radioarray[] = $mform->createElement('radio', 'allow_comments', '', block_exalib_trans('de:Lehrende und Redaktionsteam'), 'teachers_and_reviewers');
+			$radioarray[] = $mform->createElement('radio', 'allow_comments', '', block_exalib_trans('de:Redaktionsteam'), 'reviewers');
+			$radioarray[] = $mform->createElement('radio', 'allow_comments', '', block_exalib_trans('de:Keine Kommentare'), 'none');
+			$mform->addGroup($radioarray, 'allow_comments', block_exalib_trans("de:Kommentare erlauben von"), array(' '), false);
 
 			$this->add_action_buttons();
 		}
@@ -797,7 +801,7 @@ function block_exalib_handle_item_edit($type = '', $show) {
 
 			if ($type == 'mine' && empty($item->id)) {
 				// normal user items should be offline first
-				$fromform->online = \block_exalib\ITEM_STATE_NEW;
+				$fromform->online = BLOCK_EXALIB_ITEM_STATE_NEW;
 			}
 
 			if (!empty($item->id)) {
@@ -849,7 +853,7 @@ function block_exalib_handle_item_edit($type = '', $show) {
 
 			// Save categories.
 			g::$DB->delete_records('block_exalib_item_category', array("item_id" => $fromform->id));
-			$categories_request = \block_exalib\param::optional_array('categories', PARAM_INT);
+			$categories_request = block_exalib\param::optional_array('categories', PARAM_INT);
 
 			if ($root_category_id = block_exalib_course_settings::root_category_id()) {
 				// if course has a root category, always add it

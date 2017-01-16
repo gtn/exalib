@@ -116,8 +116,8 @@ return [
 		'Source',
 	],
 	'abstract' => [
-		'Abstract',
 		'Zusammenfassung',
+		'Abstract',
 	],
 	'content' => [
 		'Inhalt',

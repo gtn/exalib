@@ -20,7 +20,7 @@
 require __DIR__.'/inc.php';
 
 block_exalib_init_page();
-block_exalib_require_cap(\block_exalib\CAP_USE);
+block_exalib_require_cap(BLOCK_EXALIB_CAP_USE);
 
 $forward = required_param('forward', PARAM_LOCALURL);
 $accept = optional_param('accept', false, PARAM_BOOL);
@@ -40,11 +40,11 @@ $output->init_js_css(); // needed for javascript buttons
 
 echo $OUTPUT->header();
 
-echo \block_exalib\get_string('terms_of_use');
+echo block_exalib_get_string('terms_of_use');
 
 echo '<div style="padding: 40px; text-align: center;">';
 
-echo $output->link_button(new moodle_url($PAGE->url, ['accept' => true]), \block_exalib\trans('de:Einverstanden'));
+echo $output->link_button(new moodle_url($PAGE->url, ['accept' => true]), block_exalib_trans('de:Einverstanden'));
 echo $output->back_button(new moodle_url('/'));
 echo '</div>';
 

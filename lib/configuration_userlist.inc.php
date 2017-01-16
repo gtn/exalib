@@ -25,7 +25,7 @@ defined('MOODLE_INTERNAL') || die();
 	<table class="roleassigntable generaltable generalbox boxaligncenter" cellspacing="0">
 		<tr>
 			<td valign="top">
-				<p><label for="removeselect"><?php \block_exalib\trans(['de:Reviewers', 'en:Reviewers']); ?></label></p>
+				<p><label for="removeselect"><?php block_exalib_trans(['de:Reviewers', 'en:Reviewers']); ?></label></p>
 			  <div class="userselector">
 			  <select name="removeselect[]" size="20" id="removeselect" multiple="multiple"
 					  onfocus="getElementById('assignform').add.disabled=true;
@@ -59,7 +59,7 @@ defined('MOODLE_INTERNAL') || die();
 			  </div>
 			</td>
 			<td valign="top">
-				<p><label for="addselect"><?php echo \block_exalib\get_string('availableusers'); ?></label></p>
+				<p><label for="addselect"><?php echo block_exalib_get_string('availableusers'); ?></label></p>
 				<div class="userselector" id="addselect_wrapper">
 				<select name="addselect[]" size="20" id="addselect" multiple="multiple"
 						onfocus="getElementById('assignform').add.disabled=false;
@@ -108,7 +108,7 @@ defined('MOODLE_INTERNAL') || die();
 			   <input name="search" id="search" type="submit" value="<?php print_string('search') ?>" />
 			   <?php
 					if (!empty($searchtext)) {
-						echo '<input name="showall" id="showall" type="submit" value="'.\block_exalib\get_string('showall').'" />'."\n";
+						echo '<input name="showall" id="showall" type="submit" value="'.block_exalib_get_string('showall').'" />'."\n";
 					}
 			   ?>
 			 </td>

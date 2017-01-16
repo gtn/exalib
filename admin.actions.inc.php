@@ -29,12 +29,12 @@ $show = optional_param('show', '', PARAM_TEXT);
 $output = block_exalib_get_renderer();
 
 if ($show == 'categories') {
-	block_exalib_require_cap(\block_exalib\CAP_MANAGE_CATS);
+	block_exalib_require_cap(BLOCK_EXALIB_CAP_MANAGE_CATS);
 
 	echo $output->header('tab_manage_cats');
 
 	echo '<div id="block-exalib-category-mgmt">';
-	echo $output->link_button('admin.php?courseid='.g::$COURSE->id.'&show=category_add&parent_id=0', \block_exalib\get_string('addmaincat'));
+	echo $output->link_button('admin.php?courseid='.g::$COURSE->id.'&show=category_add&parent_id=0', block_exalib_get_string('addmaincat'));
 	echo '<ul>';
 
 	$mgr = new block_exalib_category_manager(true);
@@ -44,15 +44,15 @@ if ($show == 'categories') {
 
 		echo $cat->name;
 		if (!$cat->online) {
-			echo ' ('.\block_exalib\get_string('offline').')';
+			echo ' ('.block_exalib_get_string('offline').')';
 		}
 		echo ' ('.$cat->cnt_inc_subs.') ';
 
 		echo '<span class="buttons">';
-		echo $output->link_button('admin.php?courseid='.g::$COURSE->id.'&show=category_add&parent_id='.$cat->id, \block_exalib\get_string('addcat'));
-		echo $output->link_button('admin.php?courseid='.g::$COURSE->id.'&show=category_edit&category_id='.$cat->id, \block_exalib\get_string('edit'));
-		echo $output->link_button('admin.php?courseid='.g::$COURSE->id.'&show=category_delete&category_id='.$cat->id.'&sesskey='.sesskey(), \block_exalib\get_string('delete'), [
-			'exa-confirm' => \block_exalib\get_string('deletecat', null, $cat->name),
+		echo $output->link_button('admin.php?courseid='.g::$COURSE->id.'&show=category_add&parent_id='.$cat->id, block_exalib_get_string('addcat'));
+		echo $output->link_button('admin.php?courseid='.g::$COURSE->id.'&show=category_edit&category_id='.$cat->id, block_exalib_get_string('edit'));
+		echo $output->link_button('admin.php?courseid='.g::$COURSE->id.'&show=category_delete&category_id='.$cat->id.'&sesskey='.sesskey(), block_exalib_get_string('delete'), [
+			'exa-confirm' => block_exalib_get_string('deletecat', null, $cat->name),
 		]);
 		echo '</span>';
 		echo '</div>';
@@ -71,7 +71,7 @@ if ($show == 'categories') {
 }
 
 if ($show == 'category_delete') {
-	block_exalib_require_cap(\block_exalib\CAP_MANAGE_CATS);
+	block_exalib_require_cap(BLOCK_EXALIB_CAP_MANAGE_CATS);
 
 	$categoryid = required_param('category_id', PARAM_INT);
 
@@ -84,7 +84,7 @@ if ($show == 'category_delete') {
 }
 
 if (($show == 'category_add') || ($show == 'category_edit')) {
-	block_exalib_require_cap(\block_exalib\CAP_MANAGE_CATS);
+	block_exalib_require_cap(BLOCK_EXALIB_CAP_MANAGE_CATS);
 
 	if ($show == 'category_add') {
 		$category = (object)array(
@@ -122,13 +122,13 @@ if (($show == 'category_add') || ($show == 'category_edit')) {
 
 			$mform =& $this->_form; // Don't forget the underscore!
 
-			$mform->addElement('text', 'name', get_string('name', 'block_exalib'), 'size="100"');
+			$mform->addElement('text', 'name', block_exalib_get_string('name'), 'size="100"');
 			$mform->setType('name', PARAM_TEXT);
 			$mform->addRule('name', 'Name required', 'required', null, 'server');
 
-			$mform->addElement('select', 'parent_id', get_string('parent', 'block_exalib'), $this->_category_select);
+			$mform->addElement('select', 'parent_id', block_exalib_get_string('parent'), $this->_category_select);
 
-			$mform->addElement('advcheckbox', 'online', \block_exalib\get_string('online'));
+			$mform->addElement('advcheckbox', 'online', block_exalib_get_string('online'));
 
 			$this->add_action_buttons();
 		}

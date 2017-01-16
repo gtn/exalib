@@ -25,9 +25,9 @@ require __DIR__.'/inc.php';
 
 block_exalib_init_page();
 if (BLOCK_EXALIB_IS_ADMIN_MODE) {
-	block_exalib_require_cap(\block_exalib\CAP_MANAGE_CONTENT);
+	block_exalib_require_cap(BLOCK_EXALIB_CAP_MANAGE_CONTENT);
 } else {
-	block_exalib_require_cap(\block_exalib\CAP_USE);
+	block_exalib_require_cap(BLOCK_EXALIB_CAP_USE);
 }
 
 $urloverview = new moodle_url('/blocks/exalib');
@@ -45,7 +45,7 @@ $filterid = 0;
  if ($FILTER_CATEGORY) $PAGE->navbar->add($FILTER_CATEGORY->name); */
 /*
 if (BLOCK_EXALIB_IS_ADMIN_MODE) {
-    $PAGE->navbar->add(get_string('administration', 'block_exalib'), 'admin.php');
+    $PAGE->navbar->add(block_exalib_get_string('administration'), 'admin.php');
 }
 */
 
@@ -185,15 +185,15 @@ echo $output->header(BLOCK_EXALIB_IS_ADMIN_MODE ? 'tab_manage_content' : null);
 		/*
 		if (false && !$filterid) {
 				?>
-				<h1 class="libary_head"><?php echo get_string('welcome', 'block_exalib');  ?></h1>
+				<h1 class="libary_head"><?php echo block_exalib_get_string('welcome');  ?></h1>
 
 
 				<div class="libary_top_cat">
-					<a class="exalib-blue-cat-lib" href="<?php echo $CFG->wwwroot; ?>/blocks/exalib/index.php?category_id=11"><?php echo get_string('abstracts', 'block_exalib')?></a>
-					<a class="exalib-blue-cat-lib" href="<?php echo $CFG->wwwroot; ?>/blocks/exalib/index.php?category_id=12"><?php echo get_string('documents', 'block_exalib')?></a>
-					<a class="exalib-blue-cat-lib" href="<?php echo $CFG->wwwroot; ?>/blocks/exalib/index.php?category_id=13"><?php echo get_string('images', 'block_exalib')?></a>
-					<a class="exalib-blue-cat-lib" href="<?php echo $CFG->wwwroot; ?>/blocks/exalib/index.php?category_id=14"><?php echo get_string('podcasts', 'block_exalib')?></a>
-					<a class="exalib-blue-cat-lib" href="<?php echo $CFG->wwwroot; ?>/blocks/exalib/index.php?category_id=15"><?php echo get_string('webcasts', 'block_exalib')?></a>
+					<a class="exalib-blue-cat-lib" href="<?php echo $CFG->wwwroot; ?>/blocks/exalib/index.php?category_id=11"><?php echo block_exalib_get_string('abstracts')?></a>
+					<a class="exalib-blue-cat-lib" href="<?php echo $CFG->wwwroot; ?>/blocks/exalib/index.php?category_id=12"><?php echo block_exalib_get_string('documents')?></a>
+					<a class="exalib-blue-cat-lib" href="<?php echo $CFG->wwwroot; ?>/blocks/exalib/index.php?category_id=13"><?php echo block_exalib_get_string('images')?></a>
+					<a class="exalib-blue-cat-lib" href="<?php echo $CFG->wwwroot; ?>/blocks/exalib/index.php?category_id=14"><?php echo block_exalib_get_string('podcasts')?></a>
+					<a class="exalib-blue-cat-lib" href="<?php echo $CFG->wwwroot; ?>/blocks/exalib/index.php?category_id=15"><?php echo block_exalib_get_string('webcasts')?></a>
 
 
 				</div>
@@ -220,14 +220,14 @@ echo $output->header(BLOCK_EXALIB_IS_ADMIN_MODE ? 'tab_manage_content' : null);
 					<br /><br /><br />
 					<form method="get" action="search.php">
 						<input name="q" type="text" value="<?php p($q) ?>" style="width: 240px;" class="libaryfront_search" />
-						<input value="<?php echo get_string('search', 'block_exalib'); ?>" type="submit" class="libaryfront_searchsub">
+						<input value="<?php echo block_exalib_get_string('search'); ?>" type="submit" class="libaryfront_searchsub">
 					</form>
 		<?php
 			else:
 		?>
 					<form method="get" action="search.php">
 						<input name="q" type="text" value="<?php p($q) ?>" style="width: 240px;" class="libaryfront_search" />
-						<input value="<?php echo get_string('search', 'block_exalib'); ?>" type="submit" class="libaryfront_searchsub">
+						<input value="<?php echo block_exalib_get_string('search'); ?>" type="submit" class="libaryfront_searchsub">
 					</form>
 		<?php
 			endif;
@@ -235,10 +235,10 @@ echo $output->header(BLOCK_EXALIB_IS_ADMIN_MODE ? 'tab_manage_content' : null);
 
 		<?php
 			if ($items !== null) {
-				echo '<h1 class="library_result_heading">'.get_string('results', 'block_exalib').'</h1>';
+				echo '<h1 class="library_result_heading">'.block_exalib_get_string('results').'</h1>';
 
 				if (!$items) {
-					echo get_string('noitemsfound', 'block_exalib');
+					echo block_exalib_get_string('noitemsfound');
 				} else {
 					if ($pagingbar) {
 						echo $output->render($pagingbar);
@@ -258,7 +258,7 @@ echo $output->header(BLOCK_EXALIB_IS_ADMIN_MODE ? 'tab_manage_content' : null);
 		*/
 
 		if ($currentcategory) {
-			$PAGE->set_heading(\block_exalib\get_string('heading').': '.$currentcategory->name);
+			$PAGE->set_heading(block_exalib_get_string('heading').': '.$currentcategory->name);
 		}
 
 		?>
@@ -268,21 +268,21 @@ echo $output->header(BLOCK_EXALIB_IS_ADMIN_MODE ? 'tab_manage_content' : null);
 				<?php echo html_writer::input_hidden_params($urlsearch); ?>
 				<input name="q" type="text" value="<?php p($q) ?>"/>
 				<input value="<?php p($currentcategory
-					? \block_exalib\trans('de:In "{$a}" suchen', $currentcategory->name)
-					: \block_exalib\get_string('search_all')) ?>" type="submit">
+					? block_exalib_trans('de:In "{$a}" suchen', $currentcategory->name)
+					: block_exalib_get_string('search_all')) ?>" type="submit">
 			</form>
 
 			<?php
 
-			echo '<h3>'.\block_exalib\trans('de:Kategorien').'</h3>';
+			echo '<h3>'.block_exalib_trans('de:Kategorien').'</h3>';
 
 			echo '<div id="exalib-categories"><ul>';
 			echo '<li id="exalib-menu-item-0" class="'.(-1 == $categoryid ? ' isActive' : '').'">';
 			echo '<a class="library_categories_item_title"
-        			href="'.$urlcategory->out(true, array('category_id' => -1)).'">'.\block_exalib\get_string('latest').'</a>';
+        			href="'.$urlcategory->out(true, array('category_id' => -1)).'">'.block_exalib_get_string('latest').'</a>';
 			echo '<li id="exalib-menu-item-0" class="'.(0 == $categoryid ? ' isActive' : '').'">';
 			echo '<a class="library_categories_item_title"
-        			href="'.$urlcategory->out(true, array('category_id' => 0)).'">'.\block_exalib\get_string('all_entries').'</a>';
+        			href="'.$urlcategory->out(true, array('category_id' => 0)).'">'.block_exalib_get_string('all_entries').'</a>';
 
 			echo $mgr->walktree(null, function($cat, $suboutput) {
 				global $urlcategory, $categoryid, $currentcategoryparents;
@@ -318,21 +318,21 @@ echo $output->header(BLOCK_EXALIB_IS_ADMIN_MODE ? 'tab_manage_content' : null);
 			if (BLOCK_EXALIB_IS_ADMIN_MODE) {
 				?><input type="button" href="<?php echo $urladd; ?>"
 						 onclick="document.location.href=this.getAttribute('href');"
-						 value="<?php echo get_string('newentry', 'block_exalib') ?>" /><?php
+						 value="<?php echo block_exalib_get_string('newentry') ?>" /><?php
 			}
 
 			echo '<h1 class="library_result_heading">';
 			if ($show == 'latest_changes') {
-				echo \block_exalib\get_string('latest');
+				echo block_exalib_get_string('latest');
 			} elseif ($show == 'all_items') {
-				echo \block_exalib\get_string('all_entries');
+				echo block_exalib_get_string('all_entries');
 			} else {
-				echo \block_exalib\get_string('results');
+				echo block_exalib_get_string('results');
 			}
 			echo '</h1>';
 
 			if (!$items) {
-				echo get_string('noitemsfound', 'block_exalib');
+				echo block_exalib_get_string('noitemsfound');
 			} else {
 				if ($pagingbar) {
 					echo $output->render($pagingbar);

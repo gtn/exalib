@@ -30,7 +30,7 @@ class block_exalib extends block_list {
 	 * @return nothing
 	 */
 	public function init() {
-		$this->title = get_string('pluginname', 'block_exalib');
+		$this->title = block_exalib_get_string('pluginname');
 		$this->version = 2014102000;
 	}
 
@@ -83,19 +83,19 @@ class block_exalib extends block_list {
 		$icon = '<img src="'.$OUTPUT->pix_url('module_search', 'block_exalib').'" class="icon" alt="" />';
 		$url = new moodle_url('/blocks/exalib/index.php', ['courseid' => g::$COURSE->id]);
 		$this->content->items[] = '<a href="'.$url.'">'.$icon.
-			\block_exalib\get_string('tab_library').
+			block_exalib_get_string('tab_library').
 			'</a>';
 
 		if (block_exalib_course_settings::use_review()) {
 			$url = new moodle_url('/blocks/exalib/mine.php', ['courseid' => g::$COURSE->id]);
 			$this->content->items[] = '<a href="'.$url.'">'.$icon.
-				\block_exalib\get_string('tab_mine').
+				block_exalib_get_string('tab_mine').
 				'</a>';
 
 			if (block_exalib_is_reviewer()) {
 				$url = new moodle_url('/blocks/exalib/mine.php?type=review', ['courseid' => g::$COURSE->id]);
 				$this->content->items[] = '<a href="'.$url.'">'.$icon.
-					\block_exalib\get_string('tab_review').
+					block_exalib_get_string('tab_review').
 					'</a>';
 			}
 		}
@@ -103,38 +103,38 @@ class block_exalib extends block_list {
 		if (block_exalib_get_fachsprachliches_lexikon_id()) {
 			$url = new moodle_url('/blocks/exalib/fachsprachliches_lexikon.php', ['courseid' => g::$COURSE->id]);
 			$this->content->items[] = '<a href="'.$url.'">'.$icon.
-				\block_exalib\get_string('tab_fachsprachliches_lexikon').
+				block_exalib_get_string('tab_fachsprachliches_lexikon').
 				'</a>';
 		}
 
-		if (block_exalib_has_cap(\block_exalib\CAP_MANAGE_CONTENT)) {
+		if (block_exalib_has_cap(BLOCK_EXALIB_CAP_MANAGE_CONTENT)) {
 			$icon = '<img src="'.$OUTPUT->pix_url('module_config', 'block_exalib').'" class="icon" alt="" />';
 			$url = new moodle_url('/blocks/exalib/admin.php', ['courseid' => g::$COURSE->id]);
 			$this->content->items[] = '<a href="'.$url.'">'.$icon.
-				\block_exalib\get_string('tab_manage_content').
+				block_exalib_get_string('tab_manage_content').
 				'</a>';
 		}
-		if (block_exalib_has_cap(\block_exalib\CAP_MANAGE_CATS)) {
+		if (block_exalib_has_cap(BLOCK_EXALIB_CAP_MANAGE_CATS)) {
 			$icon = '<img src="'.$OUTPUT->pix_url('module_config', 'block_exalib').'" class="icon" alt="" />';
 			$url = new moodle_url('/blocks/exalib/admin.php', ['courseid' => g::$COURSE->id, 'show' => 'categories']);
 			$this->content->items[] = '<a href="'.$url.'">'.$icon.
-				\block_exalib\get_string('tab_manage_cats').
+				block_exalib_get_string('tab_manage_cats').
 				'</a>';
 		}
 
-		if (block_exalib_has_cap(\block_exalib\CAP_MANAGE_REVIEWERS) && block_exalib_course_settings::use_review()) {
+		if (block_exalib_has_cap(BLOCK_EXALIB_CAP_MANAGE_REVIEWERS) && block_exalib_course_settings::use_review()) {
 			$icon = '<img src="'.$OUTPUT->pix_url('module_config', 'block_exalib').'" class="icon" alt="" />';
 			$url = new moodle_url('/blocks/exalib/reviewers.php', ['courseid' => g::$COURSE->id]);
 			$this->content->items[] = '<a href="'.$url.'">'.$icon.
-				\block_exalib\get_string('tab_manage_reviewers').
+				block_exalib_get_string('tab_manage_reviewers').
 				'</a>';
 		}
 
-		if (block_exalib_has_cap(\block_exalib\CAP_COURSE_SETTINGS)) {
+		if (block_exalib_has_cap(BLOCK_EXALIB_CAP_COURSE_SETTINGS)) {
 			$icon = '<img src="'.$OUTPUT->pix_url('module_config', 'block_exalib').'" class="icon" alt="" />';
 			$url = new moodle_url('/blocks/exalib/course_settings.php', ['courseid' => g::$COURSE->id]);
 			$this->content->items[] = '<a href="'.$url.'">'.$icon.
-				\block_exalib\get_string('tab_course_settings').
+				block_exalib_get_string('tab_course_settings').
 				'</a>';
 		}
 

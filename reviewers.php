@@ -19,8 +19,8 @@
 
 require __DIR__.'/inc.php';
 
-block_exalib_require_cap(\block_exalib\CAP_USE);
-block_exalib_require_cap(\block_exalib\CAP_MANAGE_REVIEWERS);
+block_exalib_require_cap(BLOCK_EXALIB_CAP_USE);
+block_exalib_require_cap(BLOCK_EXALIB_CAP_MANAGE_REVIEWERS);
 
 define("MAX_USERS_PER_PAGE", 5000);
 

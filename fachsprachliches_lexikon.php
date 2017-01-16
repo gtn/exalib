@@ -20,7 +20,7 @@
 require __DIR__.'/inc.php';
 
 block_exalib_init_page();
-block_exalib_require_cap(\block_exalib\CAP_USE);
+block_exalib_require_cap(BLOCK_EXALIB_CAP_USE);
 
 $output = block_exalib_get_renderer();
 $output->set_tabs('tab_fachsprachliches_lexikon');
@@ -30,7 +30,7 @@ $items = block_exalib_get_fachsprachliches_lexikon_items();
 echo $output->header();
 
 if (!$items) {
-	echo get_string('noitemsfound', 'block_exalib');
+	echo block_exalib_get_string('noitemsfound');
 } else {
 	$lastLetter = '';
 

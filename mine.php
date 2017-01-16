@@ -20,7 +20,7 @@
 require __DIR__.'/inc.php';
 
 block_exalib_init_page();
-block_exalib_require_cap(\block_exalib\CAP_USE);
+block_exalib_require_cap(BLOCK_EXALIB_CAP_USE);
 
 $show = optional_param('show', '', PARAM_TEXT);
 $type = optional_param('type', '', PARAM_TEXT);
@@ -43,7 +43,7 @@ $where = '';
 $params = [];
 
 if ($type == 'review') {
-	$where .= "AND (item.reviewer_id=? AND item.online<>".\block_exalib\ITEM_STATE_NEW.")";
+	$where .= "AND (item.reviewer_id=? AND item.online<>".BLOCK_EXALIB_ITEM_STATE_NEW.")";
 	$params[] = $USER->id;
 } else {
 	$where .= "AND (item.created_by = ?)";
@@ -64,12 +64,12 @@ echo $output->header();
 
 if ($type == 'mine') {
 	echo '<div>';
-	echo $output->link_button(new moodle_url($PAGE->url, ['show' => 'add', 'back' => $PAGE->url->out_as_local_url(false)]), \block_exalib\get_string('add'));
+	echo $output->link_button(new moodle_url($PAGE->url, ['show' => 'add', 'back' => $PAGE->url->out_as_local_url(false)]), block_exalib_get_string('add'));
 	echo '</div>';
 }
 
 if (!$items) {
-	echo get_string('noitemsfound', 'block_exalib');
+	echo block_exalib_get_string('noitemsfound');
 } else {
 	$output->item_list($type, $items);
 }

@@ -20,7 +20,7 @@
 $capabilities = array(
 	// can use exalib: browse files etc
 	'block/exalib:use' => array(
-		'captype' => 'write',
+		'captype' => 'read',
 		'contextlevel' => CONTEXT_SYSTEM,
 		'legacy' => array(
 			'user' => CAP_ALLOW,
