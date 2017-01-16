@@ -320,12 +320,10 @@ namespace block_exalib\common {
 			// POST has precedence.
 			if (isset($_POST[$parname])) {
 				return $_POST[$parname];
+			} elseif (isset($_GET[$parname])) {
+				return $_GET[$parname];
 			} else {
-				if (isset($_GET[$parname])) {
-					return $_GET[$parname];
-				} else {
-					return null;
-				}
+				return null;
 			}
 		}
 

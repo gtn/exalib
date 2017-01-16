@@ -119,7 +119,9 @@ class block_exalib_renderer extends plugin_renderer_base {
 		$content = '';
 		$content .= parent::header();
 		$content .= '<div id="block_exalib">';
-		$content .= $this->render($tabtree);
+		if (count($tabtree->subtree) > 1) {
+			$content .= $this->render($tabtree);
+		}
 
 		return $content;
 	}

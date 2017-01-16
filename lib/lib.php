@@ -59,6 +59,7 @@ function block_exalib_require_cap($cap, $user = null) {
 	if (!has_capability('block/exalib:use', context_system::instance(), $user)) {
 		if (!g::$USER->id) {
 			// not logged in and no guest
+			// -> forward to login form
 			require_login();
 		} else {
 			throw new require_login_exception(block_exalib_get_string('notallowed'));
@@ -306,6 +307,12 @@ class block_exalib_category_manager {
 			")."
 			ORDER BY name
 		");
+
+		// sort naturally (for numbers)
+		uasort($this->categories, function($a, $b) {
+			return strnatcmp($a->name, $b->name);
+		});
+
 		$this->categoriesbyparent = array();
 
 		$item_category_ids = iterator_to_array(g::$DB->get_recordset_sql("
