@@ -61,18 +61,26 @@ $pagingbar = null;
 
 $categoryManager = new block_exalib_category_manager(BLOCK_EXALIB_IS_ADMIN_MODE, block_exalib_course_settings::root_category_id());
 
+if (BLOCK_EXALIB_IS_ADMIN_MODE) {
+	$sqlItemWhere = "";
+} else {
+	$sqlItemWhere = "AND item.online > 0
+		AND (item.online_from=0 OR item.online_from IS NULL OR item.online_from <= ".time().")
+		AND (item.online_to=0 OR item.online_to IS NULL OR item.online_to >= ".time().")";
+}
+
+$sql = "SELECT DISTINCT year, year as tmp FROM {block_exalib_item} AS item 
+WHERE 1=1 $sqlItemWhere
+AND year>0
+ORDER BY year
+";
+$years = $DB->get_records_sql_menu($sql);
+
 if ($category_ids) {
 	$q = trim($q);
 	$qparams = preg_split('!\s+!', $q);
 
-	if (BLOCK_EXALIB_IS_ADMIN_MODE) {
-		$sqlWhere = "";
-	} else {
-		$sqlWhere = "AND item.online > 0
-			AND (item.online_from=0 OR item.online_from IS NULL OR item.online_from <= ".time().")
-			AND (item.online_to=0 OR item.online_to IS NULL OR item.online_to >= ".time().")";
-	}
-
+	$sqlWhere = $sqlItemWhere;
 	$sqlJoin = "";
 	$sqlJoinSubfilter = "";
 	$sqlParams = array();
@@ -92,6 +100,15 @@ if ($category_ids) {
 		$sqlJoin .= " JOIN {block_exalib_item_category} AS ic_filter ON (ic_filter.item_id = item.id AND (ic_filter.category_id IN (".join(',',$filter_ids).")))";
 	}
 
+	if ($filter_category) {
+		$sqlJoin .= " JOIN {block_exalib_item_category} filter_category ON item.id=filter_category.item_id AND filter_category.category_id=?";
+		$sqlParams[] = $filter_category;
+	}
+	if ($filter_sub_type) {
+		$sqlJoin .= " JOIN {block_exalib_item_category} filter_sub_type ON item.id=filter_sub_type.item_id AND filter_sub_type.category_id=?";
+		$sqlParams[] = $filter_sub_type;
+	}
+
 	if ($q) {
 		foreach ($qparams as $i => $qparam) {
 			$search_fields = [
@@ -109,15 +126,6 @@ if ($category_ids) {
 	if ($filter_year) {
 		$sqlWhere .= ' AND item.year=?';
 		$sqlParams[] = $filter_year;
-	}
-
-	if ($filter_category) {
-		$sqlJoin .= " JOIN {block_exalib_item_category} filter_category ON item.id=filter_category.item_id AND filter_category.category_id=?";
-		$sqlParams[] = $filter_category;
-	}
-	if ($filter_sub_type) {
-		$sqlJoin .= " JOIN {block_exalib_item_category} filter_sub_type ON item.id=filter_sub_type.item_id AND filter_sub_type.category_id=?";
-		$sqlParams[] = $filter_sub_type;
 	}
 
 	$sql = "SELECT COUNT(*) FROM (SELECT item.id
@@ -500,11 +508,8 @@ input.libaryfront_searchsub[type="submit"] {
 			<div style="padding-top: 15px;">
 				<?php
 
-					$values = range(2010,date('Y'));
-					$values = array_combine($values, $values);
-
 					echo '<span>Year: ';
-					echo html_writer::select($values, 'filter_year', $filter_year);
+					echo html_writer::select($years, 'filter_year', $filter_year);
 
 					$values = array_map(function($cat) { return $cat->name; }, $categoryManager->getChildren(51001));
 					echo '<span style="padding-left: 20px;">Category: ';
