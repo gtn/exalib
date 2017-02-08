@@ -28,7 +28,7 @@ if (file_exists('../inc.php')) {
     require('../../exalib/inc.php');
 }
 
-block_exalib_require_admin();
+block_exalib_require_cap(\block_exalib\CAP_MANAGE_CONTENT);
 define('BLOCK_EXALIB_IS_ADMIN_MODE', true);
 
 
@@ -48,7 +48,9 @@ function exalib_export_to_database_activity($fromexalibcategoryid, $toactivityda
     $fs = get_file_storage();
     $dataid = $toactivitydataid;
 
-    if (! $category = block_exalib_category_manager::getcategory($fromexalibcategoryid)) {
+	$mgr = new block_exalib_category_manager(true);
+
+    if (! $category = $mgr->getcategory($fromexalibcategoryid)) {
         die('from_exalib_category_id not found');
     }
     if (! $data = $DB->get_record('data', array('id' => $dataid))) {

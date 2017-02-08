@@ -1,7 +1,7 @@
 <?php
 require('inc.php');
 
-block_exalib_require_admin();
+block_exalib_require_cap(\block_exalib\CAP_MANAGE_CONTENT);
 
 $importlatein = optional_param('importlatein', '0', PARAM_TEXT);
 
