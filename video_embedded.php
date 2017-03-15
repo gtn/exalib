@@ -48,7 +48,6 @@ $output = block_exalib_get_renderer();
 echo $output->header();
 
 ?>
-<script type="text/javascript" src="jwplayer/jwplayer.js"></script>
 <style>
 html, body {
     overflow: hidden;

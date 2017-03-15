@@ -221,49 +221,85 @@ function block_exalib_get_url_for_file(stored_file $file) {
  * @return nothing
  */
 function block_exalib_print_jwplayer($options) {
-
-	$options = array_merge(array(
-		'flashplayer' => "jwplayer/player.swf",
-		'primary' => "flash",
+    $options = array_merge(array(
+		// 'primary' => "flash",
 		'autostart' => false,
+		// 'image' => 'https://www.e-cco-ibd.eu/pluginfile.php/145/block_html/content/MASTER_ECCO_logo_rechts_26_08_2010%20jpg.jpg'
 	), $options);
 
-	if (isset($options['file']) && preg_match('!^(rtmp://.*):(.*)$!i', $options['file'], $matches)) {
-		$options = array_merge($options, array(
-			'provider' => 'rtmp',
-			'streamer' => $matches[1],
-			'file' => str_replace('%20', ' ', $matches[2]),
-		));
+    if (isset($options['file']) && preg_match('!^rtmp://.*cco-ibd.*:(.*)$!i', $options['file'], $matches)) {
+        // add hls stream
+
+        $rtmp = $options['file'];
+        unset($options['file']);
+        $options['playlist'] = array(
+            array(
+                'sources' => array(
+                    array('file' => 'http://video.ecco-ibd.eu/'.$matches[1]),
+                    array('file' => 'http://video.ecco-ibd.eu:1935/vod/mp4:'.$matches[1].'/playlist.m3u8'),
+                    array('file' => $rtmp),
+                    // array('file' => 'http://video.ecco-ibd.eu:1935/vod/mp4:'.str_replace('.mp4', '.m4v', $matches[1]).'/playlist.m3u8'),
+                    // array('file' => 'http://video.ecco-ibd.eu:1935/vod/mp4:'.strtolower('ECCO2014_SP_S7_ELouis').'.m4v/playlist.m3u8'),
+                    // array('file' => 'http://video.ecco-ibd.eu:1935/vod/mp4:ecco2012_7.m4v/playlist.m3u8'),
+                )
+            )
+        );
+    }
+
+    if (strpos($_SERVER['HTTP_HOST'], 'ecco-ibd')) {
+    	$player = '//content.jwplatform.com/libraries/xKafWURJ.js';
+	} else {
+		$player = 'jwplayer/jwplayer.js';
+		$options['flashplayer'] = "jwplayer/player.swf";
 	}
+    //
 
 	?>
-	<div id='player_2834'></div>
+    <script type="application/javascript" src="<?=$player?>"></script>
+	<div class="video-container" id='player_2834'></div>
 	<script type='text/javascript'>
+
+		// allow fullscreen in iframes, you have to add allowFullScreen to the iframe
+        if (window.frameElement) {
+            window.frameElement.setAttribute('allowFullScreen', 'allowFullScreen');
+        }
+
 		var options = <?php echo json_encode($options); ?>;
-		if (options.width == 'auto')
-			options.width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
-		if (options.height == 'auto')
-			options.height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+		if (options.width == 'auto') options.width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+		if (options.height == 'auto') options.height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
 
-		var preview_start = false;
+        var p;
+        var onPlay = function(){};
+        var pauseVideo = false;
 		if (!options.autostart) {
-			preview_start = true;
-
+            // start and just load first frame
 			options.autostart = true;
 			options.mute = true;
+            pauseVideo = true; // we want to pause it when loading
+
+            onPlay = function(){
+                if (pauseVideo) {
+                    this.setMute(false);
+                    this.pause();
+                }
+                window.setTimeout(function(){
+                    // onplay fires twice?!?
+                    // use setTimeout to overcome that
+                    pauseVideo = false;
+                }, 500);
+			};
 		}
 
-		var p = jwplayer('player_2834').setup(options);
-
-		if (preview_start) {
-			p.onPlay(function () {
-				if (preview_start) {
-					this.pause();
-					this.setMute(false);
-					preview_start = false;
-				}
-			});
-		}
+        p = jwplayer('player_2834').setup(options);
+        p.on('displayClick', function(){
+            // user clicked the video -> don't pause video again
+            pauseVideo = false;
+        });
+        p.on('play', onPlay);
+		p.on('error', function(message){
+			// $('#player_2834').replace('x');
+			// confirm('Sorry, this file could not be played')console.log('ecco', message);
+		});
 	</script>
 	<?php
 }

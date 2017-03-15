@@ -190,6 +190,13 @@ a.exalib-blue-cat-lib {
 <?
 */
 
+if (preg_match('!rtmp://!', $item->link)) {
+	$video_url = $item->link;
+	$item->link = '';
+} else {
+	$video_url = null;
+}
+
 echo '<h2 class="head">'.$item->name.'</h2>';
 
 echo '<table>';
@@ -255,15 +262,6 @@ echo '</table>';
 if ($item->content) {
 	echo '<h2 class="head">'.block_exalib_trans('de:Inhalt').'</h2>';
 	echo format_text($item->content);
-	/*
-	} else if ($item->link) {
-
-		block_exalib_print_jwplayer(array(
-			'file'    => $item->link,
-			'width'    => "960",
-			'height' => "540",
-		));
-	*/
 }
 
 // ecco
@@ -281,6 +279,14 @@ if ($item->results) {
 }
 if ($item->conclusion) {
 	echo '<h3>Conclusion</h3>'.format_text($item->conclusion);
+}
+
+if ($video_url) {
+	block_exalib_print_jwplayer(array(
+		'file'    => $video_url,
+		'width'    => "100%",
+		'height' => "100%",
+	));
 }
 
 if (@block_exalib_course_settings::allow_comments()) {

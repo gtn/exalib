@@ -266,8 +266,14 @@ class block_exalib_renderer extends plugin_renderer_base {
 				echo '<div><img src="'.$url.'" /></div>';
 			}
 
+			if ($item->year) {
+				echo '<div><span class="libary_author">'.block_exalib_trans(['de:Jahr', 'en:Year']).':</span> '.$item->year.'</div>';
+			}
+			if ($item->source) {
+				echo '<div><span class="libary_author">'.block_exalib_get_string('source').':</span> '.$item->source.'</div>';
+			}
 			if ($item->authors) {
-				echo '<div><span class="libary_author">'.block_exalib_get_string('authors').':</span> '.$item->authors.'</div>';
+				echo '<div class="exalib-authors"><span class="libary_author">'.block_exalib_get_string('authors').':</span> '.$item->authors.'</div>';
 			}
 
 			if ($item->time_created) {
@@ -289,9 +295,6 @@ class block_exalib_renderer extends plugin_renderer_base {
 
 			if ($item->abstract) {
 				echo '<div class="libary_content">'.format_text($item->abstract).'</div>';
-			}
-			if ($item->source) {
-				echo '<div><span class="libary_author">'.block_exalib_get_string('source').':</span> '.$item->source.'</div>';
 			}
 
 			if ($files) {
