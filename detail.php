@@ -267,14 +267,21 @@ if ($item->content) {
 }
 
 // ecco
-if ($item->background)
+if ($item->abstract) {
+	echo '<h3>Abstract</h3>'.format_text($item->abstract).'</div>';
+}
+if ($item->background) {
 	echo '<h3>Background</h3>'.format_text($item->background);
-if ($item->methods)
+}
+if ($item->methods) {
 	echo '<h3>Methods</h3>'.format_text($item->methods);
-if ($item->results)
+}
+if ($item->results) {
 	echo '<h3>Results</h3>'.format_text($item->results);
-if ($item->conclusion)
+}
+if ($item->conclusion) {
 	echo '<h3>Conclusion</h3>'.format_text($item->conclusion);
+}
 
 if (@block_exalib_course_settings::allow_comments()) {
 	echo '<h2 class="head">'.block_exalib_trans('de:Kommentare').'</h2>';
