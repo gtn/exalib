@@ -23,7 +23,7 @@ if (!defined('BLOCK_EXALIB_IS_ADMIN_MODE')) {
 
 require __DIR__.'/inc.php';
 
-require_login(1);
+require_login();
 
 block_exalib_init_page();
 /*
@@ -111,10 +111,18 @@ if ($category_ids) {
 
 	if ($q) {
 		foreach ($qparams as $i => $qparam) {
-			$search_fields = [
-				'item.link', 'item.source', 'item.file', 'item.name', 'item.authors',
-				'item.abstract', 'item.content', 'item.link_titel', "c$i.name",
-			];
+			if ($search_by == 'title') {
+				$search_fields = ['item.name'];
+			} elseif ($search_by == 'author') {
+				$search_fields = ['item.authors'];
+			} elseif ($search_by == 'source') {
+				$search_fields = ['item.source'];
+			} else {
+				$search_fields = [
+					'item.link', 'item.source', 'item.file', 'item.name', 'item.authors',
+					'item.abstract', 'item.content', 'item.link_titel', "c$i.name",
+				];
+			}
 
 			$sqlJoin .= " LEFT JOIN {block_exalib_item_category} ic$i ON item.id=ic$i.item_id";
 			$sqlJoin .= " LEFT JOIN {block_exalib_category} c$i ON ic$i.category_id=c$i.id";
@@ -495,6 +503,16 @@ input.libaryfront_searchsub[type="submit"] {
 			<input name="q" type="text" class="libary_search_input" style="vertical-align: middle;" value="<?php p($q) ?>" />
 
 			<div style="display: inline-block; padding-left: 50px;">
+				Search by:&nbsp;
+
+				<select name="search_by">
+					<option value="all">All</option>
+					<option value="title" <?php if ($search_by == 'title') echo 'selected="selected"'; ?>>Title</option>
+					<option value="author" <?php if ($search_by == 'author') echo 'selected="selected"'; ?>>Author</option>
+					<option value="source" <?php if ($search_by == 'source') echo 'selected="selected"'; ?>>Source</option>
+				</select>
+			</div>
+			<div style="padding-top: 15px;">
 				<label><input type="checkbox" id="search-all-categories" value="Abstracts" <?php if (count($category_ids) == 0) echo 'checked="checked"'; ?>>All</label>
 				<?php
 				foreach ($categoryManager->getChildren(51002) as $category) {
@@ -530,9 +548,16 @@ input.libaryfront_searchsub[type="submit"] {
 				?>
 			</div>
 
-			<div style="padding-top: 15px;">
-				<input value="Clear Filter" type="button" class="clear-filter" onclick="document.location.href='<?php echo $_SERVER['PHP_SELF']; ?>';">
-				<input value="Search" type="submit"  style="margin-left: 50px;">
+			<div class="row" style="padding-top: 15px;">
+				<div class="col-md-6">
+					<input value="Clear Filter" type="button" class="clear-filter" onclick="document.location.href='<?php echo $_SERVER['PHP_SELF']; ?>';">
+					<input value="Search" type="submit" style="margin-left: 50px;">
+				</div>
+				<div class="col-md-6" style="text-align: right;">
+					<?php if (is_dir(__DIR__.'/../../mod/library')) { ?>
+					<input value="Archive 2011-2015" type="button" style="margin-right: 15px;" onclick="document.location.href='<?php echo $CFG->wwwroot.'/mod/library/adv_search.php'; ?>';">
+					<?php } ?>
+				</div>
 			</div>
 		</form>
 

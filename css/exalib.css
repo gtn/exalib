@@ -111,7 +111,9 @@ float: left;
 	color: #666666;
 }
 
-
+.exalib-authors p {
+	display: inline;
+}
 #block_exalib .libary_author {
 	color: #666;
 }
@@ -343,8 +345,6 @@ float: left;
 
 #block_exalib .library-item > div > span {
 	display: inline-block;
-	width: 130px;
-	text-align: right;
 	padding-right: 5px;
 }
 
