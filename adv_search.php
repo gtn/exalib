@@ -1,5 +1,5 @@
 <?php
-// This file is part of Exabis Library
+// This file is part of ExabIs Library
 //
 // (c) 2016 GTN - Global Training Network GmbH <office@gtn-solutions.com>
 //
@@ -23,6 +23,23 @@ if (!defined('BLOCK_EXALIB_IS_ADMIN_MODE')) {
 
 require __DIR__.'/inc.php';
 
+// sonderzeichen löschen
+/*
+$items = $DB->get_records('block_exalib_item');
+foreach ($items as $item) {
+	if ($item->methods != html_entity_decode($item->methods, ENT_NOQUOTES, 'UTF-8')) {
+		var_dump($item->methods);
+		var_dump(html_entity_decode($item->methods, ENT_NOQUOTES, 'UTF-8'));
+
+		$DB->update_record('block_exalib_item', (object)[
+			'id' => $item->id,
+			'methods' => html_entity_decode($item->methods, ENT_NOQUOTES, 'UTF-8')
+		]);
+	}
+}
+exit;
+*/
+
 require_login();
 
 block_exalib_init_page();
@@ -39,9 +56,14 @@ $urlpage = block_exalib_new_moodle_url();
 $urlsearch = new block_exalib\url($urlpage, array('page' => null, 'q' => null));
 $urladd = new moodle_url($urlpage, array('show' => 'add'));
 $urlcategory = new moodle_url($urlpage, array('page' => null, 'q' => null, 'category_id' => null));
-
+$resulttrue=false;
+$filtercontent = new stdClass;
 $PAGE->set_url($urlpage);
-
+			$sm2="";
+			$sm3="";
+			$dispNone="";
+			$sm9="";
+			$sm12="";
 $topGroups = array(11=>'Abstracts', 12=>'Documents', 13=>'Images', 14=>'Podcasts', 15=>'Webcasts');
 
 $q = optional_param('q', '', PARAM_TEXT);
@@ -52,13 +74,24 @@ $filter_year = optional_param('filter_year', 0, PARAM_INT);
 
 $filter_category = optional_param('filter_category', '', PARAM_INT);
 $filter_sub_type = optional_param('filter_sub_type', '', PARAM_INT);
+$guidelines = optional_param('guidelines', "", PARAM_TEXT);
+$latestC = optional_param('latestC', "", PARAM_TEXT);
+$archiveC = optional_param('archiveC', "", PARAM_TEXT);
+if ($guidelines!="") {
+			$filter_sub_type = '51206';
+			$filter_category = '51303';
+}
+if ($latestC!="") {
+			$filter_year = 2018;
+}			
 
+			
 $perpage = 20;
 $page    = optional_param('page', 0, PARAM_INT);
 
 $items = null;
 $pagingbar = null;
-
+$result_filter_summary = new stdClass;
 $categoryManager = new block_exalib_category_manager(BLOCK_EXALIB_IS_ADMIN_MODE, block_exalib_course_settings::root_category_id());
 
 if (BLOCK_EXALIB_IS_ADMIN_MODE) {
@@ -71,10 +104,11 @@ if (BLOCK_EXALIB_IS_ADMIN_MODE) {
 
 $sql = "SELECT DISTINCT year, year as tmp FROM {block_exalib_item} AS item 
 WHERE 1=1 $sqlItemWhere
-AND year>0
+AND year>2015
 ORDER BY year
 ";
 $years = $DB->get_records_sql_menu($sql);
+
 
 if ($category_ids) {
 	$q = trim($q);
@@ -90,6 +124,7 @@ if ($category_ids) {
 		$filter_ids = [];
 		foreach ($category_ids as $category_id) {
 			$cat = $categoryManager->getcategory($category_id);
+
 			if ($cat) {
 				$filter_ids = array_merge($filter_ids, $cat->self_inc_all_sub_ids);
 			}
@@ -110,6 +145,14 @@ if ($category_ids) {
 	}
 
 	if ($q) {
+		$result_filter_summary->content.=", searchstring: ".$q;
+		if ($search_by == 'title') {
+				$result_filter_summary->content.=" in title";
+		} elseif ($search_by == 'author') {
+				$result_filter_summary->content.=" in author";
+		} elseif ($search_by == 'source') {
+				$result_filter_summary->content.=" in source";
+		}
 		foreach ($qparams as $i => $qparam) {
 			if ($search_by == 'title') {
 				$search_fields = ['item.name'];
@@ -134,6 +177,11 @@ if ($category_ids) {
 	if ($filter_year) {
 		$sqlWhere .= ' AND item.year=?';
 		$sqlParams[] = $filter_year;
+		$result_filter_summary->content.=", year: ".$filter_year;
+	}
+	if ($archiveC!="") {
+		$sqlWhere .= ' AND item.year<2016';
+		$result_filter_summary->content.=", year < 2016 ";
 	}
 
 	$sql = "SELECT COUNT(*) FROM (SELECT item.id
@@ -147,16 +195,20 @@ if ($category_ids) {
 
 	$pagingbar = new paging_bar($count, $page, $perpage, new moodle_url($_SERVER['REQUEST_URI']));
 
-	$sql = "SELECT item.*
-	FROM {block_exalib_item} AS item 
+	$sql = "SELECT item.*";
+	if ($filter_ids) 	$sql .= ", ic_filter.category_id AS icfcat";
+
+	$sql.="	FROM {block_exalib_item} AS item 
 	$sqlJoin
 	$sqlJoinSubfilter
 	WHERE 1=1 $sqlWhere
 	GROUP BY item.id
 	ORDER BY name
 	LIMIT ".$page*$perpage.', '.$perpage;
+	//echo $sql;
+	//print_r ($sqlParams);die;
 	$items = $DB->get_records_sql($sql, $sqlParams);
-
+	if ($items !== null) $resulttrue=true;
 
 
 	// SUBFILTER
@@ -491,78 +543,165 @@ input.libaryfront_searchsub[type="submit"] {
 
 </style>
 */
-?>
-<div class="ecco_lib">
 
-
-		<h3>Welcome to the e-CCO Library!</h3>
-
-		<div class="libary_top_search">
-		<form method="get" action="adv_search.php">
-			<img src="pix/libsearch.png" alt="search" style="vertical-align: middle;padding-right: 10px;">
-			<input name="q" type="text" class="libary_search_input" style="vertical-align: middle;" value="<?php p($q) ?>" />
-
-			<div style="display: inline-block; padding-left: 50px;">
-				Search by:&nbsp;
-
-				<select name="search_by">
-					<option value="all">All</option>
-					<option value="title" <?php if ($search_by == 'title') echo 'selected="selected"'; ?>>Title</option>
-					<option value="author" <?php if ($search_by == 'author') echo 'selected="selected"'; ?>>Author</option>
-					<option value="source" <?php if ($search_by == 'source') echo 'selected="selected"'; ?>>Source</option>
-				</select>
-			</div>
-			<div style="padding-top: 15px;">
-				<label><input type="checkbox" id="search-all-categories" value="Abstracts" <?php if (count($category_ids) == 0) echo 'checked="checked"'; ?>>All</label>
-				<?php
-				foreach ($categoryManager->getChildren(51002) as $category) {
-					echo '<label style="padding-left: 20px;"><input type="checkbox" name="category_ids[]" value="'.$category->id.'" '.
-						(in_array($category->id, $category_ids) ? 'checked="checked"' : '').
-						'/>'.$category->name.'</label>';
-				}
-				?>
-			</div>
-
-			<div style="padding-top: 15px;">
-				<?php
-
-					echo '<span>Year: ';
-					echo html_writer::select($years, 'filter_year', $filter_year);
-
-					$values = array_map(function($cat) { return $cat->name; }, $categoryManager->getChildren(51001));
-					echo '<span style="padding-left: 20px;">Category: ';
-					echo html_writer::select($values, 'filter_category', $filter_category);
-
-					$subtypes = [];
+echo '<div class="ecco_lib">';
+		if ($resulttrue==false){
+			echo '<h3 class="sectionname">Welcome to the e-CCO Library!</h3>';
+			echo '<div class="libary_top_search">';
+			$dispNone="hideInput";
+			$sm2="col-sm-2";
+			$sm3="col-sm-3";
+			$sm9="col-sm-9";
+			$sm12="col-sm-12";
+			echo '<form method="get" action="adv_search.php" class="form-horizontal">';
+		}
+		
+		//if ($resulttrue==false)	echo $filtercontent->form;
+			$filtercontent->searchbar='<div class="form-group">
+				<label for="searchtext" class="'.$sm2.' control-label">Search:</label>
+				<div class="'.$sm9.'">
+					<input id="searchtext" name="q" type="text" class="libary_search_input form-control" value="'.$q.'" />
+					
+				</div>
+				<div class="col-sm-1 searchInputIcon '.$dispNone.'">
+					<input value="Search" type="image" src="pix/libsearchIc.png" class="searchInputIconImg">
+					<!-- img src="pix/libsearchIc.png" alt="search" style="vertical-align: middle;" class="searchInputIconImg" -->
+				</div>
+			</div>';
+		
+		if ($resulttrue==false) echo $filtercontent->searchbar;
+			
+			$filtercontent->searchby='<div class="form-group">
+				<label for="searchtext" class="col-sm-2 control-label">Search by:</label>
+				<div class="col-sm-10">
+					<select name="search_by" class="form-control">
+						<option value="all">All</option>
+						<option value="title" ';
+						if ($search_by == 'title') $filtercontent->searchby.= 'selected="selected"'; 
+						$filtercontent->searchby.='>Title</option>
+						<option value="author" ';
+						if ($search_by == 'author') $filtercontent->searchby.='selected="selected"';
+						$filtercontent->searchby.='>Author</option>
+						<option value="source" ';
+						if ($search_by == 'source') $filtercontent->searchby.='selected="selected"'; 
+						$filtercontent->searchby.='>Source</option>
+					</select>
+				</div>
+			</div>';
+		if ($resulttrue==false) {
+			echo $filtercontent->searchby;
+			echo '<h4 class="eccoLibSubH">What kind of content would you like to view?</h4><div class="row" >';
+		}	
+		
+			$filtercontent->contenttype='
+			
+				<div class="col-sm-3 eccoLibKatChCtn">
+					<div class="checkbox">
+						<label>
+							<input type="checkbox" id="search-all-categories" value="Abstracts"';
+							if (count($category_ids) == 0) $filtercontent->contenttype.='checked="checked"'; 
+							$filtercontent->contenttype.='><img src="pix/eGuide_All.png" class="searchLibCheckIcon" /><span class="searchLibCheckTxt">All</span>
+						</label>
+					</div>';
 					foreach ($categoryManager->getChildren(51002) as $category) {
-						if (in_array($category->id, $category_ids)) {
-							$subtypes += $categoryManager->getChildren($category->id) ?: [];
+						$filtercontent->contenttype.='<div class="checkbox"><label><input type="checkbox" name="category_ids[]" value="'.$category->id.'" ';
+						if(in_array($category->id, $category_ids)) { $filtercontent->contenttype.='checked="checked"';$result_filter_summary->ctype.=' ,'.$category->name;$catidtemp=$category->id;}
+							$filtercontent->contenttype.='/><img src="pix/contenttypicon'.$category->id.'.png" class="searchLibCheckIcon" /><span class="searchLibCheckTxt">'.$category->name.'</span></label></div>';
+					}
+					if ($result_filter_summary->ctype) $result_filter_summary->content.=", ContentType: ".$result_filter_summary->ctype;
+					$filtercontent->contenttype.='</div><!-- / col-sm-4 -->';
+			if ($resulttrue==false) echo $filtercontent->contenttype;
+		
+
+
+			if ($resulttrue==false) echo '<div class="col-sm-5 form-horizontal">';
+						$filtercontent->year= '<div class="form-group"><label for="" class="'.$sm3.' control-label">Year:</label><div class="'.$sm9.'"> ';
+
+						$filtercontent->year.= html_writer::select($years, 'filter_year', $filter_year, array('0'=>"..."), array('class'=>'form-control'));
+						$filtercontent->year.= '</div></div>';
+			if ($resulttrue==false) echo $filtercontent->year;
+						$values = array_map(function($cat) { return $cat->name; }, $categoryManager->getChildren(51001));
+						$filtercontent->cat='<div class="form-group"><label for="" class="'.$sm3.' control-label">Category:</label><div class="'.$sm9.'"> ';
+						$filtercontent->cat.= html_writer::select($values, 'filter_category', $filter_category,  array(''=>"..."), array('class'=>'form-control'));
+						if ($filter_category) {
+								$result_filter_summary->content.=', Category: '.$values[$filter_category];
 						}
-					}
-					$values = array_map(function($cat) { return $cat->name; }, $subtypes);
-					if ($values) {
-						echo '<span style="padding-left: 20px;">Sub Type: ';
-						echo html_writer::select($values, 'filter_sub_type', $filter_sub_type);
-					}
+	
+						$subtypes = [];
+						foreach ($categoryManager->getChildren(51002) as $category) {
+							if (in_array($category->id, $category_ids)) {
+								$subtypes += $categoryManager->getChildren($category->id) ?: [];
+							}
+						}
+						$values = array_map(function($cat) { return $cat->name; }, $subtypes);
+						$filtercontent->cat.= '</div></div>';
+						if ($values) {
+							$filtercontent->cat.= '<div class="form-group"><label for="" class="'.$sm3.' control-label">Sub Type:</label><div class="'.$sm3.'"> ';
+							//[51205] => Congress Presentations: Plenary [51206] => Articles: Guidelines [51207] => Articles: Literature Review (ECCO News) [51210] => Articles: Position Papers [51209] => Articles: Topical Reviews [51208] => Articles: Viewpoints [51211] => Webcasts: Educational Programme [51212] => Webcasts: Plenary
+							$filtercontent->cat.= html_writer::select($values, 'filter_sub_type', $filter_sub_type, array(''=>"..."), array('class'=>'form-control'));
+							if ($filter_sub_type) {
+								$result_filter_summary->content.=', Sub Type: '.$values[$filter_sub_type];
+							}
+							$filtercontent->cat.= '</div></div>';
+						}
+				if ($resulttrue==false){
+					echo $filtercontent->cat;
+					echo '</div>';
+		
+				
+			
+			
+					echo '<div class="col-sm-4">
+					<div class="form-group">
+						<div class="col-sm-12">
+							<input value="Latest Content" name="latestC" type="submit" class="form-control">
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-12">
+							<input value="Guidelines" name="guidelines" type="submit" class="form-control">
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-12">
+					    	<input value="Keywords" name="keywords" type="button" onclick="window.location.href=\'https://e-learning.ecco-ibd.eu/blocks/exalib/pdfjs/PlainViewer/web/viewer.html?file=../../pdfs/2019_ECCO_e-Library_categories_and_keywords.pdf\'" class="form-control">
 
-				?>
-			</div>
+						</div>
+					</div>';
+				}
+		//
+                          //
+						    //<a href=\"'. $CFG->wwwroot . '/blocks/exalib/pdfjs/PlainViewer/web/viewer.html?file=../../pdfs/2019_ECCO_e-Library_categories_and_keywords.pdf\" target=\"_blank\" class=\"exalib-blue-cat-lib\">Keywords</a>
 
-			<div class="row" style="padding-top: 15px;">
-				<div class="col-md-6">
-					<input value="Clear Filter" type="button" class="clear-filter" onclick="document.location.href='<?php echo $_SERVER['PHP_SELF']; ?>';">
-					<input value="Search" type="submit" style="margin-left: 50px;">
-				</div>
-				<div class="col-md-6" style="text-align: right;">
-					<?php if (is_dir(__DIR__.'/../../mod/library')) { ?>
-					<input value="Archive 2011-2015" type="button" style="margin-right: 15px;" onclick="document.location.href='<?php echo $CFG->wwwroot.'/mod/library/adv_search.php'; ?>';">
-					<?php } ?>
-				</div>
-			</div>
-		</form>
+            if (is_dir(__DIR__.'/../../mod/library')) {
+								$filtercontent->archivebutton='<div class="form-group">
+									<div class="'.$sm12.'">
+										<!--<input value="Archive 2011-2015" type="submit" name="archiveC" class="form-control" onclick="document.location.href=\''.$CFG->wwwroot.'/mod/library/adv_search.php\';">-->
+								        <input value="Archive 2011-2015" type="button" name="archiveC" class="form-control" onclick="window.location.href=\'https://e-learning2017.ecco-ibd.eu/mod/library/adv_search.php\'">
 
-		</div>
+									</div>
+								</div>';
+								if ($resulttrue==false){
+									echo $filtercontent->archivebutton;
+								}
+				} 
+		
+		if ($resulttrue==false){			
+				echo '</div><!-- / col-sm-4 -->
+						</div><!-- /row -->	
+					
+						<div class="row bottomSearchBar">
+							<div class="col-sm-12">
+								<input value="Clear Filter" type="button" class="clear-filter btn-seFo" onclick="document.location.href=\''.$_SERVER['PHP_SELF'].'\';">
+								<input value="Search" type="submit" class="btn-seFo">
+							</div>
+						</div>
+					</form>
 
+				</div>';
+		}	 
+		?>
+		
 		<?php if (false && count($category_ids) >= 1 && $sub_filter_categories): ?>
 		<div class="libary_top_filter">
 		<form method="get" action="adv_search.php">
@@ -586,7 +725,9 @@ input.libaryfront_searchsub[type="submit"] {
 								<?php
 									foreach ($sub_filter_categories as $sub_filter_category) {
 										echo '<option value="'.$sub_filter_category->id.'"';
-										if ($sub_filter_id == $sub_filter_category->id) echo ' selected="selected"';
+										if ($sub_filter_id == $sub_filter_category->id) {
+											echo ' selected="selected"';
+										}
 										echo '>';
 										echo $sub_filter_category->name.' ('.$sub_filter_category->cnt.')</option>';
 									}
@@ -603,31 +744,70 @@ input.libaryfront_searchsub[type="submit"] {
 		<?php endif; ?>
 
 
-<div style="padding-top: 30px;">
-
-<?php
-if ($items !== null) {
-	if (!$items) {
-		echo block_exalib_get_string('noitemsfound');
-	} else {
-		if ($pagingbar) {
-			echo $output->render($pagingbar);
+<div style="margin-top: 30px;">
+	<div class="row">
+		<div class="col-sm-4 col-md-3 col-sm-push-8 col-md-push-9 exalibSearchBarleft">
+		<?php 
+		if ($resulttrue==true){	
+			echo '<div class="exalibSearchBarleftCnt"><h2>Filtering</h2>';
+			echo '<form method="get" action="adv_search.php">';
+			echo $filtercontent->searchbar;
+		//	echo $filtercontent->searchby;
+			echo $filtercontent->contenttype;
+			echo $filtercontent->year;
+			echo $filtercontent->cat;
+		
+		echo '<div class="form-group">
+						<div class="">
+			
+			<input value="Search" class="form-control" type="submit" class="btn-seFo">
+			</div>
+					</div>';
+			echo $filtercontent->archivebutton;
+				echo '<div class="form-group">
+						<div class="">
+							<input  disabled="disabled" value="Help" name="keywords" type="submit" class="form-control">
+						</div>
+					</div>';
+			
+			echo "</form></div>";
 		}
-		$output->item_list('public', $items);
-		if ($pagingbar) {
-			echo $output->render($pagingbar);
-		}
-	}
-}
-/*  else {
-	?>
-	<div style="text-align: center; padding: 200px 60px 0 0;" class="libary_nores">
-		Not found
-	</div>
-	<?php
-}
-*/
-?>
+		?>
+		<!--  Searchbar rechts hier einfügen --->
+	 
+		</div>
+		<div class="col-sm-8 col-md-9 col-sm-pull-4 col-md-pull-3">
+			<?php
+			
+			if ($items !== null) {
+			
+				if ($result_filter_summary->content!="") {};
+				$result_filter_summary->content="Search results for:  ".$result_filter_summary->content;
+				//echo $result_filter_summary->content;
+			
+				if (!$items) {
+					echo block_exalib_get_string('noitemsfound');
+				} else {
+					if ($pagingbar) {
+						echo $output->render($pagingbar);
+					}
+					$output->item_list('public', $items);
+					if ($pagingbar) {
+						echo $output->render($pagingbar);
+					}
+				}
+			}
+			/*  else {
+				?>
+				<div style="text-align: center; padding: 200px 60px 0 0;" class="libary_nores">
+					Not found
+				</div>
+				<?php
+			}
+			*/
+			?>
+		</div><!-- / col-sm-9 -->
+	</div><!--  / row -->
 </div>
 </div>
 <?php

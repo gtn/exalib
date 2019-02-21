@@ -21,9 +21,22 @@ require __DIR__.'/inc.php';
 
 use block_exalib\globals as g;
 
+//if($USER->id) {echo $USER->id;echo "ja";die;} else {echo "nein";die;}
+if (g::$USER->id==1) {
+ //$linkurl = new moodle_url('detail.php', ['courseid' => g::$COURSE->id, 'catt'=>$catt, 'itemid' => $item->id, 'back' => g::$PAGE->url->out_as_local_url()] + ($type != 'public' ? ['type' => $type] : []));
+ //redirect('https://e-learning.ecco-ibd.eu/login/index.php') ;
+ redirect('https://gtntest-e-learning.ecco-ibd.eu/login/index.php') ;
+ //block_exalib_init_page();
+ //echo "sie müssen angemeldet sein";
+ //echo "nto logein";die;
+}else{
+	
+}
+require_login();
 block_exalib_init_page();
 
 $itemid = required_param('itemid', PARAM_INT);
+$catt = optional_param('catt',0, PARAM_INT);
 if (!$item = $DB->get_record('block_exalib_item', array('id' => $itemid))) {
 	print_error(block_exalib_get_string('itemnotfound'));
 }
@@ -197,8 +210,12 @@ if (preg_match('!rtmp://!', $item->link)) {
 	$video_url = null;
 }
 
-echo '<h2 class="head">'.$item->name.'</h2>';
 
+
+echo '<h2 class="head">'.$item->name;
+if ($item->year) echo ' ('.$item->year.')';
+echo '</h2>';
+echo '<span class="library-item-icon"><img src="pix/contenttypicon'.$item->maincategory.'.png" class="searchLibCheckIcon" /></span>';
 echo '<table>';
 if ($item->source) {
 	echo '<tr><td>Source:</td><td>'.$item->source.'</td></tr>';
@@ -211,17 +228,22 @@ if ($item->authors) {
 	$authors = fullname($tmpuser);
 }
 if ($authors) {
-	echo '<tr><td>'.block_exalib_get_string('author').':</td><td>'.$authors.'</td></tr>';
+	echo '<tr><td>'.block_exalib_get_string('author').':</td><td>'.$authors;
+	if ($item->affiliations) {
+				echo '<i>'.$item->affiliations.'</i>';
+	}
+			
+	echo '</td></tr>';
 }
-
+/*
 if ($item->time_created) {
 	echo '<tr><td>'.block_exalib_get_string('created').':</td><td>'.
 		userdate($item->time_created);
-	/*
-	if ($item->created_by && $tmpuser = $DB->get_record('user', array('id' => $item->created_by))) {
-		echo ' '.block_exalib_get_string('by_person', null, fullname($tmpuser));
-	}
-	*/
+	
+	//if ($item->created_by && $tmpuser = $DB->get_record('user', array('id' => $item->created_by))) {
+	//	echo ' '.block_exalib_get_string('by_person', null, fullname($tmpuser));
+	//}
+	
 	echo '</td></tr>';
 }
 if ($item->time_modified > $item->time_created) {
@@ -231,7 +253,7 @@ if ($item->time_modified > $item->time_created) {
 		echo ' '.block_exalib_get_string('by_person', null, fullname($tmpuser));
 	}
 	echo '</td></tr>';
-}
+}*/
 
 if ($item->real_fiktiv) {
 	echo '<tr><td>'.block_exalib_trans('de:Typ').':</td><td>';
@@ -239,12 +261,29 @@ if ($item->real_fiktiv) {
 }
 
 if ($files) {
-	echo '<tr><td>'.block_exalib_get_string('files').':</td><td>';
-
+	echo '<tr>';
+	$onlypdf=true;$i=1;
 	foreach ($files as $file) {
-		echo '<a href="'.block_exalib_get_url_for_file($file).'" target="_blank">'.
-			block_exalib_get_renderer()->pix_icon(file_file_icon($file), get_mimetype_description($file)).
-			' '.$file->get_filename().'</a>&nbsp;&nbsp;&nbsp;';
+		if ($file->mimetype=="application/pdf"){
+			//dominik: pdf button hier machen
+			echo '<td><a href="'.block_exalib_get_url_for_file($file).'" target="_blank" class="exalib-blue-cat-lib">'.
+				block_exalib_get_renderer()->pix_icon(file_file_icon($file), get_mimetype_description($file)).
+				' '.$file->get_filename().'</a>&nbsp;&nbsp;&nbsp;';
+		}else{
+			if ($i==1) '<td>'.block_exalib_get_string('files').':</td><td>';$i++;
+
+		//	print_r($file);
+            $fileParams = substr(block_exalib_get_url_for_file($file), strrpos(block_exalib_get_url_for_file($file), "pluginfile.php", 0));
+            $fileParams = str_replace("pluginfile.php", '', $fileParams);
+			echo '<div class="text-center exalibPdfDetail"><a href="'. $CFG->wwwroot . '/blocks/exalib/pdfjs/ModifViewer/web/viewer.html?file='
+            .$fileParams.'" target="_blank" class="exalib-blue-cat-lib">'.
+				block_exalib_get_renderer()->pix_icon(file_file_icon($file), get_mimetype_description($file)).
+				'View Presentation</a></div>&nbsp;&nbsp;&nbsp;';
+           /* echo '<div class="text-center exalibPdfDetail"><a href="'
+                .block_exalib_get_url_for_file($file).'" target="_blank" class="exalib-blue-cat-lib">'.
+                block_exalib_get_renderer()->pix_icon(file_file_icon($file), get_mimetype_description($file)).
+                ' '.$file->get_filename().'</a></div>&nbsp;&nbsp;&nbsp;';*/
+		}
 	}
 	echo '</td></tr>';
 }
@@ -259,6 +298,7 @@ if ($item->link) {
 
 echo '</table>';
 
+
 if ($item->content) {
 	echo '<h2 class="head">'.block_exalib_trans('de:Inhalt').'</h2>';
 	echo format_text($item->content);
@@ -266,7 +306,12 @@ if ($item->content) {
 
 // ecco
 if ($item->abstract) {
-	echo '<h3>Abstract</h3>'.format_text($item->abstract).'</div>';
+	if ($item->maincategory==51302) {
+		echo '<h3>Keywords</h3>';
+	}else{
+		echo '<h3>Abstract</h3>';
+	}
+	echo format_text($item->abstract).'</div>';
 }
 if ($item->background) {
 	echo '<h3>Background</h3>'.format_text($item->background);

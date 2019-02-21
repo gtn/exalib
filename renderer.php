@@ -154,6 +154,11 @@ class block_exalib_renderer extends plugin_renderer_base {
 		g::$PAGE->requires->js('/blocks/exalib/javascript/exalib.js');
 		g::$PAGE->requires->js('/blocks/exalib/javascript/jquery.easytree.js');
 	}
+	public function crop_source($wert){
+		//if (is_null($wert)) $wert.="sourse";
+		return $wert;
+	}
+
 
 	public function requires() {
 		$this->init_js_css();
@@ -176,12 +181,17 @@ class block_exalib_renderer extends plugin_renderer_base {
 				'value' => $label,
 			]);
 	}
-
+	function get_parentcat($id){
+		global $DB;
+		if ($parent = $DB->get_field('block_exalib_category','parent_id', array('id' => $id))) {}
+		else $parent=0;
+		return $parent;
+	}
 	function item_list($type, $items) {
 		global $CFG, $DB;
 
 		foreach ($items as $item) {
-
+			//print_r($item);die;
 			$fs = get_file_storage();
 			$files = $fs->get_area_files(context_system::instance()->id,
 				'block_exalib',
@@ -236,9 +246,25 @@ class block_exalib_renderer extends plugin_renderer_base {
 			*/
 
 			echo '<div class="library-item">';
-
-			$linkurl = new moodle_url('detail.php', ['courseid' => g::$COURSE->id, 'itemid' => $item->id, 'back' => g::$PAGE->url->out_as_local_url()] + ($type != 'public' ? ['type' => $type] : []));
-			echo '<a class="head" href="'.$linkurl.'">'.$item->name.'</a>';
+			if (empty($item->maincategory)){
+				$item->maincategory=block_exalib_setMainCat($item->id);
+			}
+			
+			if ($item->icfcat) {
+				$catt=$this->get_parentcat($item->icfcat);
+			};
+			
+			echo '<span class="library-item-icon"><img src="pix/contenttypicon'.$item->maincategory.'.png" class="searchLibCheckIcon" /></span>';
+			
+			if($item->maincategory==51303 && !empty($item->link)){
+				//wenn article und externer link, dann gleich den externen link aufrufen, nicht die detailseite
+				$linkurl=$item->link;
+				echo '<a class="head" target="_blank" href="'.$linkurl.'">'.$item->name.'</a>';
+			}else{
+				//https://e-learning.ecco-ibd.eu/blocks/exalib/detail.php?courseid=1&catt=51002&itemid=7017&back=%2Fblocks%2Fexalib%2Fadv_search.php%3Fq%26amp%3Bsearch_by%3Dall%26amp%3Bcategory_ids%255B0%255D%3D51301%26amp%3Bfilter_year%3D2017%26amp%3Bfilter_category
+				$linkurl = new moodle_url('detail.php', ['courseid' => g::$COURSE->id, 'catt'=>$catt, 'itemid' => $item->id, 'back' => g::$PAGE->url->out_as_local_url()] + ($type != 'public' ? ['type' => $type] : []));
+				echo '<a class="head" href="'.$linkurl.'">'.$item->name.'</a>';
+			}
 
 			if ($rating > 0) {
 				echo '&nbsp;&nbsp;';
@@ -246,6 +272,7 @@ class block_exalib_renderer extends plugin_renderer_base {
 					echo ($rating >= $i) ? '&#9733;' : '&#9734;';
 				}
 			}
+			echo '<span class="library-item-source">'.$this->crop_source($item->source).'</span>';
 
 			if ($type != 'public') {
 				echo '<div><span class="libary_author">'.block_exalib_trans('de:Status').':</span> ';
@@ -267,31 +294,35 @@ class block_exalib_renderer extends plugin_renderer_base {
 			}
 
 			if ($item->year) {
-				echo '<div><span class="libary_author">'.block_exalib_trans(['de:Jahr', 'en:Year']).':</span> '.$item->year.'</div>';
+				echo '<div style="margin-top:10px;"><span class="libary_author">'.block_exalib_trans(['de:Jahr', 'en:Year']).':</span> '.$item->year.'</div>';
 			}
-			if ($item->source) {
+			/*if ($item->source) {
 				echo '<div><span class="libary_author">'.block_exalib_get_string('source').':</span> '.$item->source.'</div>';
-			}
+			}*/
 			if ($item->authors) {
 				echo '<div class="exalib-authors"><span class="libary_author">'.block_exalib_get_string('authors').':</span> '.$item->authors.'</div>';
+			}		 
+			if ($item->affiliations) {
+				echo '<div class="exalib-authors"><i>'.$item->affiliations.'</i></div>';
 			}
+			
 
-			if ($item->time_created) {
+			/*if ($item->time_created) {
 				echo '<div><span class="libary_author">'.block_exalib_get_string('created').':</span> '.
 					userdate($item->time_created);
 				if ($item->created_by && $tmpuser = $DB->get_record('user', array('id' => $item->created_by))) {
 					echo ' '.block_exalib_get_string('by_person', null, fullname($tmpuser));
 				}
 				echo '</div>';
-			}
-			if ($item->time_modified > $item->time_created) {
+			}*/
+			/*if ($item->time_modified > $item->time_created) {
 				echo '<div><span class="libary_author">'.block_exalib_trans(['en:Last Modified', 'de:Zuletzt geändert']).':</span> '.
 					userdate($item->time_modified);
 				if ($item->modified_by && $tmpuser = $DB->get_record('user', array('id' => $item->modified_by))) {
 					echo ' '.block_exalib_get_string('by_person', null, fullname($tmpuser));
 				}
 				echo '</div>';
-			}
+			}*/
 
 			if ($item->abstract) {
 				echo '<div class="libary_content">'.format_text($item->abstract).'</div>';
@@ -303,6 +334,8 @@ class block_exalib_renderer extends plugin_renderer_base {
 				echo count($files);
 				echo '</div>';
 			}
+			//print_r($item);die;
+			
 
 			if ($type != 'public' && block_exalib_can_edit_item($item)) {
 				echo '<span class="library-item-buttons">';
@@ -328,7 +361,7 @@ class block_exalib_renderer extends plugin_renderer_base {
 				]);
 				echo '</span>';
 			}
-
+			
 			echo '</div>';
 		}
 	}
