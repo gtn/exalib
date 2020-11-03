@@ -274,7 +274,7 @@ echo $output->header(BLOCK_EXALIB_IS_ADMIN_MODE ? 'tab_manage_content' : null);
 
 			<?php
 
-			echo '<h3>'.block_exalib_trans('de:Kategorien').'</h3>';
+			echo '<h3>'.block_exalib_get_string('categories').'</h3>';
 
 			echo '<div id="exalib-categories"><ul>';
 			echo '<li id="exalib-menu-item-0" class="'.(-1 == $categoryid ? ' isActive' : '').'">';
