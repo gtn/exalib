@@ -250,6 +250,7 @@ function block_exalib_get_url_for_file(stored_file $file) {
  * @return nothing
  */
 function block_exalib_print_jwplayer($options) {
+
     $options = array_merge(array(
 		// 'primary' => "flash",
 		'autostart' => false,
@@ -274,7 +275,9 @@ function block_exalib_print_jwplayer($options) {
                 )
             )
         );
+
     }
+
 
     if (strpos($_SERVER['HTTP_HOST'], 'ecco-ibd')) {
     	$player = '//content.jwplatform.com/libraries/xKafWURJ.js';
@@ -287,9 +290,42 @@ function block_exalib_print_jwplayer($options) {
 	?>
     <script type="application/javascript" src="<?=$player?>"></script>
 	<div class="video-container" id='player_2834'></div>
-	<script type='text/javascript'>
+  <!--  <video width="100%" height="100%" id="filterVideo" style="cursor:pointer;" poster="<?php echo $CFG->wwwroot;?>/blocks/exalib/MASTER_ECCO_IBD_Curriculum.jpg">
+        <source src="<?php echo $options['file'];?>" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>-->
 
-		// allow fullscreen in iframes, you have to add allowFullScreen to the iframe
+	<script type='text/javascript'>
+        var $video = $("#filterVideo"), //jquery-wrapped video element
+            mousedown = false;
+
+        $video.click(function(){
+            if (this.paused) {
+                this.play();
+                return false;
+            }
+            return true;
+        });
+
+        $video.on('mousedown', function () {
+            mousedown = true;
+        });
+
+        $(window).on('mouseup', function () {
+            mousedown = false;
+        });
+
+        $video.on('play', function () {
+            $video.attr('controls', '');
+        });
+
+        $video.on('pause', function () {
+            if (!mousedown) {
+                $video.removeAttr('controls');
+            }
+        });
+
+        // allow fullscreen in iframes, you have to add allowFullScreen to the iframe
         if (window.frameElement) {
             window.frameElement.setAttribute('allowFullScreen', 'allowFullScreen');
         }
@@ -297,17 +333,20 @@ function block_exalib_print_jwplayer($options) {
 		var options = <?php echo json_encode($options); ?>;
 		if (options.width == 'auto') options.width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
 		if (options.height == 'auto') options.height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+        if(options.usePreviewImage) options.image = <?php echo $CFG->wwwroot ?> "/blocks/exalib/MASTER_ECCO_IBD_Curriculum.jpg";
+      // options.stretching="exactfit";
 
         var p;
+        var onReady = function() {};
         var onPlay = function(){};
         var pauseVideo = false;
 		if (!options.autostart) {
             // start and just load first frame
-			options.autostart = true;
+            if(!options.usePreviewImage) options.autostart = true;
 			options.mute = true;
             pauseVideo = true; // we want to pause it when loading
 
-            onPlay = function(){
+            if(!options.usePreviewImage) onPlay = function(){
                 if (pauseVideo) {
                     this.setMute(false);
                     this.pause();
@@ -318,6 +357,17 @@ function block_exalib_print_jwplayer($options) {
                     pauseVideo = false;
                 }, 500);
 			};
+
+            if(!options.usePreviewImage) onReady = function() {
+
+
+                window.setTimeout(function() {
+                    jwplayer('player_2834').seek(0.6);
+                    window.setTimeout(function() {
+                        jwplayer('player_2834').pause();
+                    }, 500);
+                }, 0);
+            };
 		}
 
         p = jwplayer('player_2834').setup(options);
@@ -325,7 +375,8 @@ function block_exalib_print_jwplayer($options) {
             // user clicked the video -> don't pause video again
             pauseVideo = false;
         });
-        p.on('play', onPlay);
+        if(!options.usePreviewImage) p.on('ready', onReady);
+        if(!options.usePreviewImage) p.on('play', onPlay);
 		p.on('error', function(message){
 			// $('#player_2834').replace('x');
 			// confirm('Sorry, this file could not be played')console.log('ecco', message);
@@ -771,6 +822,9 @@ function block_exalib_handle_item_edit($type = '', $show) {
 			$values = ['' => ''] + array_combine($values, $values);
 			$mform->addElement('select', 'year', block_exalib_get_string('year', 'form'), $values);
 			$mform->setType('year', PARAM_INT);
+			
+			$mform->addElement('text', 'search_abstract', block_exalib_get_string('search_abstract'), 'size="100"');
+			$mform->setType('search_abstract', PARAM_TEXT);
 
 			$mform->addElement('editor', 'abstract_editor', block_exalib_get_string('abstract'), 'rows="10" cols="50" style="width: 95%"');
 			$mform->setType('abstract', PARAM_RAW);

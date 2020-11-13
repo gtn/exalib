@@ -405,4 +405,32 @@ float: left;
 	display: none;
 }
 
+#block_exalib .searchLibCheckIcon {
+	max-width: 65px !important;
+}
+
+#block_exalib .eccosearchvideocenter {
+	padding-left: 15px;
+}
+
 #block_exalib img{max-width:800px;}
+
+@media (max-width: 992px) {
+	#block_exalib .eccoSearchCenter {
+		margin-bottom: 30px;
+		margin-top: 30px;
+	}
+}
+
+@media (max-width: 780px) {
+	#block_exalib .eccosearchvideocenter {
+		padding-right: 15px;
+	}
+}
+
+
+@media (min-width: 780px) and (max-width: 992px) {
+	#block_exalib .eccosearchvideocenter {
+		max-width: 80%;
+	}
+}

@@ -22,7 +22,6 @@ if (!defined('BLOCK_EXALIB_IS_ADMIN_MODE')) {
 }
 
 require __DIR__.'/inc.php';
-
 // sonderzeichen löschen
 /*
 $items = $DB->get_records('block_exalib_item');
@@ -82,7 +81,7 @@ if ($guidelines!="") {
 			$filter_category = '51303';
 }
 if ($latestC!="") {
-			$filter_year = 2018;
+			$filter_year = 2019;
 }			
 
 			
@@ -163,7 +162,7 @@ if ($category_ids) {
 			} else {
 				$search_fields = [
 					'item.link', 'item.source', 'item.file', 'item.name', 'item.authors',
-					'item.abstract', 'item.content', 'item.link_titel', "c$i.name",
+					'item.abstract', 'item.content', 'item.link_titel', 'item.search_abstract', "c$i.name",
 				];
 			}
 
@@ -203,7 +202,7 @@ if ($category_ids) {
 	$sqlJoinSubfilter
 	WHERE 1=1 $sqlWhere
 	GROUP BY item.id
-	ORDER BY name
+	ORDER BY maincategory,year DESC,name
 	LIMIT ".$page*$perpage.', '.$perpage;
 	//echo $sql;
 	//print_r ($sqlParams);die;
@@ -595,7 +594,7 @@ echo '<div class="ecco_lib">';
 		
 			$filtercontent->contenttype='
 			
-				<div class="col-sm-3 eccoLibKatChCtn">
+				<div class="col-lg-3 eccoLibKatChCtn eccoSearchRight">
 					<div class="checkbox">
 						<label>
 							<input type="checkbox" id="search-all-categories" value="Abstracts"';
@@ -611,16 +610,20 @@ echo '<div class="ecco_lib">';
 					if ($result_filter_summary->ctype) $result_filter_summary->content.=", ContentType: ".$result_filter_summary->ctype;
 					$filtercontent->contenttype.='</div><!-- / col-sm-4 -->';
 			if ($resulttrue==false) echo $filtercontent->contenttype;
-		
 
 
-			if ($resulttrue==false) echo '<div class="col-sm-5 form-horizontal">';
+
+			if ($resulttrue==false) echo '<div class="col-lg-5 form-horizontal eccoSearchCenter"><div class="row">';
 						$filtercontent->year= '<div class="form-group"><label for="" class="'.$sm3.' control-label">Year:</label><div class="'.$sm9.'"> ';
 
 						$filtercontent->year.= html_writer::select($years, 'filter_year', $filter_year, array('0'=>"..."), array('class'=>'form-control'));
 						$filtercontent->year.= '</div></div>';
 			if ($resulttrue==false) echo $filtercontent->year;
+			      
 						$values = array_map(function($cat) { return $cat->name; }, $categoryManager->getChildren(51001));
+			if (count($category_ids)==1 && $category_ids[0]==51301){
+				
+			}else{
 						$filtercontent->cat='<div class="form-group"><label for="" class="'.$sm3.' control-label">Category:</label><div class="'.$sm9.'"> ';
 						$filtercontent->cat.= html_writer::select($values, 'filter_category', $filter_category,  array(''=>"..."), array('class'=>'form-control'));
 						if ($filter_category) {
@@ -644,14 +647,24 @@ echo '<div class="ecco_lib">';
 							}
 							$filtercontent->cat.= '</div></div>';
 						}
+			}
+
 				if ($resulttrue==false){
 					echo $filtercontent->cat;
 					echo '</div>';
+                    echo '<div class="row eccosearchvideocenter">';
+                       block_exalib_print_jwplayer(array(
+                            'file'    => $CFG->wwwroot . "/blocks/exalib/images/Video/2019_02_21_MASTER_eLibrary_VIDEO.mp4",
+                            'width'    => "100%",
+                            'height' => "100%",
+                            'usePreviewImage' => true
+                        ));
+                    echo '</div></div>';
 		
 				
 			
 			
-					echo '<div class="col-sm-4">
+					echo '<div class="col-lg-4 eccoSearchRight">
 					<div class="form-group">
 						<div class="col-sm-12">
 							<input value="Latest Content" name="latestC" type="submit" class="form-control">
@@ -689,7 +702,13 @@ echo '<div class="ecco_lib">';
 		if ($resulttrue==false){			
 				echo '</div><!-- / col-sm-4 -->
 						</div><!-- /row -->	
-					
+					    <div class="row">
+					    
+					        <p><h3>Our new e-Library facilitates user-friendly and high-quality search functions</h3></p>
+<p>We have introduced a transparent indexing system based on the IBD Curriculum for all search material as of ECCO’16 onwards.<br><br>Thematic categories used for the e-Library are aligned with the broad ECCO IBD Curriculum categories and constitute the back-bone of filtering the search function.<br><br> The predefined keywords ensure that the same system of terminology is used for roughly inventorying the whole content of the e-Library to facilitate free text search, which also applies to the abstracts.<br>
+You can access the current category and keyword overview used for indexing the e-Library search function  <a href="'. $CFG->wwwroot . '/blocks/exalib/pdfjs/pdfs/2019_ECCO_e-Library_categories_and_keywords.pdf">HERE</a>.<p>
+
+                        </div>
 						<div class="row bottomSearchBar">
 							<div class="col-sm-12">
 								<input value="Clear Filter" type="button" class="clear-filter btn-seFo" onclick="document.location.href=\''.$_SERVER['PHP_SELF'].'\';">

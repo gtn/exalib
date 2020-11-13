@@ -48,6 +48,9 @@
         <FIELD NAME="abstract" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="allow_comments" TYPE="char" LENGTH="34" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="real_fiktiv" TYPE="char" LENGTH="20" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="filepathtemp" TYPE="varchar" LENGTH="200" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="filestemp" TYPE="varchar" LENGTH="200" NOTNULL="false" SEQUENCE="false"/>
+		<FIELD NAME="abstract" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>

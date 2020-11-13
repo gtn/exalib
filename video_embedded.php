@@ -61,6 +61,8 @@ html, body {
 </style>
 
 <?php
+
+
     block_exalib_print_jwplayer(array(
         'file'    => $videourl,
         'width'    => $width,

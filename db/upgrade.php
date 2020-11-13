@@ -147,6 +147,20 @@ function xmldb_block_exalib_upgrade($oldversion) {
         // Exalib savepoint reached.
         upgrade_block_savepoint(true, 2017011600, 'exalib');
     }
+	    if ($oldversion < 2020052901) {
+
+        // Define field year to be added to block_exalib_item.
+        $table = new xmldb_table('block_exalib_item');
+        $field = new xmldb_field('search_abstract', XMLDB_TYPE_TEXT, null, null, null, null, null, null);
+
+        // Conditionally launch add field year.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Exalib savepoint reached.
+        upgrade_block_savepoint(true, 2020052901, 'exalib');
+    }
 
 	return $result;
 }

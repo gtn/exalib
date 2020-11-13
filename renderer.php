@@ -262,8 +262,13 @@ class block_exalib_renderer extends plugin_renderer_base {
 				echo '<a class="head" target="_blank" href="'.$linkurl.'">'.$item->name.'</a>';
 			}else{
 				//https://e-learning.ecco-ibd.eu/blocks/exalib/detail.php?courseid=1&catt=51002&itemid=7017&back=%2Fblocks%2Fexalib%2Fadv_search.php%3Fq%26amp%3Bsearch_by%3Dall%26amp%3Bcategory_ids%255B0%255D%3D51301%26amp%3Bfilter_year%3D2017%26amp%3Bfilter_category
-				$linkurl = new moodle_url('detail.php', ['courseid' => g::$COURSE->id, 'catt'=>$catt, 'itemid' => $item->id, 'back' => g::$PAGE->url->out_as_local_url()] + ($type != 'public' ? ['type' => $type] : []));
-				echo '<a class="head" href="'.$linkurl.'">'.$item->name.'</a>';
+				//if ($DB->get_record('cohort_members', array('cohortid' => 1,'userid' => g::$USER->id))) { 
+				if (1==1) { 
+					$linkurl = new moodle_url('detail.php', ['courseid' => g::$COURSE->id, 'catt'=>$catt, 'itemid' => $item->id, 'back' => g::$PAGE->url->out_as_local_url()] + ($type != 'public' ? ['type' => $type] : []));
+					echo '<a class="head" href="'.$linkurl.'">'.$item->name.'</a>';
+				}else{
+					echo $item->name;
+				}
 			}
 
 			if ($rating > 0) {

@@ -8,7 +8,7 @@ require '../inc.php';
 //delete_items(2016,"51301,51201,51308,51202,51203");
 //delete_items(2017,"51301,51201,51308,51202,51203");
 //delete_items(2018,"51301,51201,51308,51202,51203");
-delete_items(2019,"51301,51201,51308,51202,51203");
+//delete_items(2019,"51301,51201,51308,51202,51203");
 
 //import_csv("2019_02_20_import_Congress_Abstracts_2016.csv","2016",7000);
 //image_replacetif(2016,"51301,51201,51308,51202,51203");
@@ -19,10 +19,42 @@ delete_items(2019,"51301,51201,51308,51202,51203");
 
 //import_csv("2019_02_19_import_Congress_abstracts_2018.csv","2018",11500);
 
-import_csv("2019_02_20_import_Congress_abstracts_2019.csv","2019",14000);
+//import_csv("2019_02_20_import_Congress_abstracts_2019.csv","2019",14000);
+//import_csv("19_02_27_Late_breaker_abstracts_2019_korr.csv","2019",15006);
 
+//import_csv("2019_04_10_GTN_DRAFT_Presentation_Webcasts_upload_korr.csv","2019",20000);
+//import_files_fromfolder(20001,25002);
 
+/*-------------------------------------28.5.2019---------------------------*/
+//delete_items(2019,"",20000,20252);
 
+//import_csv("GTN_Master_ECCO'19_Congress Presentations_V3.csv","2019",20000);
+//import_file_frompath(19999,25002);
+/*-------------------------------------04.06.2019---------------------------*/
+//import_csv("2019_04_12_GTN_DRAFT_Webcasts_upload - KopieV3.csv","2019",20500);
+//import_csv("5ECCO_20_Abstracts_ for_GTN.csv","2020",21000);
+
+/*  --------------- Presentations 2020  ------------------ */
+//delete_items(2020,"",22500,22500);
+//import_csv("2020_06_04_Master_GTN_ECCO20_Congress_Presentations_V2a.csv","2020",22500,false,true);
+
+//import_file_frompath(22501,22785);
+
+/*import_file_frompath(22505,22507);
+import_file_frompath(22617,22619);
+import_file_frompath(22551,22553);
+import_file_frompath(22661,22663);
+import_file_frompath(22670,22672);
+import_file_frompath(22678,22680);
+import_file_frompath(22588,22590);*/
+
+/*  --------------- Webcasts 2020  ------------------ */
+//import_csv("2020_06_04_Master_GTN_ECCO20_Congress_Webcasts_V2a.csv","2020",22800,true,true);
+
+//delete_items(2020,"",22800,22972);
+echo "done";
+
+//set_maincategory();
 //ALTER TABLE mdl_block_exalib_item ADD deleted int(1)
 //ALTER TABLE mdl_block_exalib_item_category ADD deleted int(1)
 //UPDATE mdl_block_exalib_item SET deleted=0
@@ -30,7 +62,150 @@ import_csv("2019_02_20_import_Congress_abstracts_2019.csv","2019",14000);
 //DELETE FROM mdl_block_exalib_item_category WHERE deleted=1
 //delete from mdl_block_exalib_item where id >11499 and id< 13003
 //delete from mdl_block_exalib_item_category where item_id >11499 and item_id< 13003
+function import_files_fromfolder($idfrom,$idto){
+	$fs = get_file_storage();
+	$items = g::$DB->get_records_sql('select id,filepathtemp from mdl_block_exalib_item where id>'.$idfrom.' AND id<'.$idto);
 
+	foreach ($items as $item) {
+		
+		if ($item->filepathtemp != "") {
+			$alledateien = scandir($item->filepathtemp); //Ordner "files" auslesen
+
+			/*foreach ($alledateien as $datei) { // Ausgabeschleife
+	
+				$pos = strpos($datei, ".pdf");
+				if ($pos === false) {
+				    //not found
+				} else {
+				    $dateiname=$datei; //Ausgabe Einzeldatei
+				}
+			};*/
+		
+			foreach ($alledateien as $k=>$datei){
+				if ($datei!=""){
+					$dateiges = __DIR__.'/'.$item->filepathtemp.'/'.$datei;
+					//echo "<br>dateiges:".$dateiges;
+					$pos = strpos($datei, ".pdf");
+					if ($pos === false) {
+						
+					}
+					elseif (file_exists($dateiges)) {
+						echo "datei ".$dateiges."existiert<br>";
+						/*$fs->delete_area_files(context_system::instance()->id,
+							'block_exalib',
+							'item_file',
+							$item['id']);*/
+				
+						$filerecord = new stdClass();
+						$filerecord->contextid = context_system::instance()->id;
+						$filerecord->component = 'block_exalib';
+						$filerecord->filearea = 'item_file';
+						$filerecord->filepath = '/';
+						$filerecord->filename = str_replace('_', '', basename($dateiges));
+						$filerecord->itemid = $item->id;
+				
+						$fs->create_file_from_pathname($filerecord, $dateiges);
+					}
+				}
+			}
+			
+		}
+	}
+}
+function import_file_frompath($idfrom,$idto){
+	$dateitypOK=false;
+	$fs = get_file_storage();
+	$items = g::$DB->get_records_sql('select id,filepathtemp,filestemp from mdl_block_exalib_item where id>'.$idfrom.' AND id<'.$idto);
+
+	foreach ($items as $item) {
+		//$datei=str_replace("/moodleneu/blocks/exalib/scripts/","",$item->filepathtemp)."/".$item->filestemp;
+		$datei=str_replace("/moodleneu/blocks/exalib/scripts/","",$item->filepathtemp)."/".$item->filestemp;
+		
+
+		
+		if ($datei != "") {
+			
+
+					$dateiges = __DIR__.'/'.$datei;
+
+					echo "<br>dateiges:".$dateiges;
+					
+					$pos = strpos($datei, ".pdf");
+					if ($pos === false) {
+						
+					}else{$dateitypOK=true;}
+						
+					$pos = strpos($datei, ".mp4");
+					if ($pos === false) {
+						
+					}else{$dateitypOK=true;}	
+					
+					if ($dateitypOK==true){
+						if (file_exists($dateiges)) {
+							echo "datei ".$dateiges."existiert<br>";
+							$fs->delete_area_files(context_system::instance()->id,
+								'block_exalib',
+								'item_file',
+								$item->id);
+					
+							$filerecord = new stdClass();
+							$filerecord->contextid = context_system::instance()->id;
+							$filerecord->component = 'block_exalib';
+							$filerecord->filearea = 'item_file';
+							$filerecord->filepath = '/';
+							$filerecord->filename = str_replace('_', '', basename($dateiges));
+							$filerecord->itemid = $item->id;
+					
+							$fs->create_file_from_pathname($filerecord, $dateiges);
+						}
+					}
+			
+			
+		}
+
+	}
+}
+
+function set_maincategory(){
+	$items = g::$DB->get_records_sql('SELECT i.id,i.maincategory FROM mdl_block_exalib_item i JOIN mdl_block_exalib_item_category ic ON ic.item_id=i.id');
+
+	foreach ($items as $item){
+		
+		if(empty($item->maincategory)){
+			setMainCat($item->id);
+			echo $item->id."<hr>";
+	  }
+	
+	}
+	
+}
+function setMainCat($itemid){
+	if($mcategories = g::$DB->get_records_sql("
+        	SELECT category_id
+        	FROM {block_exalib_item_category}
+        	WHERE item_id=".$itemid." AND category_id IN (51301,51302,51303,51304,51305)
+        	ORDER BY category_id DESC;
+		")){
+			foreach ($mcategories as $mcategorie) {
+				g::$DB->update_record('block_exalib_item', ['id' => $itemid,'maincategory' => $mcategorie->category_id]);
+				return $mcategorie->category_id;
+				break;
+			} 
+		}
+		elseif($mcategories = g::$DB->get_records_sql("
+        	SELECT c.parent_id
+        	FROM {block_exalib_item_category} ic JOIN {block_exalib_category} c ON c.id=ic.category_id
+        	WHERE ic.item_id=".$itemid." AND c.parent_id IN (51301,51302,51303,51304,51305)
+        	ORDER BY c.parent_id DESC;
+		")){
+			foreach ($mcategories as $mcategorie) {
+				g::$DB->update_record('block_exalib_item', ['id' => $itemid,'maincategory' => $mcategorie->parent_id]);
+				return $mcategorie->parent_id;
+				break;
+			} 
+		}
+		else {return 0;}
+}
 function image_to_uppercase($year,$category_id){
 	$items = g::$DB->get_records_sql('SELECT i.id FROM mdl_block_exalib_item i JOIN mdl_block_exalib_item_category ic ON ic.item_id=i.id WHERE i.year='.$year.' AND ic.category_id IN ('.$category_id.')');
 
@@ -74,12 +249,26 @@ function delete_graficspath($year,$category_id){
 	}
 	
 }
-function delete_items($year,$category_id){
-	$items = g::$DB->get_records_sql('SELECT i.id FROM mdl_block_exalib_item i JOIN mdl_block_exalib_item_category ic ON ic.item_id=i.id WHERE i.year='.$year.' AND ic.category_id IN ('.$category_id.')');
+function delete_items($year,$category_id,$idvon=0,$idbis=0){
+	if ($idvon>0){
+		$items = g::$DB->get_records_sql('SELECT i.id FROM mdl_block_exalib_item i WHERE i.id>='.$idvon.' AND i.id<='.$idbis);
+	}else{
+		$items = g::$DB->get_records_sql('SELECT i.id FROM mdl_block_exalib_item i JOIN mdl_block_exalib_item_category ic ON ic.item_id=i.id WHERE i.year='.$year.' AND ic.category_id IN ('.$category_id.')');
+	}
 	$data["deleted"]=1;
-
+	$fs = get_file_storage();
 	foreach ($items as $item){
-			//echo $item->id;echo "<br>";
+			echo $item->id;echo "<br>";
+			
+			// file delete,  not tested yet
+			if ($files = $fs->get_area_files(context_system::instance()->id,'block_exalib','item_file',$item->id,'itemid','',false)){
+
+					$fs->delete_area_files(context_system::instance()->id,
+								'block_exalib',
+								'item_file',
+								$item->id);
+			}
+						
 	  g::$DB->execute('UPDATE {block_exalib_item} SET deleted=1 WHERE id='.$item->id);
 		g::$DB->execute('UPDATE {block_exalib_item_category} SET deleted=1 WHERE item_id='.$item->id);
 		g::$DB->execute('DELETE FROM mdl_block_exalib_item WHERE deleted=1');
@@ -113,18 +302,25 @@ function graphic_path($wert,$year){
   $wert=str_replace('<graphic xlink:href=""file:./../','<img src="images/'.$year.'/',$wert);
 	return $wert;
 }
-function import_csv($filename,$year,$k){
+
+function import_csv($filename,$year,$k,$uselink=false,$typetotitle=false){
 
 	$csv = file_get_contents($filename);
 	$csv = stringToCsv($csv, ',', true);
-
+	
 	foreach ($csv as $i => $item) {
 		$data=array();
 		$filen='';
 		$data['id'] = $k;
 		$filen.=get_graphics($item['Results']).get_graphics($item['Methods']).get_graphics($item['Background']).get_graphics($item['Conclusions']);
+		$filen.=$item['FileName'];
 		$data['source'] = $item['Source'];
-		$data['name'] = addIfNotNull($item['Number'],': ').removeTag($item['Title'],'p');
+		if($typetotitle){
+			$data['name'] = addIfNotNull(strip_tags($item['PresentationType']),': ').removeTag($item['Title'],'p');
+			
+		}else{
+			$data['name'] = removeTag($item['Title'],'p');
+		}
 		$data['authors'] = $item['Author'];
 		$data['background'] = str_replace('<bold>Background:</bold> ', '', graphic_path($item['Background'],$year));
 		$data['methods'] = str_replace('<bold>Methods:</bold> ', '', graphic_path($item['Methods'],$year));
@@ -140,12 +336,23 @@ function import_csv($filename,$year,$k){
 		$data['created_by'] = '0';		
 		$data['reviewer_id'] = 0;
 		$data['abstract'] = $item['Abstract'];
-		$data['_filename'] = $filen;
+		$data['filestemp'] = $filen;
+		//abstracts 2020, nicht notwendig
+		//$data['filepathtemp'] = "video.ecco-ibd.eu".$item['FilePath'];
+		$data['filepathtemp'] = $item['FilePath'];
+		if ($uselink){
+			$data['link']="https://video.ecco-ibd.eu".$item['FilePath']."/".$item['FileName'];
+		}else{
+			$data['link']=""; //bei webcasts ausblenden
+		}
+
+		$data['SearchAbstract']=$item['SearchAbstract'];
+
 		
 		//??$data['SubType']=$item['SubType'];
 		//??$data['_Specific_keywords'] = $item['Specific_keywords'];
 		$data['Cat1']=$item['Cat1'];$data['Cat2']=$item['Cat2'];$data['Cat3']=$item['Cat3'];$data['Cat4']=$item['Cat4'];
-		$data['Cat5']=$item['Cat5'];$data['Cat6']=$item['Cat6'];$data['Cat7']=$item['Cat7'];
+		$data['Cat5']=$item['Cat5'];$data['Cat6']=$item['Cat6'];$data['Cat7']=$item['Cat7'];$data['Cat8']=$item['Cat8'];$data['Cat9']=$item['Cat9'];$data['Cat10']=$item['Cat10'];
 		$maincategory_arr=Array();$maincategory_arr[51301]=1;$maincategory_arr[51302]=1;$maincategory_arr[51303]=1;
 		$maincategory_arr[51304]=1;$maincategory_arr[51305]=1;
 		$catt="";
@@ -158,49 +365,72 @@ function import_csv($filename,$year,$k){
 			//$category_id = 51301;
 			//g::$DB->insert_record('block_exalib_item_category', ['item_id'=>$data['id'], 'category_id' => $category_id]);
 			if (intval($data['Cat1'])>0){
-				//$category_id=51100+$data['Cat1'];
+				//$category_id=51100+$data['Cat1']; //nicht 51100 dazuzählen, weil ecco im ersten feld die richtigen langen nummern reinschreibt
 				$category_id=$data['Cat1'];
 				if ($data['Cat1']==18) $category_id=51306;			// var_dump(['itemid'=>$item['id']]);
 				if ($maincategory_arr[$category_id]==1) $catt=$category_id;
 				g::$DB->insert_record('block_exalib_item_category', ['item_id'=>$data['id'], 'category_id' => $category_id]);
 			}
 			if (intval($data['Cat2'])>0){
-				//$category_id=51100+$data['Cat2'];
-				if ($data['Cat2']==18) $category_id=51306;			// var_dump(['itemid'=>$item['id']]);
+				$category_id=51100+$data['Cat2']; //51100 dazuzählen, weil es dann übereinstimmt, zb 1 bei ecco ist "1. Aetiology of disease", hat bei exalib 51101
+				if ($data['Cat2']==18) $category_id=51306;			// weil "18. Clinical trial design and outcomes" die id 51306 hat und nicht nach der anderen systematik 51118
+				if ($data['Cat2']==19) $category_id=51307;if ($data['Cat2']==20) $category_id=51309;
 				if ($maincategory_arr[$category_id]==1) $catt=$category_id;
 				g::$DB->insert_record('block_exalib_item_category', ['item_id'=>$data['id'], 'category_id' => $category_id]);
 			}
 			if (intval($data['Cat3'])>0){
-				//$category_id=51100+$data['Cat3'];
-				if ($data['Cat3']==18) $category_id=51306;			// var_dump(['itemid'=>$item['id']]);
+				$category_id=51100+$data['Cat3'];
+				if ($data['Cat3']==18) $category_id=51306;if ($data['Cat3']==19) $category_id=51307;if ($data['Cat3']==20) $category_id=51309;
 				if ($maincategory_arr[$category_id]==1) $catt=$category_id;
 				g::$DB->insert_record('block_exalib_item_category', ['item_id'=>$data['id'], 'category_id' => $category_id]);
 			}
 			if (intval($data['Cat4'])>0){
-				//$category_id=51100+$data['Cat4'];
-				if ($data['Cat4']==18) $category_id=51306;			// var_dump(['itemid'=>$item['id']]);
+				$category_id=51100+$data['Cat4'];
+				if ($data['Cat4']==18) $category_id=51306;if ($data['Cat4']==19) $category_id=51307;if ($data['Cat4']==20) $category_id=51309;
 				if ($maincategory_arr[$category_id]==1) $catt=$category_id;
 				g::$DB->insert_record('block_exalib_item_category', ['item_id'=>$data['id'], 'category_id' => $category_id]);
 			}
 			if (intval($data['Cat5'])>0){
-				//$category_id=51100+$data['Cat5'];
-				if ($data['Cat5']==18) $category_id=51306;			// var_dump(['itemid'=>$item['id']]);
+				$category_id=51100+$data['Cat5'];
+				if ($data['Cat5']==18) $category_id=51306;if ($data['Cat5']==19) $category_id=51307;if ($data['Cat5']==20) $category_id=51309;
 				if ($maincategory_arr[$category_id]==1) $catt=$category_id;
 				g::$DB->insert_record('block_exalib_item_category', ['item_id'=>$data['id'], 'category_id' => $category_id]);
 			}
 			if (intval($data['Cat6'])>0){
-				//$category_id=51100+$data['Cat6'];
-				if ($data['Cat6']==18) $category_id=51306;			// var_dump(['itemid'=>$item['id']]);
+				$category_id=51100+$data['Cat6'];
+				if ($data['Cat6']==18) $category_id=51306;if ($data['Cat6']==19) $category_id=51307;if ($data['Cat6']==20) $category_id=51309;
 				if ($maincategory_arr[$category_id]==1) $catt=$category_id;
 				g::$DB->insert_record('block_exalib_item_category', ['item_id'=>$data['id'], 'category_id' => $category_id]);
 			}
 			if (intval($data['Cat7'])>0){
-				//$category_id=51100+$data['Cat7'];
-				if ($data['Cat7']==18) $category_id=51306;			// var_dump(['itemid'=>$item['id']]);
+				$category_id=51100+$data['Cat7'];
+				if ($data['Cat7']==18) $category_id=51306;if ($data['Cat7']==19) $category_id=51307;if ($data['Cat7']==20) $category_id=51309;
 				if ($maincategory_arr[$category_id]==1) $catt=$category_id;
 				g::$DB->insert_record('block_exalib_item_category', ['item_id'=>$data['id'], 'category_id' => $category_id]);
 			}
+			
+			if (intval($data['Cat8'])>0){
+				$category_id=51100+$data['Cat8'];
+				if ($data['Cat8']==18) $category_id=51306;if ($data['Cat8']==19) $category_id=51307;if ($data['Cat8']==20) $category_id=51309;
+				if ($maincategory_arr[$category_id]==1) $catt=$category_id;
+				g::$DB->insert_record('block_exalib_item_category', ['item_id'=>$data['id'], 'category_id' => $category_id]);
+			}
+			if (intval($data['Cat9'])>0){
+				$category_id=51100+$data['Cat9'];
+				if ($data['Cat9']==18) $category_id=51306;if ($data['Cat9']==19) $category_id=51307;if ($data['Cat9']==20) $category_id=51309;
+				if ($maincategory_arr[$category_id]==1) $catt=$category_id;
+				g::$DB->insert_record('block_exalib_item_category', ['item_id'=>$data['id'], 'category_id' => $category_id]);
+			}
+			if (intval($data['Cat10'])>0){
+				$category_id=51100+$data['Cat10'];
+				if ($data['Cat10']==18) $category_id=51306;if ($data['Cat10']==19) $category_id=51307;if ($data['Cat10']==20) $category_id=51309;
+				if ($maincategory_arr[$category_id]==1) $catt=$category_id;
+				g::$DB->insert_record('block_exalib_item_category', ['item_id'=>$data['id'], 'category_id' => $category_id]);
+			}
+			
 			$data["maincategory"]=$catt;
+			echo "<br><br>id: ".$data['id']."<br>";
+			print_r($item);
 			g::$DB->update_record('block_exalib_item', $data, ['id' => $data['id']]);
 			
 			$category_id=0;
@@ -461,7 +691,7 @@ foreach ($items as $item) {
 								
 		
 					
-					$filerecord = new stdClass();
+					/*$filerecord = new stdClass();
 					$filerecord->contextid = context_system::instance()->id;
 					$filerecord->component = 'block_exalib';
 					$filerecord->filearea = 'item_file';
@@ -469,7 +699,7 @@ foreach ($items as $item) {
 					$filerecord->filename = str_replace('_', '', basename($dateiges));
 					$filerecord->itemid = $item->id;
 			
-					$fs->create_file_from_pathname($filerecord, $dateiges);
+					$fs->create_file_from_pathname($filerecord, $dateiges);*/
 					
 				}
 		
