@@ -825,6 +825,8 @@ function block_exalib_handle_item_edit($type = '', $show) {
 			
 			$mform->addElement('text', 'search_abstract', block_exalib_get_string('search_abstract'), 'size="100"');
 			$mform->setType('search_abstract', PARAM_TEXT);
+			
+			$mform->addElement('advcheckbox', 'ibd', block_exalib_get_string('ibd'));
 
 			$mform->addElement('editor', 'abstract_editor', block_exalib_get_string('abstract'), 'rows="10" cols="50" style="width: 95%"');
 			$mform->setType('abstract', PARAM_RAW);

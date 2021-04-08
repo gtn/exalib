@@ -161,6 +161,18 @@ function xmldb_block_exalib_upgrade($oldversion) {
         // Exalib savepoint reached.
         upgrade_block_savepoint(true, 2020052901, 'exalib');
     }
+     if ($oldversion < 2020111300) {
+
+        // Define field ibd to be added to block_exalib_item. show item in ibd curriculum or not
+        $table = new xmldb_table('block_exalib_item');
+        $field = new xmldb_field('ibd', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '0');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Exalib savepoint reached.
+        upgrade_block_savepoint(true, 2020111300, 'exalib');
+    }
 
 	return $result;
 }

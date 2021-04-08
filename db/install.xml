@@ -50,6 +50,7 @@
         <FIELD NAME="real_fiktiv" TYPE="char" LENGTH="20" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="filepathtemp" TYPE="varchar" LENGTH="200" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="filestemp" TYPE="varchar" LENGTH="200" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="ibd" TYPE="int" LENGTH="1" NOTNULL="false" SEQUENCE="false"/>
 		<FIELD NAME="abstract" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
       </FIELDS>
       <KEYS>

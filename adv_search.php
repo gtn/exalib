@@ -66,6 +66,7 @@ $PAGE->set_url($urlpage);
 $topGroups = array(11=>'Abstracts', 12=>'Documents', 13=>'Images', 14=>'Podcasts', 15=>'Webcasts');
 
 $q = optional_param('q', '', PARAM_TEXT);
+$ibd = optional_param('ibd', '', PARAM_TEXT);
 $category_ids = optional_param_array('category_ids', array(), PARAM_INT);
 $sub_filter_id = optional_param('sub_filter_id', '', PARAM_INT);
 $search_by = optional_param('search_by', 'all', PARAM_TEXT);
@@ -100,7 +101,7 @@ if (BLOCK_EXALIB_IS_ADMIN_MODE) {
 		AND (item.online_from=0 OR item.online_from IS NULL OR item.online_from <= ".time().")
 		AND (item.online_to=0 OR item.online_to IS NULL OR item.online_to >= ".time().")";
 }
-
+if ($ibd==1) $sqlItemWhere .= " AND ibd=1";
 $sql = "SELECT DISTINCT year, year as tmp FROM {block_exalib_item} AS item 
 WHERE 1=1 $sqlItemWhere
 AND year>2015

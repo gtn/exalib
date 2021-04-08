@@ -121,3 +121,6 @@ $string['alt_all_entries'] = 'All Entries';
 $string['alt_heading'] = 'Exabis Library';
 $string['alt_tab_manage_content'] = 'Manage Library Content';
 $string['alt_tab_review'] = 'Review Items';
+$string['ibd'] = 'In IBD Curriculum anzeigen';
+$string['search_abstract'] = 'Searchtags Abstract';
+

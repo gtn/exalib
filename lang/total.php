@@ -389,4 +389,12 @@ return [
 		'Fälle begutachten',
 		'Review Items',
 	],
+	'ibd' => [
+		'In IBD Curriculum anzeigen',
+		'Show in IBD Curriculum',
+	],
+	'search_abstract' => [
+		'Suchtags Abstract',
+		'Searchtags Abstract',
+	],
 ];

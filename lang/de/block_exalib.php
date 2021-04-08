@@ -121,3 +121,6 @@ $string['alt_all_entries'] = 'Alle Fälle';
 $string['alt_heading'] = 'Fallarchiv';
 $string['alt_tab_manage_content'] = 'Alle Fälle verwalten';
 $string['alt_tab_review'] = 'Fälle begutachten';
+$string['ibd'] = 'Show in IBD Curriculum';
+$string['search_abstract'] = 'Suchtags Abstract';
+
