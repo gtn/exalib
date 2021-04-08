@@ -818,7 +818,7 @@ function block_exalib_handle_item_edit($type = '', $show) {
 			$mform->addElement('text', 'authors', block_exalib_get_string('authors'), 'size="100"');
 			$mform->setType('authors', PARAM_TEXT);
 
-			$values = range(2010,2020);
+			$values = range(2021,2010);
 			$values = ['' => ''] + array_combine($values, $values);
 			$mform->addElement('select', 'year', block_exalib_get_string('year', 'form'), $values);
 			$mform->setType('year', PARAM_INT);

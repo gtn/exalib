@@ -82,7 +82,7 @@ if ($guidelines!="") {
 			$filter_category = '51303';
 }
 if ($latestC!="") {
-			$filter_year = 2019;
+			$filter_year = 2020;
 }			
 
 			
@@ -105,7 +105,7 @@ if ($ibd==1) $sqlItemWhere .= " AND ibd=1";
 $sql = "SELECT DISTINCT year, year as tmp FROM {block_exalib_item} AS item 
 WHERE 1=1 $sqlItemWhere
 AND year>2015
-ORDER BY year
+ORDER BY year DESC
 ";
 $years = $DB->get_records_sql_menu($sql);
 

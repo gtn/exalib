@@ -336,6 +336,7 @@ function import_csv($filename,$year,$k,$uselink=false,$typetotitle=false){
 		$data['created_by'] = '0';		
 		$data['reviewer_id'] = 0;
 		$data['abstract'] = $item['Abstract'];
+		$data['search_abstract'] = $item['SearchAbstract'];
 		$data['filestemp'] = $filen;
 		//abstracts 2020, nicht notwendig
 		//$data['filepathtemp'] = "video.ecco-ibd.eu".$item['FilePath'];

@@ -339,7 +339,7 @@ else{
         }else{
             echo '<h3>Abstract</h3>';
         }
-        echo format_text($item->abstract).'</div>';
+        echo format_text($item->abstract);
     }
     if ($item->background) {
         echo '<h3>Background</h3>'.format_text($item->background);
@@ -436,7 +436,7 @@ else{
     ?>
     <br/><br/>
     <a class="exalib-blue-cat-lib" href="<?php echo $back ?>"><?php echo block_exalib_get_string('back') ?></a>
-    </div>
+
     <?php
 
     echo $output->footer();
