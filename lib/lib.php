@@ -736,6 +736,7 @@ function block_exalib_handle_item_edit($type = '', $show) {
 
 			$mform->addElement('text', 'authors', block_exalib_get_string('authors'), 'size="100"');
 			$mform->setType('authors', PARAM_TEXT);
+$to_year = date('Y') + 1;
 			$values = range(2010,$to_year);
 			$values = ['' => ''] + array_combine($values, $values);
 			$mform->addElement('select', 'year', block_exalib_get_string('year', 'form'), $values);
