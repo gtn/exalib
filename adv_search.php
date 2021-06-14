@@ -66,10 +66,10 @@ $PAGE->set_url($urlpage);
 $topGroups = array(11=>'Abstracts', 12=>'Documents', 13=>'Images', 14=>'Podcasts', 15=>'Webcasts');
 
 $q = optional_param('q', '', PARAM_TEXT);
-$ibd = optional_param('ibd', '', PARAM_TEXT);
+$ibd = optional_param('view2', '', PARAM_TEXT);
 $category_ids = optional_param_array('category_ids', array(), PARAM_INT);
 $sub_filter_id = optional_param('sub_filter_id', '', PARAM_INT);
-$search_by = optional_param('search_by', 'all', PARAM_TEXT);
+$search_by = optional_param('search_by', 'name', PARAM_TEXT);
 $filter_year = optional_param('filter_year', 0, PARAM_INT);
 
 $filter_category = optional_param('filter_category', '', PARAM_INT);
@@ -77,6 +77,8 @@ $filter_sub_type = optional_param('filter_sub_type', '', PARAM_INT);
 $guidelines = optional_param('guidelines', "", PARAM_TEXT);
 $latestC = optional_param('latestC', "", PARAM_TEXT);
 $archiveC = optional_param('archiveC', "", PARAM_TEXT);
+$ibdget = "";
+if ($ibd==1) $ibdget = "?view2=1";
 if ($guidelines!="") {
 			$filter_sub_type = '51206';
 			$filter_category = '51303';
@@ -153,24 +155,32 @@ if ($category_ids) {
 		} elseif ($search_by == 'source') {
 				$result_filter_summary->content.=" in source";
 		}
-		foreach ($qparams as $i => $qparam) {
-			if ($search_by == 'title') {
-				$search_fields = ['item.name'];
-			} elseif ($search_by == 'author') {
-				$search_fields = ['item.authors'];
-			} elseif ($search_by == 'source') {
-				$search_fields = ['item.source'];
-			} else {
-				$search_fields = [
-					'item.link', 'item.source', 'item.file', 'item.name', 'item.authors',
-					'item.abstract', 'item.content', 'item.link_titel', 'item.search_abstract', "c$i.name",
-				];
-			}
-
-			$sqlJoin .= " LEFT JOIN {block_exalib_item_category} ic$i ON item.id=ic$i.item_id";
-			$sqlJoin .= " LEFT JOIN {block_exalib_category} c$i ON ic$i.category_id=c$i.id";
+		if ($search_by == 'title') {
+					$search_fields = ['item.name'];
+		} elseif ($search_by == 'author') {
+					$search_fields = ['item.authors'];
+		} elseif ($search_by == 'source') {
+					$search_fields = ['item.source'];
+		}elseif ($search_by == 'all') {
+						$search_fields = [
+						'item.link', 'item.source', 'item.file', 'item.name', 'item.authors',
+						'item.abstract', 'item.content', 'item.link_titel', 'item.search_abstract', "c$i.name",
+					];
+		} else {
+					$search_fields = ['item.name'];
+		}
+		if (count($qparams)>3){
 			$sqlWhere .= " AND ".$DB->sql_concat_join("' '", $search_fields)." LIKE ?";
-			$sqlParams[] = "%".$DB->sql_like_escape($qparam)."%";
+			$sqlParams[] = "%".$DB->sql_like_escape($q)."%";
+		}else{ 
+			foreach ($qparams as $i => $qparam) {
+				
+	
+				/*Angerer 01.06.2021 $sqlJoin .= " LEFT JOIN {block_exalib_item_category} ic$i ON item.id=ic$i.item_id";
+				$sqlJoin .= " LEFT JOIN {block_exalib_category} c$i ON ic$i.category_id=c$i.id";*/
+				$sqlWhere .= " AND ".$DB->sql_concat_join("' '", $search_fields)." LIKE ?";
+				$sqlParams[] = "%".$DB->sql_like_escape($qparam)."%";
+			}
 		}
 	}
 
@@ -546,14 +556,17 @@ input.libaryfront_searchsub[type="submit"] {
 
 echo '<div class="ecco_lib">';
 		if ($resulttrue==false){
-			echo '<h3 class="sectionname">Welcome to the e-CCO Library!</h3>';
+			if ($ibd==1) echo '<h3 class="sectionname">Welcome to the IBD Curriculum!</h3>';
+			else echo '<h3 class="sectionname">Welcome to the e-CCO Library!</h3>';
+			
 			echo '<div class="libary_top_search">';
 			$dispNone="hideInput";
 			$sm2="col-sm-2";
 			$sm3="col-sm-3";
 			$sm9="col-sm-9";
 			$sm12="col-sm-12";
-			echo '<form method="get" action="adv_search.php" class="form-horizontal">';
+			echo '<form method="get" action="adv_search.php'.$ibdget.'" class="form-horizontal">';
+			if ($ibd==1) echo '<input type="hidden" name="view2" value="1" />'; 
 		}
 		
 		//if ($resulttrue==false)	echo $filtercontent->form;
@@ -575,7 +588,6 @@ echo '<div class="ecco_lib">';
 				<label for="searchtext" class="col-sm-2 control-label">Search by:</label>
 				<div class="col-sm-10">
 					<select name="search_by" class="form-control">
-						<option value="all">All</option>
 						<option value="title" ';
 						if ($search_by == 'title') $filtercontent->searchby.= 'selected="selected"'; 
 						$filtercontent->searchby.='>Title</option>
@@ -584,8 +596,12 @@ echo '<div class="ecco_lib">';
 						$filtercontent->searchby.='>Author</option>
 						<option value="source" ';
 						if ($search_by == 'source') $filtercontent->searchby.='selected="selected"'; 
-						$filtercontent->searchby.='>Source</option>
-					</select>
+						$filtercontent->searchby.='>Source</option>';
+					  $filtercontent->searchby.='<option value="all" ';
+						if ($search_by == 'all') $filtercontent->searchby.='selected="selected"'; 
+						$filtercontent->searchby.='>All</option>';
+					
+					$filtercontent->searchby.='</select>
 				</div>
 			</div>';
 		if ($resulttrue==false) {
@@ -604,7 +620,8 @@ echo '<div class="ecco_lib">';
 						</label>
 					</div>';
 					foreach ($categoryManager->getChildren(51002) as $category) {
-						$filtercontent->contenttype.='<div class="checkbox"><label><input type="checkbox" name="category_ids[]" value="'.$category->id.'" ';
+						if ($ibd==1 AND $category->id=="51301") continue;
+						$filtercontent->contenttype.='<hr><div class="checkbox"><label><input type="checkbox" name="category_ids[]" value="'.$category->id.'" ';
 						if(in_array($category->id, $category_ids)) { $filtercontent->contenttype.='checked="checked"';$result_filter_summary->ctype.=' ,'.$category->name;$catidtemp=$category->id;}
 							$filtercontent->contenttype.='/><img src="pix/contenttypicon'.$category->id.'.png" class="searchLibCheckIcon" /><span class="searchLibCheckTxt">'.$category->name.'</span></label></div>';
 					}
@@ -724,9 +741,10 @@ You can access the current category and keyword overview used for indexing the e
 		
 		<?php if (false && count($category_ids) >= 1 && $sub_filter_categories): ?>
 		<div class="libary_top_filter">
-		<form method="get" action="adv_search.php">
+		<form method="get" action="adv_search.php<?php echo $ibdget;?>">
 			<input name="q" type="hidden" value="<?php p($q) ?>" />
 			<input name="search_by" type="hidden" value="<?php p($search_by) ?>" />
+			<input name="view2" type="hidden"  value="<?php echo $ibd; ?>" />
 			<?php
 				foreach ($category_ids as $id) {
 					echo '<input name="category_ids[]" type="hidden" value="'.$id.'" />';
@@ -770,7 +788,7 @@ You can access the current category and keyword overview used for indexing the e
 		<?php 
 		if ($resulttrue==true){	
 			echo '<div class="exalibSearchBarleftCnt"><h2>Filtering</h2>';
-			echo '<form method="get" action="adv_search.php">';
+			echo '<form method="get" action="adv_search.php'.$ibdget.'">';
 			echo $filtercontent->searchbar;
 		//	echo $filtercontent->searchby;
 			echo $filtercontent->contenttype;
@@ -784,6 +802,7 @@ You can access the current category and keyword overview used for indexing the e
 			</div>
 					</div>';
 			echo $filtercontent->archivebutton;
+			if ($ibd==1) echo '<input type="text" name="view2" value="1" />';
 				echo '<div class="form-group">
 						<div class="">
 							<input  disabled="disabled" value="Help" name="keywords" type="submit" class="form-control">
@@ -797,7 +816,9 @@ You can access the current category and keyword overview used for indexing the e
 	 
 		</div>
 		<div class="col-sm-8 col-md-9 col-sm-pull-4 col-md-pull-3">
-			<?php
+			<?php 
+			if ($ibd==1) echo '<h3 class="sectionname">ECCO IBD Curriculum: '.$cat->name.'</h3>';
+			
 			
 			if ($items !== null) {
 			

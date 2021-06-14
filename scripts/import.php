@@ -51,7 +51,12 @@ import_file_frompath(22588,22590);*/
 /*  --------------- Webcasts 2020  ------------------ */
 //import_csv("2020_06_04_Master_GTN_ECCO20_Congress_Webcasts_V2a.csv","2020",22800,true,true);
 
-//delete_items(2020,"",22800,22972);
+/*  --------------- Abstracts 2021  ------------------ */
+//import_csv("MASTER_2021_05_20_import template_Abstracts_2021_V2.csv","2021",23000,false,true);
+
+//import_csv("MASTER_2021_05_20_import template_Abstracts_2021_juni.csv","2021",23000,false,true);
+//delete_items(2021,"",23000,24600);
+
 echo "done";
 
 //set_maincategory();
@@ -306,7 +311,7 @@ function graphic_path($wert,$year){
 function import_csv($filename,$year,$k,$uselink=false,$typetotitle=false){
 
 	$csv = file_get_contents($filename);
-	$csv = stringToCsv($csv, ',', true);
+	$csv = stringToCsv($csv, ';', true);
 	
 	foreach ($csv as $i => $item) {
 		$data=array();

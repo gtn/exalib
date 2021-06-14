@@ -246,7 +246,7 @@ else{
     echo '<span class="library-item-icon"><img src="pix/contenttypicon'.$item->maincategory.'.png" class="searchLibCheckIcon" /></span>';
     echo '<table>';
     if ($item->source) {
-        echo '<tr><td>Source:</td><td>'.$item->source.'</td></tr>';
+        echo '<tr><td><span class="libary_author">Source:</span></td><td>'.$item->source.'</td></tr>';
     }
 
     $authors = null;
@@ -256,9 +256,9 @@ else{
         $authors = fullname($tmpuser);
     }
     if ($authors) {
-        echo '<tr><td>'.block_exalib_get_string('author').':</td><td>'.$authors;
+        echo '<tr><td style="vertical-align: top;"><span class="libary_author">'.block_exalib_get_string('author').':</span></td><td>'.$authors;
         if ($item->affiliations) {
-            echo '<i>'.$item->affiliations.'</i>';
+            echo '<p style="margin-top:10px;"><i>'.$item->affiliations.'</i></p>';
         }
 
         echo '</td></tr>';

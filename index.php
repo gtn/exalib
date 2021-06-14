@@ -92,17 +92,22 @@ if ($q = optional_param('q', '', PARAM_TEXT)) {
 	if ($currentcategory) {
 		$sqlwhere .= " AND item.id IN (".join(',', [0] + $currentcategory->item_ids_inc_subs).")";
 	}
-
-	foreach ($qparams as $i => $qparam) {
-		$search_fields = [
-			'item.link', 'item.source', 'item.file', 'item.name', 'item.authors',
-			'item.abstract', 'item.content', 'item.link_titel', "c$i.name",
-		];
-
-		$sqljoin .= " LEFT JOIN {block_exalib_item_category} ic$i ON item.id=ic$i.item_id";
-		$sqljoin .= " LEFT JOIN {block_exalib_category} c$i ON ic$i.category_id=c$i.id";
-		$sqlwhere .= " AND ".$DB->sql_concat_join("' '", $search_fields)." LIKE ?";
-		$sqlparams[] = "%".$DB->sql_like_escape($qparam)."%";
+  if (count($qparams)>3){
+			$sqlWhere .= " AND ".$DB->sql_concat_join("' '", $search_fields)." LIKE ?";
+			$sqlParams[] = "%".$DB->sql_like_escape($q)."%";
+	}else{ 
+		foreach ($qparams as $i => $qparam) {
+			$search_fields = [
+				'item.link', 'item.source', 'item.file', 'item.name', 'item.authors',
+				'item.abstract', 'item.content', 'item.link_titel', "c$i.name",
+			];
+			$search_fields = ['item.name'];
+	
+			/* Angerer 01.06.2021 $sqljoin .= " LEFT JOIN {block_exalib_item_category} ic$i ON item.id=ic$i.item_id";
+			$sqljoin .= " LEFT JOIN {block_exalib_category} c$i ON ic$i.category_id=c$i.id";*/
+			$sqlwhere .= " AND ".$DB->sql_concat_join("' '", $search_fields)." LIKE ?";
+			$sqlparams[] = "%".$DB->sql_like_escape($qparam)."%";
+		}
 	}
 
 	$sql = "SELECT COUNT(DISTINCT item.id)
@@ -110,6 +115,7 @@ if ($q = optional_param('q', '', PARAM_TEXT)) {
 		$sqljoin
 		WHERE 1=1 $sqlwhere
 	";
+	
 	$count = $DB->get_field_sql($sql, $sqlparams);
 
 	$pagingbar = new paging_bar($count, $page, $perpage, $urlpage);
@@ -119,8 +125,8 @@ if ($q = optional_param('q', '', PARAM_TEXT)) {
     $sqljoin
     WHERE 1=1 $sqlwhere
     GROUP BY item.id
-    ORDER BY name";
-
+    ORDER BY name"; 
+  //echo $sql;die;
 	$items = $DB->get_records_sql($sql, $sqlparams, $page * $perpage, $perpage);
 
 } elseif ($currentcategory) {

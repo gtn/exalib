@@ -308,7 +308,7 @@ class block_exalib_renderer extends plugin_renderer_base {
 				echo '<div class="exalib-authors"><span class="libary_author">'.block_exalib_get_string('authors').':</span> '.$item->authors.'</div>';
 			}		 
 			if ($item->affiliations) {
-				echo '<div class="exalib-authors"><i>'.$item->affiliations.'</i></div>';
+				echo '<div class="exalib-authors" style="margin-top:10px;"><i>'.$item->affiliations.'</i></div>';
 			}
 			
 
