@@ -266,19 +266,19 @@ if ($item->content) {
 
 // ecco
 if ($item->abstract) {
-	echo '<h3>Abstract</h3>'.format_text($item->abstract).'</div>';
+	echo '<h3>'.block_exalib_get_string('abstract').'</h3>'.format_text($item->abstract).'</div>';
 }
 if ($item->background) {
-	echo '<h3>Background</h3>'.format_text($item->background);
+	echo '<h3>'.block_exalib_get_string('background').'</h3>'.format_text($item->background);
 }
 if ($item->methods) {
-	echo '<h3>Methods</h3>'.format_text($item->methods);
+	echo '<h3>'.block_exalib_get_string('methods').'</h3>'.format_text($item->methods);
 }
 if ($item->results) {
-	echo '<h3>Results</h3>'.format_text($item->results);
+	echo '<h3>'.block_exalib_get_string('results').'</h3>'.format_text($item->results);
 }
 if ($item->conclusion) {
-	echo '<h3>Conclusion</h3>'.format_text($item->conclusion);
+	echo '<h3>'.block_exalib_get_string('conclusion').'</h3>'.format_text($item->conclusion);
 }
 
 if ($video_url) {
