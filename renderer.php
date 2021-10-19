@@ -26,7 +26,7 @@ class block_exalib_renderer extends plugin_renderer_base {
 	var $tabs = [];
 
 	public function header($items = null) {
-
+		$ibd = optional_param('view2', '', PARAM_TEXT);
 		if ($items === null) {
 			$items = $this->tabs;
 		}
@@ -73,9 +73,11 @@ class block_exalib_renderer extends plugin_renderer_base {
 		}
 
 		$tabtree = new tabtree($tabs);
-
-		g::$PAGE->navbar->add(block_exalib_get_string('heading'), new moodle_url('/blocks/exalib/index.php', ['courseid' => g::$COURSE->id]));
-
+		if ($ibd==1){
+			g::$PAGE->navbar->add("IBD Curriculum");
+		}else{
+			g::$PAGE->navbar->add(block_exalib_get_string('heading'), new moodle_url('/blocks/exalib/index.php', ['courseid' => g::$COURSE->id]));
+		}
 		foreach ($items as $level => $item) {
 			if (!is_array($item)) {
 				if (!is_string($item)) {

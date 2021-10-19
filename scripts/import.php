@@ -57,6 +57,11 @@ import_file_frompath(22588,22590);*/
 //import_csv("MASTER_2021_05_20_import template_Abstracts_2021_juni.csv","2021",23000,false,true);
 //delete_items(2021,"",23000,24600);
 
+/*  --------------- Webcasts 2021  ------------------ */
+//nach webcasts import in detail.php eventuell dieses jahr dazugeben:   if (preg_match('!rtmp://!', $item->link) || preg_match('!rtmps://!', $item->link) || preg_match('!https://e-learning.ecco-ibd.eu/ECCO2019/Webcasts!', $item->link) || preg_match('!https://video.ecco-ibd.eu/ECCO2020!', $item->link) || preg_match('!https://video.ecco-ibd.eu/ECCO2021!', $item->link)) {
+import_csv("2021_06_23_GTN_DRAFT_ECCO'21_Congress_DOP_Webcasts_v2.csv","2021",25000,true,true);
+
+
 echo "done";
 
 //set_maincategory();
