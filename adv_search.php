@@ -49,7 +49,6 @@ if (BLOCK_EXALIB_IS_ADMIN_MODE) {
 	block_exalib_require_cap(BLOCK_EXALIB_CAP_USE);
 }
 */
-
 $urloverview = new moodle_url('/blocks/exalib');
 $urlpage = block_exalib_new_moodle_url();
 $urlsearch = new block_exalib\url($urlpage, array('page' => null, 'q' => null));
@@ -64,15 +63,16 @@ $PAGE->set_url($urlpage);
 			$sm9="";
 			$sm12="";
 $topGroups = array(11=>'Abstracts', 12=>'Documents', 13=>'Images', 14=>'Podcasts', 15=>'Webcasts');
-
+$ibd_first=false;
 $q = optional_param('q', '', PARAM_TEXT);
 $ibd = optional_param('view2', '', PARAM_TEXT);
+if ($ibd==10) {$ibd=1;$ibd_first=true;}//erstmaliger aufruf vom ibd curriculum, dann idb=10, wenn wegen Filter reload dann 1
 $category_ids = optional_param_array('category_ids', array(), PARAM_INT);
 $sub_filter_id = optional_param('sub_filter_id', '', PARAM_INT);
 $search_by = optional_param('search_by', 'name', PARAM_TEXT);
 $filter_year = optional_param('filter_year', 0, PARAM_INT);
 
-$filter_category = optional_param('filter_category', '', PARAM_INT);
+$filter_category = optional_param('filter_category', '', PARAM_INT); //Dropdown Category or parent category if it comes from IBD
 $filter_sub_type = optional_param('filter_sub_type', '', PARAM_INT);
 $guidelines = optional_param('guidelines', "", PARAM_TEXT);
 $latestC = optional_param('latestC', "", PARAM_TEXT);
@@ -83,9 +83,7 @@ if ($guidelines!="") {
 			$filter_sub_type = '51206';
 			$filter_category = '51303';
 }
-if ($latestC!="") {
-			$filter_year = 2020;
-}			
+		
 
 			
 $perpage = 20;
@@ -137,7 +135,12 @@ if ($category_ids) {
 		$sqlJoin .= " JOIN {block_exalib_item_category} AS ic_filter ON (ic_filter.item_id = item.id AND (ic_filter.category_id IN (".join(',',$filter_ids).")))";
 	}
 
-	if ($filter_category) {
+/*
+$filter_category nicht als condition nehmen wenn der aufruf von ibd curriculum kommt
+wenn zb in IBD auf 1.1 geklickt wird, ist die filter_category der wert von 1
+damit beim dropdown category ein besserer wert angezeigt wird, 1.1 ist ja nicht drinnen, als 1 im dropdown selecten
+*/
+	if ($filter_category && $ibd!=1) {
 		$sqlJoin .= " JOIN {block_exalib_item_category} filter_category ON item.id=filter_category.item_id AND filter_category.category_id=?";
 		$sqlParams[] = $filter_category;
 	}
@@ -164,7 +167,7 @@ if ($category_ids) {
 		}elseif ($search_by == 'all') {
 						$search_fields = [
 						'item.link', 'item.source', 'item.file', 'item.name', 'item.authors',
-						'item.abstract', 'item.content', 'item.link_titel', 'item.search_abstract', "c$i.name",
+						'item.abstract', 'item.content', 'item.link_titel', 'item.search_abstract', 'item.background', 'item.methods', 'item.results', 'item.conclusion', 'item.affiliations',
 					];
 		} else {
 					$search_fields = ['item.name'];
@@ -183,8 +186,12 @@ if ($category_ids) {
 			}
 		}
 	}
-
-	if ($filter_year) {
+	if ($latestC!="") {
+		$sqlWhere .= ' AND item.time_modified > ?';
+		$bevor= time();
+		$bevor = $bevor - (60*60*24*92);
+		$sqlParams[] =  $bevor; 
+	}else	if ($filter_year) {
 		$sqlWhere .= ' AND item.year=?';
 		$sqlParams[] = $filter_year;
 		$result_filter_summary->content.=", year: ".$filter_year;
@@ -215,9 +222,14 @@ if ($category_ids) {
 	GROUP BY item.id
 	ORDER BY maincategory,year DESC,name
 	LIMIT ".$page*$perpage.', '.$perpage;
-	//echo $sql;
+	
+	
+	
+	//echo $sql; 
 	//print_r ($sqlParams);die;
+	
 	$items = $DB->get_records_sql($sql, $sqlParams);
+
 	if ($items !== null) $resulttrue=true;
 
 
@@ -290,386 +302,221 @@ echo $output->header();
 		}
 	});
 </script>
-<?php
-/*
-?>
-<style>
-.library-item {
-	display: block;
-	border: 1px solid white;
-	padding: 5px 10px;
-	margin: 5px 0;
-}
-.library-item:hover {
-	background: -moz-linear-gradient(center top , #FAFAFA 0%, #F5F5F5 100%) repeat scroll 0 0 rgba(0, 0, 0, 0);
-    border: 1px solid #DDDDDD;
-    border-radius: 5px;
-    box-shadow: 0 1px 0 #FFFFFF inset;
-}
-.library-item .head {
-	font-family: 'vegurregular' !important;
-	color: #007BB6;
-	font-size: 18px;
-	font-weight: normal;
-	margin-bottom: 15px;
-}
-.library_filter, .library_filter_main {
-float: left;
-	width: 300px;
-}
-.library_filter a {
-	display: block;
-	padding: 2px 0 3px 5px;
-}
-.library_filter a:hover {
-	text-decoration: underline;
-}
-.library_filter_main a {
-	display: block;
-	padding: 1px 0 1px 5px;
-}
-.library_top_filter a:hover {
-	text-decoration: underline;
-}
-
-.library_result {
-
-	margin-left: 300px;
-}
-h1.library_result_heading {
-	font-size: 16px;
-	margin-top: 34px;
-	margin-bottom: 20px;
-	padding-left: 0;
-}
-
-h2.library_filter_heading {
-	font-size: 16px;
-	padding-bottom: 10px;
-}
 
 
-/* --- Libary new Styles ----- * /
+<div class="Checkbox">
+	<?php echo '<form method="get" action="adv_search.php'.$ibdget.'#searchresult" class="form-horizontal">'; ?>
+	<div class="row">
+		<div class="col-sm-6">
+			<div class="row ecco_lib form-group">
 
-.library_result .paging, .library_result .library_result_heading {
-	text-align: center;
-}
-
-.library_result .paging {
-	margin-bottom: 20px;
-	color: #666666;
-}
-.library_result .library_result_heading {
-	color: #666666;
-}
-
-
-.libary_author {
-	color: #000;
-}
-
-h1.libary_head, .ecco_lib h3 {
-    -moz-border-bottom-colors: none !important;
-    -moz-border-left-colors: none !important;
-    -moz-border-right-colors: none !important;
-    -moz-border-top-colors: none !important;
-    background: none repeat scroll 0 0 rgba(0, 0, 0, 0) !important;
-
-    border-color: #C8C8C8;
-    border-image: none !important;
-    border-style: none;
-    border-width: 0;
-
-    color: #003876;
-
-    border-bottom: 1px solid #C8C8C8 !important;
-    padding-bottom: 20px !important;
-
-    font-size: 1.9em;
-    font-weight: normal !important;
-    margin-bottom: 35px !important;
-    margin-top: 20px !important;
-}
-
-.ecco_lib {
-    margin: 0 10px;
-    padding: 10px;
-}
-
-.library_filter a {
-	color: #666666;
-}
-
-.library_filter_heading {
-	color: #666;
-}
-
-.libary_nores {
-	font-size: 18px;
-	color: #007BB6;
-}
-
-a.ecco-lib {
-	margin-top: 15px;
-	margin-top: 15px;
-    background: url([[pix:theme|bgbutton]]) repeat-x scroll 0 0 #003876;
-    border: 1px solid #003F85;
-    border-radius: 10px;
-    box-shadow: 0 5px 5px #005BC1 inset, 0 1px 1px rgba(0, 0, 0, 0.05);
-    color: #FFFFFF;
-    font-size: 16px;
-    padding: 5px 15px;
-}
-
-a.ecco-blue-cat-lib {
-	margin-top: 5px;
-	margin-top: 5px;
-    background: url([[pix:theme|bgbutton]]) repeat-x scroll 0 0 #003876;
-    border: 1px solid #003F85;
-    border-radius: 7px;
-    box-shadow: 0 5px 5px #005BC1 inset, 0 1px 1px rgba(0, 0, 0, 0.05);
-    color: #FFFFFF;
-    font-size: 14px;
-    padding: 3px 20px;
-}
-
-.library_result_main {
-
-	margin-bottom: 100px;
-	margin-top: 30px;
-}
-
-.libary_top_cat {
-	text-align: center;
-}
-
-.ecco_lib input[type="text"] {
-	box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset;
-	border-radius: 7px;
-	border: 1px solid #CCCCCC;
-	font-size: 14px;
-	padding: 4px 3px;
-
-}
-
-.ecco_lib input.libaryfront_search[type="text"] {
-	box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset;
-	border-radius: 7px;
-	border: 1px solid #CCCCCC;
-	font-size: 16px;
-	padding: 6px 3px;
-
-}
-
-input.libaryfront_searchsub[type="submit"] {
-    box-shadow: 0 5px 5px #005BC1 inset, 0 1px 1px rgba(0, 0, 0, 0.05);
-    color: #FFFFFF;
-    cursor: pointer;
-    font-size: 16px;
-    padding: 5px 15px;
-    margin-left: 5px;
-}
-
-
-
-.libary_cat_select select {
-   background: transparent;
-   width: 228px;
-   padding: 3px;
-   font-size: 14px;
-   line-height: 1;
-   border: 0;
-   border-radius: 0;
-   height: 24px;
-   -webkit-appearance: none;
-}
-
-.libary_cat_select {
-   width: 200px;
-   height: 24px;
-   overflow: hidden;
-   background: url(http://gtn02.gtn-solutions.com/layouts/ecco_lib/pix/select_arrow.png) no-repeat right #fff;
-   border: 1px solid #ccc;
-   text-align: center;
-   border-radius: 7px;
-
-   }
-
-.library_top_filter {
-	text-align: right;
-	color: #666;
-	padding-top: 5px;
-}
-
-.library_top_filter a {
-	color: #666;
-}
-
-.library-item div {
-	color: #666;
-}
-.libary_top_search {
-	background: -moz-linear-gradient(center top , #FAFAFA 0%, #F5F5F5 100%) repeat scroll 0 0 rgba(0, 0, 0, 0);
-    border: 1px solid #DDDDDD;
-    border-radius: 5px;
-    box-shadow: 0 1px 0 #FFFFFF inset;
-    padding: 15px 15px;
-    margin-bottom: 10px;
-}
-
-.libary_top_filter {
-	background: -moz-linear-gradient(center top , #FAFAFA 0%, #F5F5F5 100%) repeat scroll 0 0 rgba(0, 0, 0, 0);
-    border: 1px solid #DDDDDD;
-    border-radius: 5px;
-    box-shadow: 0 1px 0 #FFFFFF inset;
-    padding: 15px 15px;
-    margin-bottom: 30px;
-}
-
-.libary_top_search p, .libary_top_search table, .libary_top_filter table {
-	margin-bottom: 0;
-}
-
-.libary_search_input {
-	width: 90% !important;
-
-}
-
-.paging{
-	text-align: center;
-}
-
-.libary_top_filter h4 {
-
-}
-
-.paging_bottom {
-	margin-top: 25px;
-}
-
-.paging_top {
-	margin-bottom: 25px;
-}
-
-</style>
-*/
-
-echo '<div class="ecco_lib">';
-		if ($resulttrue==false){
-			if ($ibd==1) echo '<h3 class="sectionname">Welcome to the IBD Curriculum!</h3>';
-			else echo '<h3 class="sectionname">Welcome to the e-CCO Library!</h3>';
-			
-			echo '<div class="libary_top_search">';
-			$dispNone="hideInput";
-			$sm2="col-sm-2";
-			$sm3="col-sm-3";
-			$sm9="col-sm-9";
-			$sm12="col-sm-12";
-			echo '<form method="get" action="adv_search.php'.$ibdget.'" class="form-horizontal">';
-			if ($ibd==1) echo '<input type="hidden" name="view2" value="1" />'; 
-		}
-		
-		//if ($resulttrue==false)	echo $filtercontent->form;
-			$filtercontent->searchbar='<div class="form-group">
-				<label for="searchtext" class="'.$sm2.' control-label">Search:</label>
-				<div class="'.$sm9.'">
-					<input id="searchtext" name="q" type="text" class="libary_search_input form-control" value="'.$q.'" />
-					
-				</div>
-				<div class="col-sm-1 searchInputIcon '.$dispNone.'">
-					<input value="Search" type="image" src="pix/libsearchIc.png" class="searchInputIconImg">
-					<!-- img src="pix/libsearchIc.png" alt="search" style="vertical-align: middle;" class="searchInputIconImg" -->
-				</div>
-			</div>';
-		
-		if ($resulttrue==false) echo $filtercontent->searchbar;
-			
-			$filtercontent->searchby='<div class="form-group">
-				<label for="searchtext" class="col-sm-2 control-label">Search by:</label>
-				<div class="col-sm-10">
-					<select name="search_by" class="form-control">
-						<option value="title" ';
-						if ($search_by == 'title') $filtercontent->searchby.= 'selected="selected"'; 
-						$filtercontent->searchby.='>Title</option>
-						<option value="author" ';
-						if ($search_by == 'author') $filtercontent->searchby.='selected="selected"';
-						$filtercontent->searchby.='>Author</option>
-						<option value="source" ';
-						if ($search_by == 'source') $filtercontent->searchby.='selected="selected"'; 
-						$filtercontent->searchby.='>Source</option>';
-					  $filtercontent->searchby.='<option value="all" ';
-						if ($search_by == 'all') $filtercontent->searchby.='selected="selected"'; 
-						$filtercontent->searchby.='>All</option>';
-					
-					$filtercontent->searchby.='</select>
-				</div>
-			</div>';
-		if ($resulttrue==false) {
-			echo $filtercontent->searchby;
-			echo '<h4 class="eccoLibSubH">What kind of content would you like to view?</h4><div class="row" >';
-		}	
-		
-			$filtercontent->contenttype='
-			
-				<div class="col-lg-3 eccoLibKatChCtn eccoSearchRight">
-					<div class="checkbox">
-						<label>
-							<input type="checkbox" id="search-all-categories" value="Abstracts"';
-							if (count($category_ids) == 0) $filtercontent->contenttype.='checked="checked"'; 
-							$filtercontent->contenttype.='><img src="pix/eGuide_All.png" class="searchLibCheckIcon" /><span class="searchLibCheckTxt">All</span>
-						</label>
-					</div>';
-					foreach ($categoryManager->getChildren(51002) as $category) {
-						if ($ibd==1 AND $category->id=="51301") continue;
-						$filtercontent->contenttype.='<hr><div class="checkbox"><label><input type="checkbox" name="category_ids[]" value="'.$category->id.'" ';
-						if(in_array($category->id, $category_ids)) { $filtercontent->contenttype.='checked="checked"';$result_filter_summary->ctype.=' ,'.$category->name;$catidtemp=$category->id;}
-							$filtercontent->contenttype.='/><img src="pix/contenttypicon'.$category->id.'.png" class="searchLibCheckIcon" /><span class="searchLibCheckTxt">'.$category->name.'</span></label></div>';
-					}
-					if ($result_filter_summary->ctype) $result_filter_summary->content.=", ContentType: ".$result_filter_summary->ctype;
-					$filtercontent->contenttype.='</div><!-- / col-sm-4 -->';
-			if ($resulttrue==false) echo $filtercontent->contenttype;
-
-
-
-			if ($resulttrue==false) echo '<div class="col-lg-5 form-horizontal eccoSearchCenter"><div class="row">';
-						$filtercontent->year= '<div class="form-group"><label for="" class="'.$sm3.' control-label">Year:</label><div class="'.$sm9.'"> ';
-
-						$filtercontent->year.= html_writer::select($years, 'filter_year', $filter_year, array('0'=>"..."), array('class'=>'form-control'));
-						$filtercontent->year.= '</div></div>';
-			if ($resulttrue==false) echo $filtercontent->year;
-			      
-						$values = array_map(function($cat) { return $cat->name; }, $categoryManager->getChildren(51001));
-			if (count($category_ids)==1 && $category_ids[0]==51301){
 				
-			}else{
-						$filtercontent->cat='<div class="form-group"><label for="" class="'.$sm3.' control-label">Category:</label><div class="'.$sm9.'"> ';
-						$filtercontent->cat.= html_writer::select($values, 'filter_category', $filter_category,  array(''=>"..."), array('class'=>'form-control'));
-						if ($filter_category) {
-								$result_filter_summary->content.=', Category: '.$values[$filter_category];
-						}
-	
-						$subtypes = [];
-						foreach ($categoryManager->getChildren(51002) as $category) {
-							if (in_array($category->id, $category_ids)) {
-								$subtypes += $categoryManager->getChildren($category->id) ?: [];
-							}
-						}
-						$values = array_map(function($cat) { return $cat->name; }, $subtypes);
-						$filtercontent->cat.= '</div></div>';
-						if ($values) {
-							$filtercontent->cat.= '<div class="form-group"><label for="" class="'.$sm3.' control-label">Sub Type:</label><div class="'.$sm3.'"> ';
-							//[51205] => Congress Presentations: Plenary [51206] => Articles: Guidelines [51207] => Articles: Literature Review (ECCO News) [51210] => Articles: Position Papers [51209] => Articles: Topical Reviews [51208] => Articles: Viewpoints [51211] => Webcasts: Educational Programme [51212] => Webcasts: Plenary
-							$filtercontent->cat.= html_writer::select($values, 'filter_sub_type', $filter_sub_type, array(''=>"..."), array('class'=>'form-control'));
-							if ($filter_sub_type) {
-								$result_filter_summary->content.=', Sub Type: '.$values[$filter_sub_type];
-							}
-							$filtercontent->cat.= '</div></div>';
-						}
-			}
+					<div class="col-sm-9"><?php
+						if ($resulttrue==false)
+						{ 
+						if ($ibd==1) echo '<h1 class="sectionname">Welcome to the IBD Curriculum!</h1>';
+						else echo '<h1 class="sectionname ">Welcome to the e-CCO Library!</h1>';?>
+						
+							<?php $dispNone="hideInput";
+							
+							if ($ibd==1) echo '<input type="hidden" name="view2" value="1" />'; 
+						} 	//end result true ?>
+		
+							<label style="margin:0;padding:0;list-style:none;" for="searchtext" class=" control-label">Search:</label>
+							<input id="searchtext" name="q" type="text" class="libary_search_input form-control" value="<?php echo $q; ?>">		
+							
+							<label style="margin:0;padding:0;list-style:none;" for="searchtext" class=" control-label">Search by:</label>
+						
+							<div class="cselect">
+								<select name="search_by" class="form-control">
+									<?php
+									echo '<option value="title" ';
+									if ($search_by == 'title') echo 'selected="selected"'; 
+									echo '>Title</option><option value="author" ';
+									if ($search_by == 'author') echo 'selected="selected"';
+									echo '>Author</option><option value="source" ';
+									if ($search_by == 'source') echo 'selected="selected"'; 
+									echo '>Source</option><option value="all" ';
+									if ($search_by == 'all') echo 'selected="selected"'; 
+									echo '>All</option>';
+									?>
+								</select>
+							</div>
+						
+							<h1 class="nextFilter_area">Refine your search with filters</h1>
+							<label style="margin:0;padding:0;list-style:none;" for="searchyear" class="col-sm-2 control-label">Year:</label>	<div class="cselect">
+							<?php echo html_writer::select($years, 'filter_year', $filter_year, array('0'=>"..."), array('id'=>'menufilter_year','class'=>'form-control')); ?>
+						</div>
+				<?php $values = array_map(function($cat) { return $cat->name; }, $categoryManager->getChildren(51001));
+						if (count($category_ids)==1 && $category_ids[0]==51301){
+							
+						}else{
+								echo '<label style="margin:0;padding:0;list-style:none;" for="searchtext" class="col-sm-2 control-label">Category:</label>';
+								echo html_writer::select($values, 'filter_category', $filter_category,  array(''=>"..."), array('class'=>'form-control'));
+								
+			/*
+								$subtypes = [];
+								foreach ($categoryManager->getChildren(51002) as $category) {
+									if (in_array($category->id, $category_ids)) {
+										$subtypes += $categoryManager->getChildren($category->id) ?: [];
+									}
+								}
+								$values = array_map(function($cat) { return $cat->name; }, $subtypes);
 
-				if ($resulttrue==false){
-					echo $filtercontent->cat;
-					echo '</div>';
+								if ($values) {
+									echo '<br> <br>
+									<label style="margin:0;padding:0;list-style:none;" for="subtype" class="col-sm-2 control-label">Sub Type:</label>';
+									//[51205] => Congress Presentations: Plenary [51206] => Articles: Guidelines [51207] => Articles: Literature Review (ECCO News) [51210] => Articles: Position Papers [51209] => Articles: Topical Reviews [51208] => Articles: Viewpoints [51211] => Webcasts: Educational Programme [51212] => Webcasts: Plenary
+									echo html_writer::select($values, 'filter_sub_type', $filter_sub_type, array(''=>"..."), array('class'=>'form-control'));
+									if ($filter_sub_type) {
+										$result_filter_summary->content.=', Sub Type: '.$values[$filter_sub_type];
+									}
+								}*/
+						}?>
+		
+				</div> <!--sm9-->
+			</div> <!--formgroup-->
+			<div class="Checkbox12">
+				<div class="row">
+					<div class="col-sm-6">
+					
+			      <div class="Checkbox-1">
+							<div class="Box-wfmb7k-0 hFmYJS"> 
+								<input 
+								<?php if(in_array(51302, $category_ids) || $ibd_first==true) { echo ' checked="checked" ';}  
+											else if (!$category_ids) { echo ' checked="checked" ';} 
+								?>
+								 type="checkbox" id="search-all-categories" value="Abstracts" data-testid="navigator-Zustand-checkbox-modal-Neu" aria-labelledby="Zustand-checkbox-modal-Neu-label" class="Checkbox__CheckboxInput-sc-7kkiwa-4 dVAswu">
+								<img src="pix/all1.png" alt="All-Materials">
+								All
+							</div>
+						</div>
+				
+						<div class="Checkbox-2">
+								<div class="Box-wfmb7k-0 hFmYJS">
+								<input 
+								<?php if(in_array(51301, $category_ids) || $ibd_first==true) { echo ' checked="checked" ';}  
+											else if (!$category_ids) { echo ' checked="checked" ';} 
+								?>
+								name="category_ids[]" value="51301" type="checkbox" id="" data-testid="" aria-labelledby="" class="">
+								<img  src="pix/congress-abstracts1.png" alt="Congress-Abstracts">Congress Abstracts	</div>
+						</div>
+				
+						<div class="Checkbox-3">
+								<div class="Box-wfmb7k-0 hFmYJS">
+								<input 
+								<?php if(in_array(51304, $category_ids) || $ibd_first==true) { echo ' checked="checked" ';}  
+											else if (!$category_ids) { echo ' checked="checked" ';} 
+								?>
+								name="category_ids[]" value="51304" type="checkbox" id="Zustand-checkbox3-modal-Neu" data-testid="navigator-Zustand-checkbox-modal-Neu" aria-labelledby="Zustand-checkbox-modal-Neu-label" class="Checkbox__CheckboxInput-sc-7kkiwa-4 dVAswu">
+								<img src="pix/tools-skills1.png" alt="Tools-Skills">Tools & Skills
+								</div>
+						</div>
+			    </div><!--sm6 2a-->
+					<div class="col-sm-6">
+					  <div class="Checkbox-4">
+								<div class="Box-wfmb7k-0 hFmYJS">
+								<input 
+								<?php if(in_array(51303, $category_ids) || $ibd_first==true) { echo ' checked="checked" ';}  
+											else if (!$category_ids) { echo ' checked="checked" ';} 
+								?>
+								 name="category_ids[]" value="51303" type="checkbox" id="Zustand-checkbox4-modal-Neu" data-testid="navigator-Zustand-checkbox-modal-Neu" aria-labelledby="Zustand-checkbox-modal-Neu-label" class="Checkbox__CheckboxInput-sc-7kkiwa-4 dVAswu">
+								<img src="pix/publications1.png" alt="Publications">Publications
+								</div>
+						</div>
+						
+						<div class="Checkbox-5">
+								<div class="Box-wfmb7k-0 hFmYJS">
+								<input 
+								<?php if(in_array(51302, $category_ids) || $ibd_first==true) { echo ' checked="checked" ';}  
+											else if (!$category_ids) { echo ' checked="checked" ';} 
+								?>
+								 name="category_ids[]" value="51302" type="checkbox" id="Zustand-checkbox5-modal-Neu" data-testid="navigator-Zustand-checkbox-modal-Neu" aria-labelledby="Zustand-checkbox-modal-Neu-label" class="Checkbox__CheckboxInput-sc-7kkiwa-4 dVAswu">
+								<img src="pix/congress-slides1.png" alt="Congress-Slides">Congress Slides
+								</div>
+						</div>
+						
+						<div class="Checkbox-6">
+								<div class="Box-wfmb7k-0 hFmYJS">
+								<input 
+								<?php if(in_array(51305, $category_ids) || $ibd_first==true) { echo ' checked="checked" ';}  
+											else if (!$category_ids) { echo ' checked="checked" ';} 
+								?>
+								  name="category_ids[]" value="51305" type="checkbox" id="Zustand-checkbox6-modal-Neu" data-testid="navigator-Zustand-checkbox-modal-Neu" aria-labelledby="Zustand-checkbox-modal-Neu-label" class="Checkbox__CheckboxInput-sc-7kkiwa-4 dVAswu">
+								<img src="pix/videos-podcasts1.png" alt="Videos-Podcasts">Videos & Podcasts
+								</div>
+								<?php
+									if ($ibd==1) {
+										echo '<input type="hidden" name="" value="">';
+									}
+								?>
+						</div>
+					</div> <!--sm6 2b-->		
+				</div> <!--row-->
+			</div> <!--container Checkbox 2-->
+			<div class="row bottomSearchBar">
+			<div class="col-sm-12 nextFilter_area">
+											<input value="Search" type="submit" class="search">
+											<input value="Clear Filter" type="button" class="btn-seFo btn-grey" >
+			</div>
+			</div>
+		</div> <!--sm6-->
+		<div class="col-sm-6">
+			<div class="col-lg-4 eccoSearchRight">
+							<div class="form-group">
+		
+								<div class="col-sm-12">
+									<h1> Quicksearch</h1>
+		
+									<input value="Latest Content" name="latestC" type="submit" class="form-control">
+								</div>
+							</div>
+							<div class="form-group">
+								<div class="col-sm-12">
+									<input value="Guidelines" name="guidelines" type="submit" class="form-control">
+								</div>
+							</div>
+							<div class="form-group">
+								<div class="col-sm-12">
+							    	<input value="Keywords" name="keywords" type="button" onclick="window.location.href='https://e-learning.ecco-ibd.eu/blocks/exalib/pdfjs/PlainViewer/web/viewer.html?file=../../pdfs/2019_ECCO_e-Library_categories_and_keywords.pdf'" class="form-control">
+								</div>
+							</div>
+							<?php if (is_dir(__DIR__.'/../../mod/library')) {
+											echo '<div class="form-group">
+												<div class="col-sm-12">
+													<!--<input value="Archive 2011-2015" type="submit" name="archiveC" class="form-control" onclick="document.location.href=\''.$CFG->wwwroot.'/mod/library/adv_search.php\';">-->
+											    <input value="Archive 2011-2015" type="button" name="archiveC" class="form-control" onclick="window.location.href=\'https://e-learning2017.ecco-ibd.eu/mod/library/adv_search.php\'">
+	
+												</div>
+											</div>';
+										}?>
+			</div><!--eccoSearchRight-->
+		</div><!--sm6-->
+	</div> <!--row-->
+	</form>
+</div> <!--container Checkbox-->	
+
+
+<div class="Checkbox">
+<div class="row">
+			
+			
+			<?php 
+			
+			/*$i==1;$j=2;
+				foreach ($categoryManager->getChildren(51002) as $category) {
+						if ($ibd==1 AND $category->id=="51301") continue;
+						$filtercontent->contenttype.='<div class="col-sm-6"><div class="checkbox'.$j.'"><label><input type="checkbox" name="category_ids[]" value="'.$category->id.'" ';
+						if(in_array($category->id, $category_ids)) { $filtercontent->contenttype.='checked="checked"';$result_filter_summary->ctype.=' ,'.$category->name;$catidtemp=$category->id;}
+							$filtercontent->contenttype.='/><img src="pix/contenttypicon'.$category->id.'.png" class="searchLibCheckIcon" /><span class="searchLibCheckTxt">'.$category->name.'</span></label></div></div>';
+							if ($i==1) {$filtercontent->contenttype.= '</div><div class="row">';$i==0;}
+							$i++;$j++;
+				}
+					if ($result_filter_summary->ctype) $result_filter_summary->content.=", ContentType: ".$result_filter_summary->ctype;
+					$filtercontent->contenttype.='</div>';
+				echo $filtercontent->contenttype;
+
+
                     echo '<div class="row eccosearchvideocenter">';
                        block_exalib_print_jwplayer(array(
                             'file'    => $CFG->wwwroot . "/blocks/exalib/images/Video/2019_02_21_MASTER_eLibrary_VIDEO.mp4",
@@ -678,44 +525,6 @@ echo '<div class="ecco_lib">';
                             'usePreviewImage' => true
                         ));
                     echo '</div></div>';
-		
-				
-			
-			
-					echo '<div class="col-lg-4 eccoSearchRight">
-					<div class="form-group">
-						<div class="col-sm-12">
-							<input value="Latest Content" name="latestC" type="submit" class="form-control">
-						</div>
-					</div>
-					<div class="form-group">
-						<div class="col-sm-12">
-							<input value="Guidelines" name="guidelines" type="submit" class="form-control">
-						</div>
-					</div>
-					<div class="form-group">
-						<div class="col-sm-12">
-					    	<input value="Keywords" name="keywords" type="button" onclick="window.location.href=\'https://e-learning.ecco-ibd.eu/blocks/exalib/pdfjs/PlainViewer/web/viewer.html?file=../../pdfs/2019_ECCO_e-Library_categories_and_keywords.pdf\'" class="form-control">
-
-						</div>
-					</div>';
-				}
-		//
-                          //
-						    //<a href=\"'. $CFG->wwwroot . '/blocks/exalib/pdfjs/PlainViewer/web/viewer.html?file=../../pdfs/2019_ECCO_e-Library_categories_and_keywords.pdf\" target=\"_blank\" class=\"exalib-blue-cat-lib\">Keywords</a>
-
-            if (is_dir(__DIR__.'/../../mod/library')) {
-								$filtercontent->archivebutton='<div class="form-group">
-									<div class="'.$sm12.'">
-										<!--<input value="Archive 2011-2015" type="submit" name="archiveC" class="form-control" onclick="document.location.href=\''.$CFG->wwwroot.'/mod/library/adv_search.php\';">-->
-								        <input value="Archive 2011-2015" type="button" name="archiveC" class="form-control" onclick="window.location.href=\'https://e-learning2017.ecco-ibd.eu/mod/library/adv_search.php\'">
-
-									</div>
-								</div>';
-								if ($resulttrue==false){
-									echo $filtercontent->archivebutton;
-								}
-				} 
 		
 		if ($resulttrue==false){			
 				echo '</div><!-- / col-sm-4 -->
@@ -736,7 +545,7 @@ You can access the current category and keyword overview used for indexing the e
 					</form>
 
 				</div>';
-		}	 
+		}	 */
 		?>
 		
 		<?php if (false && count($category_ids) >= 1 && $sub_filter_categories): ?>
@@ -784,44 +593,53 @@ You can access the current category and keyword overview used for indexing the e
 
 <div style="margin-top: 30px;">
 	<div class="row">
-		<div class="col-sm-4 col-md-3 col-sm-push-8 col-md-push-9 exalibSearchBarleft">
-		<?php 
-		if ($resulttrue==true){	
-			echo '<div class="exalibSearchBarleftCnt"><h2>Filtering</h2>';
-			echo '<form method="get" action="adv_search.php'.$ibdget.'">';
-			echo $filtercontent->searchbar;
-		//	echo $filtercontent->searchby;
-			echo $filtercontent->contenttype;
-			echo $filtercontent->year;
-			echo $filtercontent->cat;
 		
-		echo '<div class="form-group">
-						<div class="">
+		<?php 
+		if ($ibd!=1) {
+			echo '<div class="col-sm-4 col-md-3 col-sm-push-8 col-md-push-9 exalibSearchBarleft">';
+		
+		
+			/*if ($resulttrue==true){	
+				echo '<div class="exalibSearchBarleftCnt"><h2>Filtering</h2>';
+				echo '<form method="get" action="adv_search.php'.$ibdget.'">';
+				echo $filtercontent->searchbar;
+				echo $filtercontent->searchby;
+				echo $filtercontent->contenttype;
+				echo $filtercontent->year;
+				echo $filtercontent->cat;
 			
-			<input value="Search" class="form-control" type="submit" class="btn-seFo">
-			</div>
-					</div>';
-			echo $filtercontent->archivebutton;
-			if ($ibd==1) echo '<input type="text" name="view2" value="1" />';
-				echo '<div class="form-group">
-						<div class="">
-							<input  disabled="disabled" value="Help" name="keywords" type="submit" class="form-control">
-						</div>
-					</div>';
-			
-			echo "</form></div>";
+			echo '<div class="form-group">
+							<div class="">
+				
+				<input value="Search" class="form-control" type="submit" class="btn-seFo">
+				</div>
+						</div>';
+				echo $filtercontent->archivebutton;
+				if ($ibd==1) echo '<input type="text" name="view2" value="1" />';
+					echo '<div class="form-group">
+							<div class="">
+								<input  disabled="disabled" value="Help" name="keywords" type="submit" class="form-control">
+							</div>
+						</div>';
+				
+				echo "</form></div>";
+			}*/
+			echo '</div>';
 		}
-		?>
-		<!--  Searchbar rechts hier einfügen --->
-	 
-		</div>
-		<div class="col-sm-8 col-md-9 col-sm-pull-4 col-md-pull-3">
-			<?php 
-			if ($ibd==1) echo '<h3 class="sectionname">ECCO IBD Curriculum: '.$cat->name.'</h3>';
+		
+		//<!--  Searchbar rechts hier einfügen --->
+	
+		
+		echo '<div class="col-sm-12 col-md-12 col-sm-pull-12 col-md-pull-12" id="searchresult">';
+			
+			if ($ibd==1) {echo '<h2>ECCO IBD Curriculum</h2>';
+				echo '<h5 class="sectionname" style="font-size:1.4rem">'.$cat->name.'</h5>';
+			}
 			
 			
+
 			if ($items !== null) {
-			
+
 				if ($result_filter_summary->content!="") {};
 				$result_filter_summary->content="Search results for:  ".$result_filter_summary->content;
 				//echo $result_filter_summary->content;
@@ -846,9 +664,15 @@ You can access the current category and keyword overview used for indexing the e
 				<?php
 			}
 			*/
-			?>
-		</div><!-- / col-sm-9 -->
-	</div><!--  / row -->
+			if ($ibd==1) {
+				//echo '<a href="../../course/view.php?id=61#ibdindex">back to the IBD Curriculum</a>';  
+			  echo '<div style="text-align:center"><input style="background-color: #003772;color:#fff" value="back to IBD Curriculum" type="button" class="clear-filter btn-seFo" onclick="document.location.href=\'../../course/view.php?id=61#ibdindex\';"></div>';
+			}
+		echo '</div>'; //col-sm-9 
+	echo '</div>'; //row 
+	
+	?>
+	
 </div>
 </div>
 <?php
