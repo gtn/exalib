@@ -74,6 +74,7 @@ else{
     $back = optional_param('back', '', PARAM_LOCALURL);
     if ($back) {
         $back = (new moodle_url($back))->out(false);
+        $back.="#searchresult";
     } else {
         $back = 'javascript:history.back();';
     }
@@ -359,6 +360,7 @@ else{
             'file'    => $video_url,
             'width'    => "100%",
             'height' => "100%",
+            'videoTitle' => sprintf('%s (%s)', $item->name, $item->year)
         ));
     }
 
