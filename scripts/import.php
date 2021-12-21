@@ -59,10 +59,12 @@ import_file_frompath(22588,22590);*/
 
 /*  --------------- Webcasts 2021  ------------------ */
 //nach webcasts import in detail.php eventuell dieses jahr dazugeben:   if (preg_match('!rtmp://!', $item->link) || preg_match('!rtmps://!', $item->link) || preg_match('!https://e-learning.ecco-ibd.eu/ECCO2019/Webcasts!', $item->link) || preg_match('!https://video.ecco-ibd.eu/ECCO2020!', $item->link) || preg_match('!https://video.ecco-ibd.eu/ECCO2021!', $item->link)) {
-import_csv("2021_06_23_GTN_DRAFT_ECCO'21_Congress_DOP_Webcasts_v2.csv","2021",25000,true,true);
+//import_csv("2021_06_23_GTN_DRAFT_ECCO'21_Congress_DOP_Webcasts_v2.csv","2021",25000,true,true);
 
-
-echo "done";
+/*  --------------- Videos/Webcasts 2021  ------------------ */
+//import_csv("Webcasts2021.csv","2021",25100,true,false);
+delete_items(2021,"",25100,25400);
+echo "done";  
 
 //set_maincategory();
 //ALTER TABLE mdl_block_exalib_item ADD deleted int(1)
@@ -72,6 +74,11 @@ echo "done";
 //DELETE FROM mdl_block_exalib_item_category WHERE deleted=1
 //delete from mdl_block_exalib_item where id >11499 and id< 13003
 //delete from mdl_block_exalib_item_category where item_id >11499 and item_id< 13003
+
+function cp($param){
+	return preg_replace('/[^0-9,]/i', '', $param);
+}
+
 function import_files_fromfolder($idfrom,$idto){
 	$fs = get_file_storage();
 	$items = g::$DB->get_records_sql('select id,filepathtemp from mdl_block_exalib_item where id>'.$idfrom.' AND id<'.$idto);
@@ -362,8 +369,8 @@ function import_csv($filename,$year,$k,$uselink=false,$typetotitle=false){
 		
 		//??$data['SubType']=$item['SubType'];
 		//??$data['_Specific_keywords'] = $item['Specific_keywords'];
-		$data['Cat1']=$item['Cat1'];$data['Cat2']=$item['Cat2'];$data['Cat3']=$item['Cat3'];$data['Cat4']=$item['Cat4'];
-		$data['Cat5']=$item['Cat5'];$data['Cat6']=$item['Cat6'];$data['Cat7']=$item['Cat7'];$data['Cat8']=$item['Cat8'];$data['Cat9']=$item['Cat9'];$data['Cat10']=$item['Cat10'];
+		$data['Cat1']=cp($item['Cat1']);$data['Cat2']=cp($item['Cat2']);$data['Cat3']=cp($item['Cat3']);$data['Cat4']=cp($item['Cat4']);
+		$data['Cat5']=cp($item['Cat5']);$data['Cat6']=cp($item['Cat6']);$data['Cat7']=cp($item['Cat7']);$data['Cat8']=cp($item['Cat8']);$data['Cat9']=cp($item['Cat9']);$data['Cat10']=cp($item['Cat10']);
 		$maincategory_arr=Array();$maincategory_arr[51301]=1;$maincategory_arr[51302]=1;$maincategory_arr[51303]=1;
 		$maincategory_arr[51304]=1;$maincategory_arr[51305]=1;
 		$catt="";
