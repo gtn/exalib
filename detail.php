@@ -153,17 +153,17 @@ h1.libary_head {
     -moz-border-right-colors: none !important;
     -moz-border-top-colors: none !important;
     background: none repeat scroll 0 0 rgba(0, 0, 0, 0) !important;
-    
+
     border-color: #C8C8C8;
     border-image: none !important;
     border-style: none;
     border-width: 0;
-    
+
     color: #003876;
-    
+
     border-bottom: 1px solid #C8C8C8 !important;
     padding-bottom: 20px !important;
-    
+
     font-size: 1.9em;
     font-weight: normal !important;
     margin-bottom: 35px !important;
@@ -260,7 +260,7 @@ if ($item->link) {
 echo '</table>';
 
 if ($item->content) {
-	echo '<h2 class="head">'.block_exalib_trans('de:Inhalt').'</h2>';
+	echo '<h2 class="head">'.block_exalib_get_string('content').'</h2>';
 	echo format_text($item->content);
 }
 
