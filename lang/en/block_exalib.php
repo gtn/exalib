@@ -17,6 +17,16 @@
 //
 // This copyright notice MUST APPEAR in all copies of the script!
 
+// course_settings
+$string['allow_comments'] = 'Use comment function (allowed users can add remarks)';
+$string['use_review'] = 'Use for reviewing (allowed reviewers can publish items)';
+$string['use_terms_of_service'] = 'Accept Terms & Conditions before adding content';
+$string['alternative_wording'] = 'Use wording for casuistics database (some field titles change)';
+$string['option_keine'] = '-- none --';
+$string['aenderungen_gespeichert'] = 'Changes was saved!';
+$string['einstiegsebene_festlegen'] = 'Set entry level';
+
+
 $string['pluginname'] = 'Exabis Library';
 $string['heading'] = 'Exabis Library';
 $string['exalib:use'] = 'Use Exalib: Viewing and Searching';
@@ -89,7 +99,7 @@ $string['methods'] = 'Methods';
 $string['results'] = 'Results';
 $string['conclusion'] = 'Conclusion';
 $string['back'] = 'back';
-$string['terms_of_use'] = 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.';
+$string['terms_of_use'] = 'All cases have to be related to an educational environment or related to the profession it is being used for. Cases may not contain any political statements, racist content or content antagonistic to the profession. No recognition of persons in cases is allowed. Your texts and comments may be used based upon the Creative Commons principle.';
 
 
 // index

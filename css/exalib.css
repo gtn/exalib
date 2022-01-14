@@ -371,3 +371,8 @@ float: left;
 	border-top: 1px dotted #ccc;
 
 } 
+
+#block_exalib .course_setting_checkbox {
+	margin-right:5px;
+
+} 
