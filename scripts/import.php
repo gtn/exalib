@@ -62,9 +62,11 @@ import_file_frompath(22588,22590);*/
 //import_csv("2021_06_23_GTN_DRAFT_ECCO'21_Congress_DOP_Webcasts_v2.csv","2021",25000,true,true);
 
 /*  --------------- Videos/Webcasts 2021  ------------------ */
-//import_csv("Webcasts2021.csv","2021",25100,true,false);
-delete_items(2021,"",25100,25400);
+import_csv("Webcasts2021.csv","2021",25100,true,false);
+//delete_items(2021,"",25100,25400);
 echo "done";  
+
+
 
 //set_maincategory();
 //ALTER TABLE mdl_block_exalib_item ADD deleted int(1)
