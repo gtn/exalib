@@ -52,7 +52,12 @@ echo $out;
 echo html_writer::tag('form',
 	html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'action', 'value' => 'save_coursesettings')).
 
+	html_writer::checkbox('allow_comments', 1, block_exalib_course_settings::allow_comments(), block_exalib_get_string('allow_comments'),array("class"=>"course_setting_checkbox")).'<br />'.
+	html_writer::checkbox('use_review', 1, block_exalib_course_settings::use_review(), block_exalib_get_string('use_review'),array("class"=>"course_setting_checkbox")).'<br />'.
+	html_writer::checkbox('use_terms_of_service', 1, block_exalib_course_settings::use_terms_of_service(), block_exalib_get_string('use_terms_of_service'),array("class"=>"course_setting_checkbox")).'<br />'.
+	html_writer::checkbox('alternative_wording', 1, block_exalib_course_settings::alternative_wording(), block_exalib_get_string('alternative_wording'),array("class"=>"course_setting_checkbox")).'<br />'.
 
+	html_writer::select($categories, 'root_category_id', block_exalib_course_settings::root_category_id(), block_exalib_get_string('option_keine')).' '.block_exalib_get_string('einstiegsebene_festlegen').'<br />'.
 
 	html_writer::empty_tag('input', array('type' => 'submit', 'value' => get_string('save', 'admin')))
 	, ['action' => $_SERVER['REQUEST_URI'], 'method' => 'post']);
