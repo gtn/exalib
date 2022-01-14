@@ -595,7 +595,7 @@ function block_exalib_handle_item_edit($type = '', $show) {
 				$eventdata->fullmessageformat = FORMAT_HTML;
 				$eventdata->fullmessagehtml = $message;
 				$eventdata->smallmessage = '';
-				message_send($eventdata);
+				@message_send($eventdata);
 			}
 		}
 
