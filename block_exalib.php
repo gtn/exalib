@@ -80,7 +80,7 @@ class block_exalib extends block_list {
 		$this->content->icons = array();
 		$this->content->footer = '';
 
-		$icon = '<img src="'.$OUTPUT->pix_url('module_search', 'block_exalib').'" class="icon" alt="" />';
+		$icon = $OUTPUT->pix_icon('module_search', '','block_exalib');
 		$url = new moodle_url('/blocks/exalib/index.php', ['courseid' => g::$COURSE->id]);
 		$this->content->items[] = '<a href="'.$url.'">'.$icon.
 			block_exalib_get_string('tab_library').
@@ -108,14 +108,14 @@ class block_exalib extends block_list {
 		}
 
 		if (block_exalib_has_cap(BLOCK_EXALIB_CAP_MANAGE_CONTENT)) {
-			$icon = '<img src="'.$OUTPUT->pix_url('module_config', 'block_exalib').'" class="icon" alt="" />';
+			$icon = $OUTPUT->pix_icon('module_config','', 'block_exalib');
 			$url = new moodle_url('/blocks/exalib/admin.php', ['courseid' => g::$COURSE->id]);
 			$this->content->items[] = '<a href="'.$url.'">'.$icon.
 				block_exalib_get_string('tab_manage_content').
 				'</a>';
 		}
 		if (block_exalib_has_cap(BLOCK_EXALIB_CAP_MANAGE_CATS)) {
-			$icon = '<img src="'.$OUTPUT->pix_url('module_config', 'block_exalib').'" class="icon" alt="" />';
+			$icon = $OUTPUT->pix_icon('module_config', '','block_exalib');
 			$url = new moodle_url('/blocks/exalib/admin.php', ['courseid' => g::$COURSE->id, 'show' => 'categories']);
 			$this->content->items[] = '<a href="'.$url.'">'.$icon.
 				block_exalib_get_string('tab_manage_cats').
@@ -123,7 +123,7 @@ class block_exalib extends block_list {
 		}
 
 		if (block_exalib_has_cap(BLOCK_EXALIB_CAP_MANAGE_REVIEWERS) && block_exalib_course_settings::use_review()) {
-			$icon = '<img src="'.$OUTPUT->pix_url('module_config', 'block_exalib').'" class="icon" alt="" />';
+			$icon = $OUTPUT->pix_icon('module_config', '','block_exalib');
 			$url = new moodle_url('/blocks/exalib/reviewers.php', ['courseid' => g::$COURSE->id]);
 			$this->content->items[] = '<a href="'.$url.'">'.$icon.
 				block_exalib_get_string('tab_manage_reviewers').
@@ -131,7 +131,7 @@ class block_exalib extends block_list {
 		}
 
 		if (block_exalib_has_cap(BLOCK_EXALIB_CAP_COURSE_SETTINGS)) {
-			$icon = '<img src="'.$OUTPUT->pix_url('module_config', 'block_exalib').'" class="icon" alt="" />';
+			$icon = $OUTPUT->pix_icon('module_config', '','block_exalib');
 			$url = new moodle_url('/blocks/exalib/course_settings.php', ['courseid' => g::$COURSE->id]);
 			$this->content->items[] = '<a href="'.$url.'">'.$icon.
 				block_exalib_get_string('tab_course_settings').

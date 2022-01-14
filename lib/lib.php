@@ -666,7 +666,8 @@ function block_exalib_handle_item_edit($type = '', $show) {
 						'Das ist eine automatisch generierte E-Mail, bitte nicht Antworten.',
 					]));
 
-				$eventdata = new stdClass();
+				$eventdata = new \core\message\message();
+				$eventdata->component = 'block_exalib'; // Your plugin's name
 				$eventdata->name = 'item_status_changed';
 				$eventdata->component = 'block_exalib';
 				$eventdata->userfrom = $creator;
@@ -676,7 +677,8 @@ function block_exalib_handle_item_edit($type = '', $show) {
 				$eventdata->fullmessageformat = FORMAT_HTML;
 				$eventdata->fullmessagehtml = $message;
 				$eventdata->smallmessage = '';
-				message_send($eventdata);
+				$eventdata->notification = 1;
+				@message_send($eventdata);
 			}
 		}
 
