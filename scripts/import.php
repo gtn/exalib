@@ -62,9 +62,16 @@ import_file_frompath(22588,22590);*/
 //import_csv("2021_06_23_GTN_DRAFT_ECCO'21_Congress_DOP_Webcasts_v2.csv","2021",25000,true,true);
 
 /*  --------------- Videos/Webcasts 2021  ------------------ */
-import_csv("Webcasts2021.csv","2021",25100,true,false);
+//import_csv("Webcasts2021.csv","2021",25100,true,false);
 //delete_items(2021,"",25100,25400);
-echo "done";  
+
+/*  --------------- Abstracts 2022  ------------------ */
+//import_csv("FINAL_MASTER_Abstracts2022.csv","2022",26000,false,true);
+import_csv("FINAL_MASTER_Abstracts2022_teil2.csv","2022",26630,false,true);
+ 
+//delete_items(2022,"",26000,28600);
+echo "done!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!";  
+
 
 
 
@@ -275,18 +282,19 @@ function delete_items($year,$category_id,$idvon=0,$idbis=0){
 		$items = g::$DB->get_records_sql('SELECT i.id FROM mdl_block_exalib_item i JOIN mdl_block_exalib_item_category ic ON ic.item_id=i.id WHERE i.year='.$year.' AND ic.category_id IN ('.$category_id.')');
 	}
 	$data["deleted"]=1;
+
 	$fs = get_file_storage();
 	foreach ($items as $item){
 			echo $item->id;echo "<br>";
 			
 			// file delete,  not tested yet
-			if ($files = $fs->get_area_files(context_system::instance()->id,'block_exalib','item_file',$item->id,'itemid','',false)){
+			/*if ($files = $fs->get_area_files(context_system::instance()->id,'block_exalib','item_file',$item->id,'itemid','',false)){
 
 					$fs->delete_area_files(context_system::instance()->id,
 								'block_exalib',
 								'item_file',
 								$item->id);
-			}
+			}*/
 						
 	  g::$DB->execute('UPDATE {block_exalib_item} SET deleted=1 WHERE id='.$item->id);
 		g::$DB->execute('UPDATE {block_exalib_item_category} SET deleted=1 WHERE item_id='.$item->id);
@@ -325,9 +333,13 @@ function graphic_path($wert,$year){
 function import_csv($filename,$year,$k,$uselink=false,$typetotitle=false){
 
 	$csv = file_get_contents($filename);
-	$csv = stringToCsv($csv, ';', true);
+	$csv = stringToCsv($csv, ',', true);
 	
 	foreach ($csv as $i => $item) {
+		
+		//echo "<pre>";
+		//print_r($item);die;
+		
 		$data=array();
 		$filen='';
 		$data['id'] = $k;
@@ -466,7 +478,7 @@ function import_csv($filename,$year,$k,$uselink=false,$typetotitle=false){
 		//if ($k>0) exit;
 	}
 
-}
+} //import_csv
 
 function stringToCsv($string, $delimiter, $has_header) {
 	$string = trim($string, "\r\n");
