@@ -838,19 +838,19 @@ function block_exalib_handle_item_edit($type = '', $show) {
 			$mform->addElement('advcheckbox', 'ibd', block_exalib_get_string('ibd'));
 
             $mform->addElement('textarea', 'background', block_exalib_get_string('background'), 'rows="10" cols="50" style="width: 95%"');
-            $mform->setType('background', PARAM_TEXT);
+            $mform->setType('background', PARAM_RAW);
 
             $mform->addElement('textarea', 'methods', block_exalib_get_string('methods'), 'rows="10" cols="50" style="width: 95%"');
-            $mform->setType('methods', PARAM_TEXT);
+            $mform->setType('methods', PARAM_RAW);
 
             $mform->addElement('textarea', 'results', block_exalib_get_string('results'), 'rows="10" cols="50" style="width: 95%"');
-            $mform->setType('results', PARAM_TEXT);
+            $mform->setType('results', PARAM_RAW);
 
             $mform->addElement('textarea', 'conclusion', block_exalib_get_string('conclusion'), 'rows="10" cols="50" style="width: 95%"');
-            $mform->setType('conclusion', PARAM_TEXT);
+            $mform->setType('conclusion', PARAM_RAW);
 
             $mform->addElement('textarea', 'affiliations', block_exalib_get_string('affiliations'), 'rows="10" cols="50" style="width: 95%"');
-            $mform->setType('affiliations', PARAM_TEXT);
+            $mform->setType('affiliations', PARAM_RAW);
 
             $mform->addElement('editor', 'abstract_editor', block_exalib_get_string('abstract'), 'rows="10" cols="50" style="width: 95%"');
 			$mform->setType('abstract', PARAM_RAW);
@@ -859,7 +859,7 @@ function block_exalib_handle_item_edit($type = '', $show) {
 			$mform->setExpanded('contentheader');
 
 			$mform->addElement('text', 'link', block_exalib_get_string('link'), 'size="100"');
-			$mform->setType('link', PARAM_TEXT);
+			$mform->setType('link', PARAM_RAW);
 
 			$mform->addElement('editor', 'content_editor', block_exalib_get_string('content'), 'rows="20" cols="50" style="width: 95%"');
 			$mform->setType('content', PARAM_RAW);
