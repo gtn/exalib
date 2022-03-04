@@ -123,4 +123,12 @@ $string['alt_tab_manage_content'] = 'Alle Fälle verwalten';
 $string['alt_tab_review'] = 'Fälle begutachten';
 $string['ibd'] = 'Show in IBD Curriculum';
 $string['search_abstract'] = 'Suchtags Abstract';
+$string['background'] = 'Background';
+$string['methods'] = 'Methoden';
+$string['results'] = 'Ergebnisse';
+$string['conclusion'] = 'Conclusion';
+$string['affiliations'] = 'Affiliationen';
+
+
+
 

@@ -397,4 +397,26 @@ return [
 		'Suchtags Abstract',
 		'Searchtags Abstract',
 	],
+    'background' => [
+        'Background',
+        'Background',
+    ],
+    'methods' => [
+        'Methoden',
+        'Methods',
+    ],
+    'results' => [
+        'Ergebnisse',
+        'Results',
+    ],
+    'conclusion' => [
+        'Conclusion',
+        'Conclusion',
+    ],
+    'affiliations' => [
+        'Affiliationen',
+        'Affiliations',
+    ],
+
 ];
+

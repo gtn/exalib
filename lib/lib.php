@@ -622,6 +622,7 @@ function block_exalib_handle_item_delete($type) {
 function block_exalib_handle_item_edit($type = '', $show) {
 	global $CFG, $USER;
 
+
 	if ($show == 'delete') {
 		block_exalib_handle_item_delete($type);
 	}
@@ -743,6 +744,12 @@ function block_exalib_handle_item_edit($type = '', $show) {
 		$id = required_param('id', PARAM_INT);
 		$item = g::$DB->get_record('block_exalib_item', array('id' => $id));
 
+
+        if ($_GET["debug"] == 1) {
+            var_dump($item);
+            die();
+        }
+
 		block_exalib_require_can_edit_item($item);
 
 		if ($item->online_to > 10000000000) {
@@ -827,13 +834,28 @@ function block_exalib_handle_item_edit($type = '', $show) {
 			
 			$mform->addElement('text', 'search_abstract', block_exalib_get_string('search_abstract'), 'size="100"');
 			$mform->setType('search_abstract', PARAM_TEXT);
-			
+
 			$mform->addElement('advcheckbox', 'ibd', block_exalib_get_string('ibd'));
 
-			$mform->addElement('editor', 'abstract_editor', block_exalib_get_string('abstract'), 'rows="10" cols="50" style="width: 95%"');
+            $mform->addElement('textarea', 'background', block_exalib_get_string('background'), 'rows="10" cols="50" style="width: 95%"');
+            $mform->setType('background', PARAM_TEXT);
+
+            $mform->addElement('textarea', 'methods', block_exalib_get_string('methods'), 'rows="10" cols="50" style="width: 95%"');
+            $mform->setType('methods', PARAM_TEXT);
+
+            $mform->addElement('textarea', 'results', block_exalib_get_string('results'), 'rows="10" cols="50" style="width: 95%"');
+            $mform->setType('results', PARAM_TEXT);
+
+            $mform->addElement('textarea', 'conclusion', block_exalib_get_string('conclusion'), 'rows="10" cols="50" style="width: 95%"');
+            $mform->setType('conclusion', PARAM_TEXT);
+
+            $mform->addElement('textarea', 'affiliations', block_exalib_get_string('affiliations'), 'rows="10" cols="50" style="width: 95%"');
+            $mform->setType('affiliations', PARAM_TEXT);
+
+            $mform->addElement('editor', 'abstract_editor', block_exalib_get_string('abstract'), 'rows="10" cols="50" style="width: 95%"');
 			$mform->setType('abstract', PARAM_RAW);
 
-			$mform->addElement('header', 'contentheader', block_exalib_get_string('content'));
+            $mform->addElement('header', 'contentheader', block_exalib_get_string('content'));
 			$mform->setExpanded('contentheader');
 
 			$mform->addElement('text', 'link', block_exalib_get_string('link'), 'size="100"');
@@ -1015,6 +1037,11 @@ function block_exalib_handle_item_edit($type = '', $show) {
 			echo $output->header(defined('BLOCK_EXALIB_IS_ADMIN_MODE') && BLOCK_EXALIB_IS_ADMIN_MODE ? 'tab_manage_content' : null);
 
 			$itemeditform->set_data($item);
+
+            if ($_GET["debug3"] == 1) {
+                var_dump($item);
+                die();
+            }
 			$itemeditform->display();
 
 			echo $output->footer();

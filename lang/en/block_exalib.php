@@ -123,4 +123,10 @@ $string['alt_tab_manage_content'] = 'Manage Library Content';
 $string['alt_tab_review'] = 'Review Items';
 $string['ibd'] = 'In IBD Curriculum anzeigen';
 $string['search_abstract'] = 'Searchtags Abstract';
+$string['background'] = 'Background';
+$string['methods'] = 'Methods';
+$string['results'] = 'Results';
+$string['conclusion'] = 'Conclusion';
+$string['affiliations'] = 'Affiliations';
+
 
