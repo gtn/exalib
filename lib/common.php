@@ -735,6 +735,7 @@ namespace block_exalib {
 
 	if (_export_function('get_string')) {
 		function get_string($identifier, $component = null, $a = null) {
+            return '';
 		}
 	}
 	if (_export_function('print_error')) {
@@ -742,7 +743,8 @@ namespace block_exalib {
 		}
 	}
 	if (_export_function('trans')) {
-		function trans() {
+        function block_exacomp_trans($string_or_strings, $arg_or_args = null) {
+            return '';
 		}
 	}
 }
@@ -768,6 +770,7 @@ namespace {
 
 	if (_block_exalib_export_function('get_string')) {
 		function block_exalib_get_string($identifier, $component = null, $a = null) {
+            return '';
 		}
 	}
 	if (_block_exalib_export_function('print_error')) {
@@ -775,7 +778,8 @@ namespace {
 		}
 	}
 	if (_block_exalib_export_function('trans')) {
-		function block_exalib_trans() {
+		function block_exalib_trans($string_or_strings, $arg_or_args = null) {
+            return '';
 		}
 	}
 }

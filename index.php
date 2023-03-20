@@ -268,7 +268,7 @@ echo $output->header(BLOCK_EXALIB_IS_ADMIN_MODE ? 'tab_manage_content' : null);
 				<?php echo html_writer::input_hidden_params($urlsearch); ?>
 				<input name="q" type="text" value="<?php p($q) ?>"/>
 				<input value="<?php p($currentcategory
-					? block_exalib_trans('de:In "{$a}" suchen', $currentcategory->name)
+					? block_exalib_trans(['de:In "{$a}" suchen', 'en:Search in "{$a}"'], $currentcategory->name)
 					: block_exalib_get_string('search_all')) ?>" type="submit">
 			</form>
 

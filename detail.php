@@ -55,11 +55,11 @@ class block_exalib_comment_form extends moodleform {
 
 		// $mform->addElement('header', 'comment', get_string("addcomment", "block_exaport"));
 
-		$mform->addElement('editor', 'text', block_exalib_trans("de:Kommentar"), null, array('rows' => 10));
+		$mform->addElement('editor', 'text', block_exalib_trans(["de:Kommentar", 'en:Comment']), null, array('rows' => 10));
 		$mform->setType('text', PARAM_TEXT);
 		//$mform->addRule('text', block_exalib_get_string('requiredelement', 'form'), 'required');
 
-		if (block_exalib_course_settings::allow_rating() && $this->_customdata['item']->created_by != g::$USER->id) {
+		if (block_exalib_course_settings::allow_rating()) {
 			$radioarray = array();
 			$radioarray[] = $mform->createElement('radio', 'rating', '', block_exalib_trans(['de:keine', 'en:none']), 0);
 			$radioarray[] = $mform->createElement('radio', 'rating', '', 1, 1);
@@ -71,7 +71,7 @@ class block_exalib_comment_form extends moodleform {
 		}
 
 		if (block_exalib_course_settings::use_review() && in_array(g::$USER->id, [$this->_customdata['item']->created_by, $this->_customdata['item']->reviewer_id])) {
-			$mform->addElement('advcheckbox', 'isprivate', block_exalib_trans('de:Privater Kommentar (nur für Ersteller und Reviewer'));
+			$mform->addElement('advcheckbox', 'isprivate', block_exalib_trans(['de:Privater Kommentar (nur für Ersteller und Reviewer sichtbar)', 'en:Private Comment (only visible for the creator and reviewer)']));
 		}
 
 		$this->add_action_buttons(false, block_exalib_get_string('add'));
@@ -264,21 +264,8 @@ if ($item->content) {
 	echo format_text($item->content);
 }
 
-// ecco
 if ($item->abstract) {
 	echo '<h3>'.block_exalib_get_string('abstract').'</h3>'.format_text($item->abstract).'</div>';
-}
-if ($item->background) {
-	echo '<h3>'.block_exalib_get_string('background').'</h3>'.format_text($item->background);
-}
-if ($item->methods) {
-	echo '<h3>'.block_exalib_get_string('methods').'</h3>'.format_text($item->methods);
-}
-if ($item->results) {
-	echo '<h3>'.block_exalib_get_string('results').'</h3>'.format_text($item->results);
-}
-if ($item->conclusion) {
-	echo '<h3>'.block_exalib_get_string('conclusion').'</h3>'.format_text($item->conclusion);
 }
 
 if ($video_url) {
@@ -290,7 +277,7 @@ if ($video_url) {
 }
 
 if (@block_exalib_course_settings::allow_comments()) {
-	echo '<h2 class="head">'.block_exalib_trans('de:Kommentare').'</h2>';
+	echo '<h2 class="head">'.block_exalib_trans(['de:Kommentare', 'en:Comments']).'</h2>';
 
 
 	$comments = $DB->get_records("block_exalib_item_comments", ["itemid" => $item->id], 'time_created ASC');
@@ -314,7 +301,7 @@ if (@block_exalib_course_settings::allow_comments()) {
 		echo '<td class="topic starter"><div class="author">';
 
 		if ($comment->isprivate) {
-			echo '['.block_exalib_trans('de:Privat').'] ';
+			echo '['.block_exalib_trans(['de:Privat', 'en:Private']).'] ';
 		}
 
 		$fullname = fullname($user, $comment->userid);
@@ -324,7 +311,7 @@ if (@block_exalib_course_settings::allow_comments()) {
 		$by->date = userdate($comment->time_modified);
 		print_string('bynameondate', 'forum', $by);
 		if (block_exalib_course_settings::allow_rating() && $comment->rating) {
-			echo ' - '.block_exalib_trans('de:Bewertung').': ';
+			echo ' - '.block_exalib_trans(['de:Bewertung', 'en:Rating']).': ';
 			echo '<span title="'.block_exalib_trans('de:{$a->rating} von {$a->max} Sternen', ['rating' => $comment->rating, 'max' => 5]).'">';
 			for ($i = 1; $i <= 5; $i++) {
 				echo ($comment->rating >= $i) ? '&#9733;' : '&#9734;';

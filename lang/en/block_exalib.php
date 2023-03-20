@@ -17,16 +17,6 @@
 //
 // This copyright notice MUST APPEAR in all copies of the script!
 
-// course_settings
-$string['allow_comments'] = 'Use comment function (allowed users can add remarks)';
-$string['use_review'] = 'Use for reviewing (allowed reviewers can publish items)';
-$string['use_terms_of_service'] = 'Accept Terms & Conditions before adding content';
-$string['alternative_wording'] = 'Use wording for casuistics database (some field titles change)';
-$string['option_keine'] = '-- none --';
-$string['aenderungen_gespeichert'] = 'Changes was saved!';
-$string['einstiegsebene_festlegen'] = 'Set entry level';
-
-
 $string['pluginname'] = 'Exabis Library';
 $string['heading'] = 'Exabis Library';
 $string['exalib:use'] = 'Use Exalib: Viewing and Searching';
@@ -35,6 +25,16 @@ $string['exalib:creator'] = 'Create Content and manage own Content';
 $string['exalib:admin'] = 'Manage All Content';
 $string['block/exalib:open'] = 'Open Items and Files';
 $string['exalib:addinstance'] = 'Add Instance to Course';
+
+
+// course_settings
+$string['allow_comments'] = 'Use comment function (allowed users can add remarks)';
+$string['use_review'] = 'Use reviewing (allowed reviewers can publish items)';
+$string['use_terms_of_service'] = 'Accept Terms & Conditions before adding content';
+$string['alternative_wording'] = 'Use wording for casuistics database (some field titles change)';
+$string['option_keine'] = '-- none --';
+$string['aenderungen_gespeichert'] = 'Changes was saved!';
+$string['einstiegsebene_festlegen'] = 'Set entry level';
 
 
 // tabs
@@ -69,7 +69,7 @@ $string['online'] = 'Online';
 $string['offline'] = 'Offline';
 $string['categories'] = 'Categories';
 $string['groups'] = 'Groups';
-$string['addmaincat'] = 'add main category';
+$string['addmaincat'] = 'Add main category';
 $string['deletecat'] = 'Delete category {$a}?';
 $string['availableusers'] = 'Available Users';
 $string['showall'] = 'Show all';

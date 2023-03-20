@@ -703,7 +703,7 @@ function block_exalib_handle_item_edit($type = '', $show) {
 			if (block_exalib_course_settings::use_review()) {
 				$values = array_map('fullname', block_exalib_get_reviewers());
 				$values = ['' => ''] + $values;
-				$mform->addElement('select', 'reviewer_id', block_exalib_trans('de:Reviewer'), $values);
+				$mform->addElement('select', 'reviewer_id', block_exalib_trans(['de:Reviewer', 'en:Reviewer']), $values);
 				$mform->addRule('reviewer_id', get_string('requiredelement', 'form'), 'required');
 
 				$values = [
@@ -786,18 +786,18 @@ $to_year = date('Y') + 1;
 				// $mform->addElement('advcheckbox', 'online', block_exalib_get_string('online'));
 
 				$radioarray = array();
-				$radioarray[] = $mform->createElement('radio', 'online', '', block_exalib_trans('de:in Review'), BLOCK_EXALIB_ITEM_STATE_IN_REVIEW);
+				$radioarray[] = $mform->createElement('radio', 'online', '', block_exalib_trans(['de:in Review', 'en:in review']), BLOCK_EXALIB_ITEM_STATE_IN_REVIEW);
 				$radioarray[] = $mform->createElement('radio', 'online', '', block_exalib_get_string('offline'), 0);
 				$radioarray[] = $mform->createElement('radio', 'online', '', block_exalib_get_string('online'), 1);
 				$mform->addGroup($radioarray, 'online', block_exalib_get_string("status"), array(' '), false);
 			}
 
 			$radioarray = array();
-			$radioarray[] = $mform->createElement('radio', 'allow_comments', '', block_exalib_trans('de:Alle Benutzer/innen'), '');
-			$radioarray[] = $mform->createElement('radio', 'allow_comments', '', block_exalib_trans('de:Lehrende und Redaktionsteam'), 'teachers_and_reviewers');
-			$radioarray[] = $mform->createElement('radio', 'allow_comments', '', block_exalib_trans('de:Redaktionsteam'), 'reviewers');
-			$radioarray[] = $mform->createElement('radio', 'allow_comments', '', block_exalib_trans('de:Keine Kommentare'), 'none');
-			$mform->addGroup($radioarray, 'allow_comments', block_exalib_trans("de:Kommentare erlauben von"), array(' '), false);
+			$radioarray[] = $mform->createElement('radio', 'allow_comments', '', block_exalib_trans(['de:Alle Benutzer/innen', 'en:All users']), '');
+			$radioarray[] = $mform->createElement('radio', 'allow_comments', '', block_exalib_trans(['de:Lehrende und Redaktionsteam', 'en:Teachers and Reviewers']), 'teachers_and_reviewers');
+			$radioarray[] = $mform->createElement('radio', 'allow_comments', '', block_exalib_trans(['de:Redaktionsteam', 'en:Reviewers']), 'reviewers');
+			$radioarray[] = $mform->createElement('radio', 'allow_comments', '', block_exalib_trans(['de:Keine Kommentare erlauben', 'en:No one (Disable comments)']), 'none');
+			$mform->addGroup($radioarray, 'allow_comments', block_exalib_trans(['de:Kommentare erlauben von', 'en:Allow comments from']), array(' '), false);
 
 			$this->add_action_buttons();
 		}

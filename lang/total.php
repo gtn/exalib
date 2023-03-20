@@ -52,6 +52,37 @@ return [
 	],
 
 
+	// course_settings
+	'allow_comments' => [
+		'Kommentarfunktion verwenden',
+		'Use comment function (allowed users can add remarks)',
+	],
+	'use_review' => [
+		'Reviewing verwenden',
+		'Use reviewing (allowed reviewers can publish items)',
+	],
+	'use_terms_of_service' => [
+		'Nutzungsbedingungen vor dem Erstellen von Inhalten/Fällen bestätigen',
+		'Accept Terms & Conditions before adding content',
+	],
+	'alternative_wording' => [
+		'Wording für Fallarchiv verwenden',
+		'Use wording for casuistics database (some field titles change)',
+	],
+	'option_keine' => [
+		'-- keine --',
+		'-- none --',
+	],
+	'aenderungen_gespeichert' => [
+		'Änderungen wurden gespeichert!',
+		'Changes was saved!',
+	],
+	'einstiegsebene_festlegen' => [
+		'Einstiegsebene festlegen',
+		'Set entry level',
+	],
+
+
 	// tabs
 	'tab_library' => [
 		'Einträge',
@@ -173,7 +204,7 @@ return [
 	],
 	'addmaincat' => [
 		'Hauptkategorie hinzufügen',
-		'add main category',
+		'Add main category',
 	],
 	'deletecat' => [
 		'Kategorie {$a} wirklich löschen?',

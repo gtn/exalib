@@ -17,17 +17,6 @@
 //
 // This copyright notice MUST APPEAR in all copies of the script!
 
-// course_settings
-$string['allow_comments'] = 'Kommentarfunktion verwenden';
-$string['use_review'] = 'Reviewing verwenden';
-$string['use_terms_of_service'] = 'Nutzungsbedingungen vor dem Erstellen von Inhalten/Fällen bestätigen';
-$string['alternative_wording'] = 'Wording für Fallarchiv verwenden';
-$string['option_keine'] = '-- keine --';
-$string['aenderungen_gespeichert'] = 'Änderungen wurden gespeichert!';
-$string['einstiegsebene_festlegen'] = 'Einstiegsebene festlegen';
-
-
-
 $string['pluginname'] = 'Exabis Bibliothek';
 $string['heading'] = 'Exabis Bibliothek';
 $string['exalib:use'] = 'Exalib verwenden: Betrachten & Suchen';
@@ -36,6 +25,16 @@ $string['exalib:creator'] = 'Inhalt erstellen und eigenen Inhalt verwalten';
 $string['exalib:admin'] = 'Gesamten Inhalt verwalten';
 $string['block/exalib:open'] = 'Einträge und Dateien öffnen';
 $string['exalib:addinstance'] = 'Exalib Instanz zu Kurs hinzufügen';
+
+
+// course_settings
+$string['allow_comments'] = 'Kommentarfunktion verwenden';
+$string['use_review'] = 'Reviewing verwenden';
+$string['use_terms_of_service'] = 'Nutzungsbedingungen vor dem Erstellen von Inhalten/Fällen bestätigen';
+$string['alternative_wording'] = 'Wording für Fallarchiv verwenden';
+$string['option_keine'] = '-- keine --';
+$string['aenderungen_gespeichert'] = 'Änderungen wurden gespeichert!';
+$string['einstiegsebene_festlegen'] = 'Einstiegsebene festlegen';
 
 
 // tabs
