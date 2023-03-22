@@ -31,6 +31,8 @@ First official publishing-date: January 2015
 
 2) Transfer the folder exalib to the blocks-directory of Moodle
 
-3) Log in as 'administrator' and click on the 'Home' link
+3) Optionally install the repository plugin: Copy moodle_path/blocks/exalib/repository_plugin/exalib folder to moodle_path/repository/exalib
+
+4) Log in as 'administrator' and click on the 'Home' link
 
 That's it!

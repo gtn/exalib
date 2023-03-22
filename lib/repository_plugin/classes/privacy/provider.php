@@ -1,7 +1,7 @@
 <?php
 // This file is part of Exabis Library
 //
-// (c) 2016 GTN - Global Training Network GmbH <office@gtn-solutions.com>
+// (c) 2023 GTN - Global Training Network GmbH <office@gtn-solutions.com>
 //
 // Exabis Library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,10 +17,19 @@
 //
 // This copyright notice MUST APPEAR in all copies of the script!
 
+namespace repository_exalib\privacy;
+
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->release = '4.6.0';
-$plugin->version   = 2023032200;      // The current module version (Date: YYYYMMDDXX)
-$plugin->requires  = 2014051200;    // Requires this Moodle version
-$plugin->component = 'block_exalib'; // Full name of the plugin (used for diagnostics).
-$plugin->maturity = MATURITY_STABLE; // MATURITY_STABLE.
+class provider implements \core_privacy\local\metadata\null_provider {
+
+    /**
+     * Get the language string identifier with the component's language
+     * file to explain why this plugin stores no data.
+     *
+     * @return  string
+     */
+    public static function get_reason() : string {
+        return 'privacy:metadata';
+    }
+}

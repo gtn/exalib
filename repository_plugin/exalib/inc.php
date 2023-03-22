@@ -1,7 +1,7 @@
 <?php
 // This file is part of Exabis Library
 //
-// (c) 2016 GTN - Global Training Network GmbH <office@gtn-solutions.com>
+// (c) 2023 GTN - Global Training Network GmbH <office@gtn-solutions.com>
 //
 // Exabis Library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,10 +17,18 @@
 //
 // This copyright notice MUST APPEAR in all copies of the script!
 
-defined('MOODLE_INTERNAL') || die();
+function repository_exalib_dir($file) {
+    $sub_path = str_replace(__DIR__, '', $file);
 
-$plugin->release = '4.6.0';
-$plugin->version   = 2023032200;      // The current module version (Date: YYYYMMDDXX)
-$plugin->requires  = 2014051200;    // Requires this Moodle version
-$plugin->component = 'block_exalib'; // Full name of the plugin (used for diagnostics).
-$plugin->maturity = MATURITY_STABLE; // MATURITY_STABLE.
+    $exalib_path = dirname(dirname(__DIR__)).'/blocks/exalib';
+    $file_path = $exalib_path.'/lib/repository_plugin'.$sub_path;
+
+    if (!is_dir($exalib_path)) {
+        die('Exabis Library not installed');
+    }
+    if (!is_file($file_path)) {
+        die('Repository Plugin and Exabis Library not compatible?!?');
+    }
+
+    return $file_path;
+}
