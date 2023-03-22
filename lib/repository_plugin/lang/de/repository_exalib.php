@@ -17,8 +17,8 @@
 //
 // This copyright notice MUST APPEAR in all copies of the script!
 
-$string['exalib:view'] = 'View Exabis Library Repository';
-$string['configplugin'] = 'Configuration for Exabis Library Repository';
+$string['exalib:view'] = 'Exabis Bibliothek Repository Dateien anzeigen';
+$string['configplugin'] = 'Konfiguration für Exabis Bibliothek Repository';
 $string['pluginname_help'] = 'Files embedded in the current text editor';
-$string['pluginname'] = 'Exabis Library';
-$string['privacy:metadata'] = 'The Exabis Library Repository plugin does not store or transmit any personal data.';
+$string['pluginname'] = 'Exabis Bibliothek';
+$string['privacy:metadata'] = 'Das Exabis Bibliothek Repository speichert keine personenbezogenen Daten.';

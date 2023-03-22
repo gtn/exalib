@@ -17,8 +17,5 @@
 //
 // This copyright notice MUST APPEAR in all copies of the script!
 
-$string['exalib:view'] = 'View Exabis Library Repository';
-$string['configplugin'] = 'Configuration for Exabis Library Repository';
-$string['pluginname_help'] = 'Files embedded in the current text editor';
-$string['pluginname'] = 'Exabis Library';
-$string['privacy:metadata'] = 'The Exabis Library Repository plugin does not store or transmit any personal data.';
+require_once __DIR__.'/../../inc.php';
+require repository_exalib_dir(__FILE__);
