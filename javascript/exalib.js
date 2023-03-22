@@ -1,6 +1,6 @@
 // This file is part of Exabis Library
 //
-// (c) 2016 GTN - Global Training Network GmbH <office@gtn-solutions.com>
+// (c) 2023 GTN - Global Training Network GmbH <office@gtn-solutions.com>
 //
 // Exabis Library is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
