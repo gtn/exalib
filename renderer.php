@@ -73,7 +73,7 @@ class block_exalib_renderer extends plugin_renderer_base {
 		}
 
 		$tabtree = new tabtree($tabs);
-		if ($ibd==1){
+		if ($ibd>=1){
 			g::$PAGE->navbar->add("IBD Curriculum");
 		}else{
 			g::$PAGE->navbar->add(block_exalib_get_string('heading'), new moodle_url('/blocks/exalib/index.php', ['courseid' => g::$COURSE->id]));

@@ -65,7 +65,7 @@ $PAGE->set_url($urlpage);
 $topGroups = array(11=>'Abstracts', 12=>'Documents', 13=>'Images', 14=>'Podcasts', 15=>'Webcasts');
 $ibd_first=false;
 $q = optional_param('q', '', PARAM_TEXT);
-$ibd = optional_param('view2', '', PARAM_TEXT);
+$ibd = optional_param('view2', 0, PARAM_INT);
 if ($ibd==10) {$ibd=1;$ibd_first=true;}//erstmaliger aufruf vom ibd curriculum, dann idb=10, wenn wegen Filter reload dann 1
 $category_ids = optional_param_array('category_ids', array(), PARAM_INT);
 $sub_filter_id = optional_param('sub_filter_id', '', PARAM_INT);
@@ -78,7 +78,7 @@ $guidelines = optional_param('guidelines', "", PARAM_TEXT);
 $latestC = optional_param('latestC', "", PARAM_TEXT);
 $archiveC = optional_param('archiveC', "", PARAM_TEXT);
 $ibdget = "";
-if ($ibd==1) $ibdget = "?view2=1";
+if ($ibd>=1) $ibdget = "?view2=".$ibd;
 if ($guidelines!="") {
 			$filter_sub_type = '51206';
 			$filter_category = '51303';
@@ -101,7 +101,7 @@ if (BLOCK_EXALIB_IS_ADMIN_MODE) {
 		AND (item.online_from=0 OR item.online_from IS NULL OR item.online_from <= ".time().")
 		AND (item.online_to=0 OR item.online_to IS NULL OR item.online_to >= ".time().")";
 }
-if ($ibd==1) $sqlItemWhere .= " AND ibd=1";
+if ($ibd>=1) $sqlItemWhere .= " AND ibd=1";
 $sql = "SELECT DISTINCT year, year as tmp FROM {block_exalib_item} AS item 
 WHERE 1=1 $sqlItemWhere
 AND year>2015
@@ -140,7 +140,7 @@ $filter_category nicht als condition nehmen wenn der aufruf von ibd curriculum k
 wenn zb in IBD auf 1.1 geklickt wird, ist die filter_category der wert von 1
 damit beim dropdown category ein besserer wert angezeigt wird, 1.1 ist ja nicht drinnen, als 1 im dropdown selecten
 */
-	if ($filter_category && $ibd!=1) {
+	if ($filter_category && $ibd==0) {
 		$sqlJoin .= " JOIN {block_exalib_item_category} filter_category ON item.id=filter_category.item_id AND filter_category.category_id=?";
 		$sqlParams[] = $filter_category;
 	}
@@ -319,10 +319,10 @@ echo $output->header();
 						
 							<?php $dispNone="hideInput";
 							
-							if ($ibd==1) echo '<input type="hidden" name="view2" value="1" />'; 
+							if ($ibd>=1) echo '<input type="hidden" name="view2" value="'.$ibd.'" />'; 
 						} 	//end result true ?>
 		
-							<label style="margin:0;padding:0;list-style:none;" for="searchtext" class=" control-label">Search:</label>
+							<label style="margin:0;padding:0;list-style:none;" for="searchtext" class=" control-label">Text Search:</label>
 							<input id="searchtext" name="q" type="text" class="libary_search_input form-control" value="<?php echo $q; ?>">		
 							
 							<label style="margin:0;padding:0;list-style:none;" for="searchtext" class=" control-label">Search by:</label>
@@ -432,7 +432,7 @@ echo $output->header();
 											else if (!$category_ids) { echo ' checked="checked" ';} 
 								?>
 								 name="category_ids[]" value="51302" type="checkbox" id="Zustand-checkbox5-modal-Neu" data-testid="navigator-Zustand-checkbox-modal-Neu" aria-labelledby="Zustand-checkbox-modal-Neu-label" class="Checkbox__CheckboxInput-sc-7kkiwa-4 dVAswu">
-								<img src="pix/congress-slides1.png" alt="Congress-Slides">Congress Slides
+								<img src="pix/congress-slides1.png" alt="Congress-Slides">Congress Presentations
 								</div>
 						</div>
 						
@@ -667,6 +667,9 @@ You can access the current category and keyword overview used for indexing the e
 			if ($ibd==1) {
 				//echo '<a href="../../course/view.php?id=61#ibdindex">back to the IBD Curriculum</a>';  
 			  echo '<div style="text-align:center"><input style="background-color: #003772;color:#fff" value="back to IBD Curriculum" type="button" class="clear-filter btn-seFo" onclick="document.location.href=\'../../course/view.php?id=61#ibdindex\';"></div>';
+			}else if ($ibd==2) {
+				//echo '<a href="../../course/view.php?id=61#ibdindex">back to the IBD Curriculum</a>';  
+			  echo '<div style="text-align:center"><input style="background-color: #003772;color:#fff" value="back to IBD Curriculum" type="button" class="clear-filter btn-seFo" onclick="document.location.href=\'../../course/view.php?id=100#ibdindex\';"></div>';
 			}
 		echo '</div>'; //col-sm-9 
 	echo '</div>'; //row 

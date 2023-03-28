@@ -26,10 +26,11 @@ $itemid = required_param('itemid', PARAM_INT);
 //if($USER->id) {echo $USER->id;echo "ja";die;} else {echo "nein";die;}
 if (g::$USER->id==1) {
 	$allowdetail=0;
-	if ($_SERVER["REMOTE_ADDR"]=="217.149.166.65") $allowdetail=2;
-	if ($_SERVER["REMOTE_ADDR"]=="185.85.64.18") $allowdetail=2;
+	if ($_SERVER["REMOTE_ADDR"]=="91.224.175.11") $allowdetail=2; //neu 2023
+	if ($_SERVER["REMOTE_ADDR"]=="212.241.70.202") {$allowdetail=2;}
 	if ($_SERVER["REMOTE_ADDR"]=="185.85.64.19") $allowdetail=2;
 	if ($_SERVER["REMOTE_ADDR"]=="185.85.64.20") $allowdetail=2;
+	
 }else{
 	$allowdetail=1;
 }
@@ -232,7 +233,7 @@ else{
     <?
     */
 
-    if (preg_match('!rtmp://!', $item->link) || preg_match('!rtmps://!', $item->link) || preg_match('!https://e-learning.ecco-ibd.eu/ECCO2019/Webcasts!', $item->link) || preg_match('!https://video.ecco-ibd.eu/ECCO2020!', $item->link) || preg_match('!https://video.ecco-ibd.eu/ECCO2021!', $item->link)) {
+    if (preg_match('!rtmp://!', $item->link) || preg_match('!rtmps://!', $item->link) || preg_match('!https://e-learning.ecco-ibd.eu/ECCO2019/Webcasts!', $item->link) || preg_match('!https://video.ecco-ibd.eu/ECCO2020!', $item->link) || preg_match('!https://video2.ecco-ibd.eu/content!', $item->link) || preg_match('!https://video.ecco-ibd.eu/ECCO2021!', $item->link)) {
         $video_url = $item->link;
         $item->link = '';
     } else {
@@ -288,33 +289,37 @@ else{
         echo '<tr><td>'.block_exalib_trans('de:Typ').':</td><td>';
         echo $item->real_fiktiv;
     }
-
+	
     if ($files) {
-        echo '<tr>';
-        $onlypdf=true;$i=1;
-        foreach ($files as $file) {
-            if ($file->mimetype=="application/pdf"){
-                //dominik: pdf button hier machen
-                echo '<td><a href="'.block_exalib_get_url_for_file($file).'" target="_blank" class="exalib-blue-cat-lib">'.
-                    block_exalib_get_renderer()->pix_icon(file_file_icon($file), get_mimetype_description($file)).
-                    ' '.$file->get_filename().'</a>&nbsp;&nbsp;&nbsp;';
-            }else{
-                if ($i==1) '<td>'.block_exalib_get_string('files').':</td><td>';$i++;
+		if ($allowdetail==2){
+			//no file view possible in kiosk view, access problems
+		}else{
+			echo '<tr>';
+			$onlypdf=true;$i=1;
+			foreach ($files as $file) {
+				if ($file->mimetype=="application/pdf"){
+					//dominik: pdf button hier machen
+					echo '<td><a href="'.block_exalib_get_url_for_file($file).'" target="_blank" class="exalib-blue-cat-lib">'.
+						block_exalib_get_renderer()->pix_icon(file_file_icon($file), get_mimetype_description($file)).
+						' '.$file->get_filename().'</a>&nbsp;&nbsp;&nbsp;';
+				}else{
+					if ($i==1) '<td>'.block_exalib_get_string('files').':</td><td>';$i++;
 
-                //	print_r($file);
-                $fileParams = substr(block_exalib_get_url_for_file($file), strrpos(block_exalib_get_url_for_file($file), "pluginfile.php", 0));
-                $fileParams = str_replace("pluginfile.php", '', $fileParams);
-                echo '<div class="text-center exalibPdfDetail"><a href="'. $CFG->wwwroot . '/blocks/exalib/pdfjs/ModifViewer/web/viewer.html?file='
-                    .$fileParams.'" target="_blank" class="exalib-blue-cat-lib">'.
-                    block_exalib_get_renderer()->pix_icon(file_file_icon($file), get_mimetype_description($file)).
-                    'View Presentation</a></div>&nbsp;&nbsp;&nbsp;';
-                /* echo '<div class="text-center exalibPdfDetail"><a href="'
-                     .block_exalib_get_url_for_file($file).'" target="_blank" class="exalib-blue-cat-lib">'.
-                     block_exalib_get_renderer()->pix_icon(file_file_icon($file), get_mimetype_description($file)).
-                     ' '.$file->get_filename().'</a></div>&nbsp;&nbsp;&nbsp;';*/
-            }
-        }
-        echo '</td></tr>';
+					//	print_r($file);
+					$fileParams = substr(block_exalib_get_url_for_file($file), strrpos(block_exalib_get_url_for_file($file), "pluginfile.php", 0));
+					$fileParams = str_replace("pluginfile.php", '', $fileParams);
+					echo '<div class="text-center exalibPdfDetail"><a href="'. $CFG->wwwroot . '/blocks/exalib/pdfjs/ModifViewer/web/viewer.html?file='
+						.$fileParams.'" target="_blank" class="exalib-blue-cat-lib">'.
+						block_exalib_get_renderer()->pix_icon(file_file_icon($file), get_mimetype_description($file)).
+						'View Presentation</a></div>&nbsp;&nbsp;&nbsp;';
+					/* echo '<div class="text-center exalibPdfDetail"><a href="'
+						 .block_exalib_get_url_for_file($file).'" target="_blank" class="exalib-blue-cat-lib">'.
+						 block_exalib_get_renderer()->pix_icon(file_file_icon($file), get_mimetype_description($file)).
+						 ' '.$file->get_filename().'</a></div>&nbsp;&nbsp;&nbsp;';*/
+				}
+			}
+			echo '</td></tr>';
+		}
     }
 
     if ($item->link) {
