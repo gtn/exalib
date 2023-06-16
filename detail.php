@@ -259,6 +259,10 @@ if ($item->link) {
 
 echo '</table>';
 
+if ($text = trim(get_config('block_exalib', 'item_detail_bottom_info'))) {
+    echo '<div style="padding-top: 40px;">'.$text.'</div>';
+}
+
 if ($item->content) {
 	echo '<h2 class="head">'.block_exalib_get_string('content').'</h2>';
 	echo format_text($item->content);
