@@ -251,7 +251,7 @@ if ($files) {
 
 if ($item->link) {
 	$linkurl = block_exalib_format_url($item->link);
-	$linktext = trim($item->link_titel) ? $item->link_titel : $item->link;
+	$linktext = trim($item->link_titel ?? '') ? $item->link_titel : $item->link;
 
 	echo '<tr><td>'.block_exalib_get_string('link').':</td><td>';
 	echo '<a class="head" href="'.$linkurl.'" target="_blank">'.$linktext.'</a>';
