@@ -732,21 +732,6 @@ namespace block_exalib {
 		class url extends common\url {
 		}
 	}
-
-	if (_export_function('get_string')) {
-		function get_string($identifier, $component = null, $a = null) {
-            return '';
-		}
-	}
-	if (_export_function('print_error')) {
-		function print_error($errorcode, $module = 'error', $link = '', $a = null, $debuginfo = null) {
-		}
-	}
-	if (_export_function('trans')) {
-        function block_exacomp_trans($string_or_strings, $arg_or_args = null) {
-            return '';
-		}
-	}
 }
 
 namespace {
@@ -760,7 +745,7 @@ namespace {
 		if (!function_exists($namespace.'_'.$function)) {
 			eval('
 			function '.$namespace.'_'.$function.'() {
-				return call_user_func_array(\'\\'.$namespace.'\\'.$function.'\', func_get_args());
+				return call_user_func_array(\'\\'.$namespace.'\\common\\'.$function.'\', func_get_args());
 			}
 		');
 		}
@@ -771,10 +756,6 @@ namespace {
 	if (_block_exalib_export_function('get_string')) {
 		function block_exalib_get_string($identifier, $component = null, $a = null) {
             return '';
-		}
-	}
-	if (_block_exalib_export_function('print_error')) {
-		function block_exalib_print_error($errorcode, $module = 'error', $link = '', $a = null, $debuginfo = null) {
 		}
 	}
 	if (_block_exalib_export_function('trans')) {
