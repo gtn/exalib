@@ -148,7 +148,9 @@ class block_exalib_renderer extends plugin_renderer_base {
 		$init = false;
 
 		// init default js / css
-		g::$PAGE->requires->css('/blocks/exalib/css/exalib.css');
+	        if (g::$PAGE->url->get_param('show') !== 'edit') {
+			g::$PAGE->requires->css('/blocks/exalib/css/exalib.css');
+		}
 		g::$PAGE->requires->css('/blocks/exalib/css/skin-lion/ui.easytree.css');
 
 		g::$PAGE->requires->jquery();
