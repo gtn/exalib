@@ -84,10 +84,10 @@ $string['noitemsfound'] = 'Keine Einträge gefunden';
 
 // detail
 $string['itemnotfound'] = 'Eintrag nicht gefunden';
-$string['background'] = 'Hintergrund';
+$string['background'] = 'Background';
 $string['methods'] = 'Methoden';
 $string['results'] = 'Ergebnisse';
-$string['conclusion'] = 'Schlussfolgerung';
+$string['conclusion'] = 'Conclusion';
 $string['back'] = 'zurück';
 $string['terms_of_use'] = 'Sie müssen die Nutzungsbestimmungen akzeptieren: Die Fälle müssen einen Bezug zur Ausbildung, zum schulischen Feld und Umfeld oder zur Professionalisierung ausweisen. Eingebrachte Fälle dürfen keine politischen Botschaften, rassistischen Inhalte, professionsfeindliche Haltungen oder fragwürdige erzieherische Ansätze beinhalten. Jeder Fall muss anonymisiert sein, es darf keine Wiedererkennung der dokumentierten Akteur/-innen geben. Sie erklären sich einverstanden, dass Ihre Texte und Kommentare in Lehre und Forschung unter der üblichen Zitation weiter verwendet werden dürfen.';
 
@@ -121,14 +121,6 @@ $string['alt_all_entries'] = 'Alle Fälle';
 $string['alt_heading'] = 'Fallarchiv';
 $string['alt_tab_manage_content'] = 'Alle Fälle verwalten';
 $string['alt_tab_review'] = 'Fälle begutachten';
-$string['ibd'] = 'Show in IBD Curriculum';
+$string['ibd'] = 'In IBD Curriculum anzeigen';
 $string['search_abstract'] = 'Suchtags Abstract';
-$string['background'] = 'Background';
-$string['methods'] = 'Methoden';
-$string['results'] = 'Ergebnisse';
-$string['conclusion'] = 'Conclusion';
 $string['affiliations'] = 'Affiliationen';
-
-
-
-

@@ -408,6 +408,7 @@ float: left;
 
 #block_exalib .searchLibCheckIcon {
 	max-width: 65px !important;
+	max-width: 45px !important;
 }
 
 #block_exalib .eccosearchvideocenter {

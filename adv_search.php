@@ -669,7 +669,7 @@ You can access the current category and keyword overview used for indexing the e
 			  echo '<div style="text-align:center"><input style="background-color: #003772;color:#fff" value="back to IBD Curriculum" type="button" class="clear-filter btn-seFo" onclick="document.location.href=\'../../course/view.php?id=61#ibdindex\';"></div>';
 			}else if ($ibd==2) {
 				//echo '<a href="../../course/view.php?id=61#ibdindex">back to the IBD Curriculum</a>';  
-			  echo '<div style="text-align:center"><input style="background-color: #003772;color:#fff" value="back to IBD Curriculum" type="button" class="clear-filter btn-seFo" onclick="document.location.href=\'../../course/view.php?id=100#ibdindex\';"></div>';
+			  echo '<div style="text-align:center"><input style="background-color: #003772;color:#fff" value="back to Nurse IBD Curriculum" type="button" class="clear-filter btn-seFo" onclick="document.location.href=\'../../course/view.php?id=100#ibdindex\';"></div>';
 			}
 		echo '</div>'; //col-sm-9 
 	echo '</div>'; //row 
