@@ -619,7 +619,7 @@ function block_exalib_handle_item_delete($type) {
 	exit;
 }
 
-function block_exalib_handle_item_edit($type = '', $show) {
+function block_exalib_handle_item_edit($show, $type = '') {
 	global $CFG, $USER;
 
 
