@@ -518,7 +518,7 @@ echo $output->header();
 
 
                     echo '<div class="row eccosearchvideocenter">';
-                       block_exalib_print_jwplayer(array(
+                       block_exalib_print_html5video(array(
                             'file'    => $CFG->wwwroot . "/blocks/exalib/images/Video/2019_02_21_MASTER_eLibrary_VIDEO.mp4",
                             'width'    => "100%",
                             'height' => "100%",

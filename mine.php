@@ -35,7 +35,7 @@ $output = block_exalib_get_renderer();
 $output->set_tabs('tab_'.$type);
 
 if (in_array($show, ['change_state', 'edit', 'add', 'delete'])) {
-	block_exalib_handle_item_edit($type, $show);
+	block_exalib_handle_item_edit($show, $type);
 	exit;
 }
 

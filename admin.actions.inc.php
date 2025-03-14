@@ -177,6 +177,6 @@ if (($show == 'category_add') || ($show == 'category_edit')) {
 }
 
 if (in_array($show, ['edit', 'add', 'delete'])) {
-	block_exalib_handle_item_edit('', $show);
+	block_exalib_handle_item_edit($show, '');
 	exit;
 }

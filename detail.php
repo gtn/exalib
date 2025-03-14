@@ -361,7 +361,7 @@ else{
     }
 
     if ($video_url) {
-        block_exalib_print_jwplayer(array(
+        block_exalib_print_html5video(array(
             'file'    => $video_url,
             'width'    => "100%",
             'height' => "100%",

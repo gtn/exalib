@@ -251,70 +251,30 @@ function block_exalib_get_url_for_file(stored_file $file) {
 }
 
 /**
- * print jwplayer
+ * print html5video
  *
  * @param array $options
  * @return nothing
  */
-function block_exalib_print_jwplayer($options) {
-
-    $options = array_merge(array(
-        // 'primary' => "flash",
-            'autostart' => false,
-        //'image' => 'https://www.e-cco-ibd.eu/pluginfile.php/145/block_html/content/MASTER_ECCO_logo_rechts_26_08_2010%20jpg.jpg'
-    ), $options);
-
-    if (isset($options['file']) && preg_match('!^rtmp://.*cco-ibd.*:(.*)$!i', $options['file'], $matches)) {
-        // add hls stream
-
-        $rtmp = $options['file'];
-        unset($options['file']);
-        $options['playlist'] = array(
-                array(
-                        'sources' => array(
-                                array('file' => 'http://video.ecco-ibd.eu/' . $matches[1]),
-                                array('file' => 'http://video.ecco-ibd.eu:1935/vod/mp4:' . $matches[1] . '/playlist.m3u8'),
-                                array('file' => $rtmp),
-
-                            // array('file' => 'http://video.ecco-ibd.eu:1935/vod/mp4:'.str_replace('.mp4', '.m4v', $matches[1]).'/playlist.m3u8'),
-                            // array('file' => 'http://video.ecco-ibd.eu:1935/vod/mp4:'.strtolower('ECCO2014_SP_S7_ELouis').'.m4v/playlist.m3u8'),
-                            // array('file' => 'http://video.ecco-ibd.eu:1935/vod/mp4:ecco2012_7.m4v/playlist.m3u8'),
-                        )
-                )
-        );
-
-    }
-
-    if (strpos($_SERVER['HTTP_HOST'], 'ecco-ibd')) {
-        $player = '//content.jwplatform.com/libraries/xKafWURJ.js';
-    } else {
-        $player = 'jwplayer/jwplayer.js';
-        $options['flashplayer'] = "jwplayer/player.swf";
-    }
-    //
-
+function block_exalib_print_html5video($options) {
     // ADDED 20250311 START
     // Escape URL to prevent issues
     $videoUrl = htmlspecialchars($options['file'], ENT_QUOTES, 'UTF-8');
     // ADDED 20250311 END
-
     ?>
-
     <!--    // ADDED 20250311 START-->
     <div class="video-container">
-        <video width="100%" height="100%" id="exalibVideo" <?php echo $options['controls'] ? 'controls' : ''; ?>
-               poster="<?php echo $options['poster']; ?>">
+        <video width="100%" height="100%" id="exalibVideo">
             <source src="<?php echo $videoUrl; ?>" type="video/mp4">
             Your browser does not support the video tag.
         </video>
     </div>
-
     <script type="text/javascript">
-        document.addEventListener("DOMContentLoaded", function() {
+        document.addEventListener("DOMContentLoaded", function () {
             var video = document.getElementById("exalibVideo");
 
             // Click-to-play functionality
-            video.addEventListener("click", function() {
+            video.addEventListener("click", function () {
                 if (video.paused) {
                     video.play();
                 } else {
@@ -323,114 +283,17 @@ function block_exalib_print_jwplayer($options) {
             });
 
             // Auto-show controls when playing
-            video.addEventListener("play", function() {
+            video.addEventListener("play", function () {
                 video.setAttribute("controls", "");
             });
 
             // Hide controls when paused
-            video.addEventListener("pause", function() {
+            video.addEventListener("pause", function () {
                 video.removeAttribute("controls");
             });
         });
     </script>
     <!--    // ADDED 20250311 END-->
-
-    <script type="application/javascript" src="<?= $player ?>"></script>
-    <div class="video-container" id='player_2834'></div>
-    <!--  <video width="100%" height="100%" id="filterVideo" style="cursor:pointer;" poster="<?php echo $CFG->wwwroot; ?>/blocks/exalib/MASTER_ECCO_IBD_Curriculum.jpg">
-        <source src="<?php echo $options['file']; ?>" type="video/mp4">
-        Your browser does not support the video tag.
-    </video>-->
-
-    <script type='text/javascript'>
-        var $video = $("#filterVideo"), //jquery-wrapped video element
-            mousedown = false;
-
-        $video.click(function () {
-            if (this.paused) {
-                this.play();
-                return false;
-            }
-            return true;
-        });
-
-        $video.on('mousedown', function () {
-            mousedown = true;
-        });
-
-        $(window).on('mouseup', function () {
-            mousedown = false;
-        });
-
-        $video.on('play', function () {
-            $video.attr('controls', '');
-        });
-
-        $video.on('pause', function () {
-            if (!mousedown) {
-                $video.removeAttr('controls');
-            }
-        });
-
-        // allow fullscreen in iframes, you have to add allowFullScreen to the iframe
-        if (window.frameElement) {
-            window.frameElement.setAttribute('allowFullScreen', 'allowFullScreen');
-        }
-
-        var options = <?php echo json_encode($options); ?>;
-        if (options.width == 'auto') options.width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
-        if (options.height == 'auto') options.height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
-        if (options.usePreviewImage) options.image = <?php echo $CFG->wwwroot ?> "/blocks/exalib/MASTER_ECCO_IBD_Curriculum.jpg";
-        // options.stretching="exactfit";
-
-        var p;
-        var onReady = function () {
-        };
-        var onPlay = function () {
-        };
-        var pauseVideo = false;
-        if (!options.autostart) {
-            // start and just load first frame
-            if (!options.usePreviewImage) options.autostart = true;
-            options.mute = true;
-            pauseVideo = true; // we want to pause it when loading
-
-            if (!options.usePreviewImage) onPlay = function () {
-                if (pauseVideo) {
-                    this.setMute(false);
-                    this.pause();
-                }
-                window.setTimeout(function () {
-                    // onplay fires twice?!?
-                    // use setTimeout to overcome that
-                    pauseVideo = false;
-                }, 500);
-            };
-
-            if (!options.usePreviewImage) onReady = function () {
-
-
-                window.setTimeout(function () {
-                    jwplayer('player_2834').seek(0.6);
-                    window.setTimeout(function () {
-                        jwplayer('player_2834').pause();
-                    }, 500);
-                }, 0);
-            };
-        }
-
-        p = jwplayer('player_2834').setup(options);
-        p.on('displayClick', function () {
-            // user clicked the video -> don't pause video again
-            pauseVideo = false;
-        });
-        if (!options.usePreviewImage) p.on('ready', onReady);
-        if (!options.usePreviewImage) p.on('play', onPlay);
-        p.on('error', function (message) {
-            // $('#player_2834').replace('x');
-            // confirm('Sorry, this file could not be played')console.log('ecco', message);
-        });
-    </script>
     <?php
 }
 

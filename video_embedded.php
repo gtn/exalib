@@ -63,7 +63,7 @@ html, body {
 <?php
 
 
-    block_exalib_print_jwplayer(array(
+    block_exalib_print_html5video(array(
         'file'    => $videourl,
         'width'    => $width,
         'height' => $height,
