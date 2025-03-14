@@ -387,7 +387,7 @@ echo $output->header();
 											else if (!$category_ids) { echo ' checked="checked" ';} 
 								?>
 								 type="checkbox" id="search-all-categories" value="Abstracts" data-testid="navigator-Zustand-checkbox-modal-Neu" aria-labelledby="Zustand-checkbox-modal-Neu-label" class="Checkbox__CheckboxInput-sc-7kkiwa-4 dVAswu">
-								<img src="pix/all1.png" alt="All-Materials">
+								<img src="pix/all1_24.png" alt="All-Materials">
 								All
 							</div>
 						</div>
@@ -399,7 +399,7 @@ echo $output->header();
 											else if (!$category_ids) { echo ' checked="checked" ';} 
 								?>
 								name="category_ids[]" value="51301" type="checkbox" id="" data-testid="" aria-labelledby="" class="">
-								<img  src="pix/congress-abstracts1.png" alt="Congress-Abstracts">Congress Abstracts	</div>
+								<img  src="pix/congress-abstracts1_24.png" alt="Congress-Abstracts">Congress Abstracts	</div>
 						</div>
 				
 						<div class="Checkbox-3">
@@ -409,7 +409,7 @@ echo $output->header();
 											else if (!$category_ids) { echo ' checked="checked" ';} 
 								?>
 								name="category_ids[]" value="51304" type="checkbox" id="Zustand-checkbox3-modal-Neu" data-testid="navigator-Zustand-checkbox-modal-Neu" aria-labelledby="Zustand-checkbox-modal-Neu-label" class="Checkbox__CheckboxInput-sc-7kkiwa-4 dVAswu">
-								<img src="pix/tools-skills1.png" alt="Tools-Skills">Tools & Skills
+								<img src="pix/tools-skills1_24.png" alt="Tools-Skills">Tools & Skills
 								</div>
 						</div>
 			    </div><!--sm6 2a-->
@@ -421,7 +421,7 @@ echo $output->header();
 											else if (!$category_ids) { echo ' checked="checked" ';} 
 								?>
 								 name="category_ids[]" value="51303" type="checkbox" id="Zustand-checkbox4-modal-Neu" data-testid="navigator-Zustand-checkbox-modal-Neu" aria-labelledby="Zustand-checkbox-modal-Neu-label" class="Checkbox__CheckboxInput-sc-7kkiwa-4 dVAswu">
-								<img src="pix/publications1.png" alt="Publications">Publications
+								<img src="pix/publications1_24.png" alt="Publications">Publications
 								</div>
 						</div>
 						
@@ -432,7 +432,7 @@ echo $output->header();
 											else if (!$category_ids) { echo ' checked="checked" ';} 
 								?>
 								 name="category_ids[]" value="51302" type="checkbox" id="Zustand-checkbox5-modal-Neu" data-testid="navigator-Zustand-checkbox-modal-Neu" aria-labelledby="Zustand-checkbox-modal-Neu-label" class="Checkbox__CheckboxInput-sc-7kkiwa-4 dVAswu">
-								<img src="pix/congress-slides1.png" alt="Congress-Slides">Congress Presentations
+								<img src="pix/congress-slides1_24.png" alt="Congress-Slides">Congress Presentations
 								</div>
 						</div>
 						
@@ -443,7 +443,7 @@ echo $output->header();
 											else if (!$category_ids) { echo ' checked="checked" ';} 
 								?>
 								  name="category_ids[]" value="51305" type="checkbox" id="Zustand-checkbox6-modal-Neu" data-testid="navigator-Zustand-checkbox-modal-Neu" aria-labelledby="Zustand-checkbox-modal-Neu-label" class="Checkbox__CheckboxInput-sc-7kkiwa-4 dVAswu">
-								<img src="pix/videos-podcasts1.png" alt="Videos-Podcasts">Videos & Podcasts
+								<img src="pix/videos-podcasts1_24.png" alt="Videos-Podcasts">Videos & Podcasts
 								</div>
 								<?php
 									if ($ibd==1) {
