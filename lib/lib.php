@@ -293,7 +293,48 @@ function block_exalib_print_jwplayer($options) {
     }
     //
 
+    // ADDED 20250311 START
+    // Escape URL to prevent issues
+    $videoUrl = htmlspecialchars($options['file'], ENT_QUOTES, 'UTF-8');
+    // ADDED 20250311 END
+
     ?>
+
+    <!--    // ADDED 20250311 START-->
+    <div class="video-container">
+        <video width="100%" height="100%" id="exalibVideo" <?php echo $options['controls'] ? 'controls' : ''; ?>
+               poster="<?php echo $options['poster']; ?>">
+            <source src="<?php echo $videoUrl; ?>" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+    </div>
+
+    <script type="text/javascript">
+        document.addEventListener("DOMContentLoaded", function() {
+            var video = document.getElementById("exalibVideo");
+
+            // Click-to-play functionality
+            video.addEventListener("click", function() {
+                if (video.paused) {
+                    video.play();
+                } else {
+                    video.pause();
+                }
+            });
+
+            // Auto-show controls when playing
+            video.addEventListener("play", function() {
+                video.setAttribute("controls", "");
+            });
+
+            // Hide controls when paused
+            video.addEventListener("pause", function() {
+                video.removeAttribute("controls");
+            });
+        });
+    </script>
+    <!--    // ADDED 20250311 END-->
+
     <script type="application/javascript" src="<?= $player ?>"></script>
     <div class="video-container" id='player_2834'></div>
     <!--  <video width="100%" height="100%" id="filterVideo" style="cursor:pointer;" poster="<?php echo $CFG->wwwroot; ?>/blocks/exalib/MASTER_ECCO_IBD_Curriculum.jpg">
