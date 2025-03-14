@@ -264,35 +264,10 @@ function block_exalib_print_html5video($options) {
     ?>
     <!--    // ADDED 20250311 START-->
     <div class="video-container">
-        <video width="100%" height="100%" id="exalibVideo">
+        <video id="exalibVideo" class="exalibVideoClass" controls>
             <source src="<?php echo $videoUrl; ?>" type="video/mp4">
-            Your browser does not support the video tag.
         </video>
     </div>
-    <script type="text/javascript">
-        document.addEventListener("DOMContentLoaded", function () {
-            var video = document.getElementById("exalibVideo");
-
-            // Click-to-play functionality
-            video.addEventListener("click", function () {
-                if (video.paused) {
-                    video.play();
-                } else {
-                    video.pause();
-                }
-            });
-
-            // Auto-show controls when playing
-            video.addEventListener("play", function () {
-                video.setAttribute("controls", "");
-            });
-
-            // Hide controls when paused
-            video.addEventListener("pause", function () {
-                video.removeAttribute("controls");
-            });
-        });
-    </script>
     <!--    // ADDED 20250311 END-->
     <?php
 }

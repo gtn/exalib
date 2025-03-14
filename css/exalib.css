@@ -552,3 +552,8 @@ float: left;
 	margin-left: auto;
 	margin-right: auto;
 }
+
+#block_exalib .exalibVideoClass {
+	width: 100%;
+	height: auto;
+}
