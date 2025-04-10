@@ -90,7 +90,13 @@ import_csv("Webcasts2022d.csv","2022",27000,true,false);*/
 
 
 //delete_items(2025,"",40000,41600);
-import_csv("ECCO25_Abstract_Export_FI_V1_schritt4_ods_csv.csv","2025",40000,false,true);
+//import_csv("ECCO25_Abstract_Export_FI_V1_schritt4_ods_csv.csv","2025",40000,false,true);
+
+/*--------------------- Webcasts 2025 -------------------------*/
+
+//delete_items(2024,"",30800,30971);
+import_csv("2025_02_04_FINAL_ECCO25_Webcasts_csv.csv","2025",41700,true,true);
+
 
 echo "everything done!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!";  
 
@@ -401,6 +407,8 @@ function import_csv($filename,$year,$k,$uselink=false,$typetotitle=false){
 		$data['filepathtemp'] = $item['FilePath'];
 		if ($uselink){
 			$data['link']="https://video2.ecco-ibd.eu".$item['FilePath']."".$item['FileName'];
+			//webcasts 2025
+			$data['link']="https://video2.ecco-ibd.eu".$item['FilePath'];
 		}else{
 			$data['link']=""; //bei webcasts ausblenden
 		}
