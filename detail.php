@@ -261,7 +261,9 @@ else{
         echo '<tr><td style="vertical-align: top;"><span class="libary_author">'.block_exalib_get_string('author').':</span></td><td>'.$authors;
         if ($item->affiliations) {
             echo '<p style="margin-top:10px;"><i>'.$item->affiliations.'</i></p>';
-        }
+        }else{
+			 echo '<p style="margin-top:10px;"></p>';
+		}
 
         echo '</td></tr>';
     }
