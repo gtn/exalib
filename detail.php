@@ -233,7 +233,7 @@ else{
     <?
     */
 
-    if (preg_match('!rtmp://!', $item->link) || preg_match('!rtmps://!', $item->link) || preg_match('!https://e-learning.ecco-ibd.eu/ECCO2019/Webcasts!', $item->link) || preg_match('!https://video.ecco-ibd.eu/ECCO2020!', $item->link) || preg_match('!https://video2.ecco-ibd.eu/content!', $item->link) || preg_match('!https://video.ecco-ibd.eu/ECCO2021!', $item->link)) {
+    if (preg_match('!rtmp://!', $item->link) || preg_match('!rtmps://!', $item->link) || preg_match('!https://e-learning.ecco-ibd.eu/ECCO2019/Webcasts!', $item->link) || preg_match('!https://video.ecco-ibd.eu/ECCO2020!', $item->link) || preg_match('!http://video.ecco-ibd.eu/20', $item->link) || preg_match('!https://video2.ecco-ibd.eu/content!', $item->link) || preg_match('!https://video.ecco-ibd.eu/ECCO2021!', $item->link)) {
         $video_url = $item->link;
         $item->link = '';
     } else {
