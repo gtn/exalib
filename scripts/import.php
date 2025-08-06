@@ -95,10 +95,15 @@ import_csv("Webcasts2022d.csv","2022",27000,true,false);*/
 /*--------------------- Webcasts 2025 -------------------------*/
 
 //delete_items(2024,"",30800,30971);
-import_csv("2025_02_04_FINAL_ECCO25_Webcasts_csv.csv","2025",41700,true,true);
+//import_csv("2025_02_04_FINAL_ECCO25_Webcasts_csv.csv","2025",41700,true,true);
 
-
-echo "everything done!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!";  
+//delete_items(2024,"",30800,30971);
+$hauptkategorie=51100; //bei allen außer IBD Physians
+$hauptkategorie=51600; //bei IBD Physians 2025, Kategorien neu von Angerer angelegt, wenn in spalte cat2 1 steht solls die kategorie 51601 werden
+$ibd=1; 
+import_csv("2025_07_23_ECCO_IBD Curriculum - New Format_V3b_csv.csv","2025",42000,true,false,$hauptkategorie,$ibd);
+//delete_items(2025,"",42000,42293);
+echo "everything done!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!";  
 
 //set_maincategory();
 //ALTER TABLE mdl_block_exalib_item ADD deleted int(1)
@@ -355,7 +360,7 @@ function graphic_path($wert,$year){
 	return $wert;
 }
 
-function import_csv($filename,$year,$k,$uselink=false,$typetotitle=false){
+function import_csv($filename,$year,$k,$uselink=false,$typetotitle=false,$hauptkategorie,$ibd){
 
 	$csv = file_get_contents($filename);
 
@@ -402,6 +407,7 @@ function import_csv($filename,$year,$k,$uselink=false,$typetotitle=false){
 		$data['content'] = $item['content'];
 		$data['search_abstract'] = $item['SearchAbstract'];
 		$data['filestemp'] = $filen;
+		$data['ibd'] = $ibd;
 		//abstracts 2020, nicht notwendig
 		//$data['filepathtemp'] = "video.ecco-ibd.eu".$item['FilePath'];
 		$data['filepathtemp'] = $item['FilePath'];
@@ -409,6 +415,8 @@ function import_csv($filename,$year,$k,$uselink=false,$typetotitle=false){
 			$data['link']="https://video2.ecco-ibd.eu".$item['FilePath']."".$item['FileName'];
 			//webcasts 2025
 			$data['link']="https://video2.ecco-ibd.eu".$item['FilePath'];
+			//curriculum 2025
+			$data['link']=$item['FilePath'];
 		}else{
 			$data['link']=""; //bei webcasts ausblenden
 		}
@@ -441,58 +449,59 @@ function import_csv($filename,$year,$k,$uselink=false,$typetotitle=false){
 				g::$DB->insert_record('block_exalib_item_category', ['item_id'=>$data['id'], 'category_id' => $category_id]);
 
 			}
+			
 			if (intval($data2['Cat2'])>0){
-				$category_id=51100+$data2['Cat2']; //51100 dazuzählen, weil es dann übereinstimmt, zb 1 bei ecco ist "1. Aetiology of disease", hat bei exalib 51101
+				$category_id=$hauptkategorie+$data2['Cat2']; //$hauptkategorie dazuzählen, weil es dann übereinstimmt, zb 1 bei ecco ist "1. Aetiology of disease", hat bei exalib 51101
 				if ($data2['Cat2']==18) $category_id=51306;			// weil "18. Clinical trial design and outcomes" die id 51306 hat und nicht nach der anderen systematik 51118
 				if ($data2['Cat2']==19) $category_id=51307;if ($data2['Cat2']==20) $category_id=51309;
 				if ($maincategory_arr[$category_id]==1) $catt=$category_id;
 				g::$DB->insert_record('block_exalib_item_category', ['item_id'=>$data['id'], 'category_id' => $category_id]);
 			}
 			if (intval($data2['Cat3'])>0){
-				$category_id=51100+$data2['Cat3'];
+				$category_id=$hauptkategorie+$data2['Cat3'];
 				if ($data2['Cat3']==18) $category_id=51306;if ($data2['Cat3']==19) $category_id=51307;if ($data2['Cat3']==20) $category_id=51309;
 				if ($maincategory_arr[$category_id]==1) $catt=$category_id;
 				g::$DB->insert_record('block_exalib_item_category', ['item_id'=>$data['id'], 'category_id' => $category_id]);
 			}
 			if (intval($data2['Cat4'])>0){
-				$category_id=51100+$data2['Cat4'];
+				$category_id=$hauptkategorie+$data2['Cat4'];
 				if ($data2['Cat4']==18) $category_id=51306;if ($data2['Cat4']==19) $category_id=51307;if ($data2['Cat4']==20) $category_id=51309;
 				if ($maincategory_arr[$category_id]==1) $catt=$category_id;
 				g::$DB->insert_record('block_exalib_item_category', ['item_id'=>$data['id'], 'category_id' => $category_id]);
 			}
 			if (intval($data2['Cat5'])>0){
-				$category_id=51100+$data2['Cat5'];
+				$category_id=$hauptkategorie+$data2['Cat5'];
 				if ($data2['Cat5']==18) $category_id=51306;if ($data2['Cat5']==19) $category_id=51307;if ($data2['Cat5']==20) $category_id=51309;
 				if ($maincategory_arr[$category_id]==1) $catt=$category_id;
 				g::$DB->insert_record('block_exalib_item_category', ['item_id'=>$data['id'], 'category_id' => $category_id]);
 			}
 			if (intval($data2['Cat6'])>0){
-				$category_id=51100+$data2['Cat6'];
+				$category_id=$hauptkategorie+$data2['Cat6'];
 				if ($data2['Cat6']==18) $category_id=51306;if ($data2['Cat6']==19) $category_id=51307;if ($data2['Cat6']==20) $category_id=51309;
 				if ($maincategory_arr[$category_id]==1) $catt=$category_id;
 				g::$DB->insert_record('block_exalib_item_category', ['item_id'=>$data['id'], 'category_id' => $category_id]);
 			}
 			if (intval($data2['Cat7'])>0){
-				$category_id=51100+$data2['Cat7'];
+				$category_id=$hauptkategorie+$data2['Cat7'];
 				if ($data2['Cat7']==18) $category_id=51306;if ($data2['Cat7']==19) $category_id=51307;if ($data2['Cat7']==20) $category_id=51309;
 				if ($maincategory_arr[$category_id]==1) $catt=$category_id;
 				g::$DB->insert_record('block_exalib_item_category', ['item_id'=>$data['id'], 'category_id' => $category_id]);
 			}
 			
 			if (intval($data2['Cat8'])>0){
-				$category_id=51100+$data2['Cat8'];
+				$category_id=$hauptkategorie+$data2['Cat8'];
 				if ($data2['Cat8']==18) $category_id=51306;if ($data2['Cat8']==19) $category_id=51307;if ($data2['Cat8']==20) $category_id=51309;
 				if ($maincategory_arr[$category_id]==1) $catt=$category_id;
 				g::$DB->insert_record('block_exalib_item_category', ['item_id'=>$data['id'], 'category_id' => $category_id]);
 			}
 			if (intval($data2['Cat9'])>0){
-				$category_id=51100+$data2['Cat9'];
+				$category_id=$hauptkategorie+$data2['Cat9'];
 				if ($data2['Cat9']==18) $category_id=51306;if ($data2['Cat9']==19) $category_id=51307;if ($data2['Cat9']==20) $category_id=51309;
 				if ($maincategory_arr[$category_id]==1) $catt=$category_id;
 				g::$DB->insert_record('block_exalib_item_category', ['item_id'=>$data['id'], 'category_id' => $category_id]);
 			}
 			if (intval($data2['Cat10'])>0){
-				$category_id=51100+$data2['Cat10'];
+				$category_id=$hauptkategorie+$data2['Cat10'];
 				if ($data2['Cat10']==18) $category_id=51306;if ($data2['Cat10']==19) $category_id=51307;if ($data2['Cat10']==20) $category_id=51309;
 				if ($maincategory_arr[$category_id]==1) $catt=$category_id;
 				g::$DB->insert_record('block_exalib_item_category', ['item_id'=>$data['id'], 'category_id' => $category_id]);
