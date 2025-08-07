@@ -373,7 +373,7 @@ function import_csv($filename,$year,$k,$uselink=false,$typetotitle=false,$hauptk
 		
 		//echo "<pre>";
 		//print_r($item);die;
-		
+		if ($ibd>0)	$year=$item['Year'];
 		$data=array();$data2=array();
 		$filen='';
 		$data['id'] = $k;$data2['id'] = $k;
