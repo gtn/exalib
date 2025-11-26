@@ -40,7 +40,7 @@ if ($allowdetail==0) {
 	  setcookie("exalib_lastitem", $itemid, time() + (60 * 3), "/", 'e-learning.ecco-ibd.eu');
     echo $output->header();
     echo "Guests cannot access this course. Please log in via the ECCO Portal...<br><br>";
-    echo "<button onclick=\"window.location.href='https://cm.ecco-ibd.eu/cmportal/OAuthRedirect/EC20/config/normal'\">Continue </button> <br>";
+    echo "<button onclick=\"window.location.href='https://e-learning.ecco-ibd.eu/login/index.php'\">Continue </button> <br>";
     //echo "(If redirect fails, press button in order to proceed to login page.)";
     echo "<!--script> window.location.href='https://e-learning.ecco-ibd.eu/login/index.php'</script-->";
    
