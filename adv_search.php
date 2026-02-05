@@ -478,7 +478,7 @@ echo $output->header();
 							</div>
 							<div class="form-group">
 								<div class="col-sm-12">
-							    	<input value="Keywords" name="keywords" type="button" onclick="window.location.href='https://e-learning.ecco-ibd.eu/blocks/exalib/pdfjs/PlainViewer/web/viewer.html?file=../../pdfs/2019_ECCO_e-Library_categories_and_keywords.pdf'" class="form-control">
+							    	<input value="Keywords" name="keywords" type="button" onclick="window.location.href='https://e-learning.ecco-ibd.eu/blocks/exalib/pdfjs/PlainViewer/web/viewer.html?file=../../pdfs/2026_categories_and_keywords.pdf'" class="form-control">
 								</div>
 							</div>
 							<?php if (is_dir(__DIR__.'/../../mod/library')) {
